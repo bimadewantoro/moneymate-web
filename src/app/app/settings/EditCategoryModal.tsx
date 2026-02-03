@@ -9,6 +9,7 @@ interface Category {
   type: "income" | "expense";
   color: string;
   icon: string | null;
+  monthlyBudget: number | null;
   isActive: boolean;
 }
 
@@ -43,6 +44,7 @@ export function EditCategoryModal({
     type: category.type,
     color: category.color,
     icon: category.icon || "",
+    monthlyBudget: category.monthlyBudget ? category.monthlyBudget / 100 : "",
     isActive: category.isActive,
   });
 
@@ -53,6 +55,7 @@ export function EditCategoryModal({
       type: category.type,
       color: category.color,
       icon: category.icon || "",
+      monthlyBudget: category.monthlyBudget ? category.monthlyBudget / 100 : "",
       isActive: category.isActive,
     });
   }, [category]);
@@ -62,11 +65,16 @@ export function EditCategoryModal({
     setIsSubmitting(true);
 
     try {
+      const monthlyBudget = formData.monthlyBudget 
+        ? Math.round(Number(formData.monthlyBudget) * 100)
+        : null;
+
       const result = await updateCategoryAction(category.id, {
         name: formData.name,
         type: formData.type,
         color: formData.color,
         icon: formData.icon || undefined,
+        monthlyBudget,
         isActive: formData.isActive,
       });
 
@@ -161,6 +169,37 @@ export function EditCategoryModal({
                 <option value="income">Income</option>
               </select>
             </div>
+
+            {/* Monthly Budget (only for expense categories) */}
+            {formData.type === "expense" && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Monthly Budget Limit
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 text-sm">
+                    Rp
+                  </span>
+                  <input
+                    type="number"
+                    value={formData.monthlyBudget}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        monthlyBudget: e.target.value ? Number(e.target.value) : "",
+                      })
+                    }
+                    min="0"
+                    step="1000"
+                    placeholder="No limit"
+                    className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  />
+                </div>
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  Leave empty for no budget limit
+                </p>
+              </div>
+            )}
 
             {/* Icon */}
             <div>

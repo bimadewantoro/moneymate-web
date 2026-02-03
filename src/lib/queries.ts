@@ -276,6 +276,7 @@ export async function createCategory(
     type: "income" | "expense";
     color?: string;
     icon?: string;
+    monthlyBudget?: number;
   }
 ) {
   const result = await db
@@ -286,6 +287,7 @@ export async function createCategory(
       type: data.type,
       color: data.color || "#6366f1",
       icon: data.icon,
+      monthlyBudget: data.monthlyBudget,
     })
     .returning();
 
@@ -303,6 +305,7 @@ export async function updateCategory(
     type: "income" | "expense";
     color: string;
     icon: string;
+    monthlyBudget: number | null;
     isActive: boolean;
   }>
 ) {
@@ -783,4 +786,110 @@ export async function getNetWorthProgression(userId: string, months: number = 6)
   }
   
   return monthlyData;
+}
+
+// ============================================
+// BUDGET ENGINE QUERIES
+// ============================================
+
+export interface BudgetStatus {
+  categoryId: string;
+  categoryName: string;
+  categoryColor: string;
+  categoryIcon: string | null;
+  monthlyBudget: number;
+  spent: number;
+  remaining: number;
+  percentage: number;
+  status: "safe" | "warning" | "danger" | "over";
+}
+
+/**
+ * Get budget status for all expense categories with monthly budgets
+ * Returns spending vs budget for the current month
+ */
+export async function getBudgetStatus(userId: string): Promise<BudgetStatus[]> {
+  // Get all expense categories with budgets
+  const userCategories = await db
+    .select()
+    .from(categories)
+    .where(
+      and(
+        eq(categories.userId, userId),
+        eq(categories.type, "expense"),
+        eq(categories.isActive, true),
+        sql`${categories.monthlyBudget} IS NOT NULL`
+      )
+    );
+
+  if (userCategories.length === 0) {
+    return [];
+  }
+
+  // Get current month date range
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+
+  // Get spending per category for current month
+  const spendingResults = await db
+    .select({
+      categoryId: transactions.categoryId,
+      total: sql<number>`COALESCE(SUM(${transactions.amount}), 0)`,
+    })
+    .from(transactions)
+    .where(
+      and(
+        eq(transactions.userId, userId),
+        eq(transactions.type, "expense"),
+        sql`${transactions.date} >= ${startOfMonth.getTime()}`,
+        sql`${transactions.date} <= ${endOfMonth.getTime()}`
+      )
+    )
+    .groupBy(transactions.categoryId);
+
+  const spendingMap = new Map(
+    spendingResults.map((r) => [r.categoryId, r.total])
+  );
+
+  // Calculate budget status for each category
+  return userCategories
+    .map((category) => {
+      const budget = category.monthlyBudget!;
+      const spent = spendingMap.get(category.id) || 0;
+      const remaining = budget - spent;
+      const percentage = budget > 0 ? (spent / budget) * 100 : 0;
+
+      let status: BudgetStatus["status"];
+      if (percentage >= 100) {
+        status = "over";
+      } else if (percentage >= 90) {
+        status = "danger";
+      } else if (percentage >= 75) {
+        status = "warning";
+      } else {
+        status = "safe";
+      }
+
+      return {
+        categoryId: category.id,
+        categoryName: category.name,
+        categoryColor: category.color,
+        categoryIcon: category.icon,
+        monthlyBudget: budget,
+        spent,
+        remaining,
+        percentage,
+        status,
+      };
+    })
+    .sort((a, b) => b.percentage - a.percentage);
+}
+
+/**
+ * Get categories that are over 80% of their budget (Watchlist)
+ */
+export async function getWatchlistCategories(userId: string): Promise<BudgetStatus[]> {
+  const allBudgetStatus = await getBudgetStatus(userId);
+  return allBudgetStatus.filter((b) => b.percentage >= 80);
 }

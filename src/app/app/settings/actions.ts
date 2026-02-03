@@ -123,6 +123,8 @@ export async function createCategoryAction(formData: FormData) {
   const type = formData.get("type") as "income" | "expense";
   const color = (formData.get("color") as string) || "#6366f1";
   const icon = formData.get("icon") as string | undefined;
+  const monthlyBudgetStr = formData.get("monthlyBudget") as string;
+  const monthlyBudget = monthlyBudgetStr ? Math.round(parseFloat(monthlyBudgetStr) * 100) : undefined;
 
   if (!name || !type) {
     return { error: "Name and type are required" };
@@ -134,9 +136,11 @@ export async function createCategoryAction(formData: FormData) {
       type,
       color,
       icon,
+      monthlyBudget,
     });
 
     revalidatePath("/app/settings");
+    revalidatePath("/app");
     return { success: true, category };
   } catch (error) {
     console.error("Failed to create category:", error);
@@ -151,6 +155,7 @@ export async function updateCategoryAction(
     type: "income" | "expense";
     color: string;
     icon: string;
+    monthlyBudget: number | null;
     isActive: boolean;
   }>
 ) {
@@ -167,6 +172,7 @@ export async function updateCategoryAction(
     }
 
     revalidatePath("/app/settings");
+    revalidatePath("/app");
     return { success: true, category };
   } catch (error) {
     console.error("Failed to update category:", error);
