@@ -60,6 +60,50 @@ export const verificationTokens = sqliteTable(
 );
 
 // MoneyMate application tables
+
+// Finance Accounts (BCA, Wallet, Investments, etc.)
+export const financeAccounts = sqliteTable("finance_account", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  userId: text("userId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  type: text("type", { enum: ["bank", "cash", "e-wallet", "investment", "other"] }).notNull(),
+  initialBalance: integer("initialBalance").notNull().default(0), // Store as cents/smallest unit
+  currency: text("currency").notNull().default("IDR"),
+  icon: text("icon"), // Optional icon identifier
+  isActive: integer("isActive", { mode: "boolean" }).notNull().default(true),
+  createdAt: integer("createdAt", { mode: "timestamp_ms" })
+    .notNull()
+    .default(sql`(unixepoch() * 1000)`),
+  updatedAt: integer("updatedAt", { mode: "timestamp_ms" })
+    .notNull()
+    .default(sql`(unixepoch() * 1000)`),
+});
+
+// Categories for transactions (Food, Transport, Salary, etc.)
+export const categories = sqliteTable("category", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  userId: text("userId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  type: text("type", { enum: ["income", "expense"] }).notNull(),
+  color: text("color").notNull().default("#6366f1"), // Hex color for UI
+  icon: text("icon"), // Optional icon identifier
+  isActive: integer("isActive", { mode: "boolean" }).notNull().default(true),
+  createdAt: integer("createdAt", { mode: "timestamp_ms" })
+    .notNull()
+    .default(sql`(unixepoch() * 1000)`),
+  updatedAt: integer("updatedAt", { mode: "timestamp_ms" })
+    .notNull()
+    .default(sql`(unixepoch() * 1000)`),
+});
+
 export const transactions = sqliteTable("transaction", {
   id: text("id")
     .primaryKey()
@@ -69,8 +113,16 @@ export const transactions = sqliteTable("transaction", {
     .references(() => users.id, { onDelete: "cascade" }),
   amount: integer("amount").notNull(), // Store as cents/smallest unit
   description: text("description"),
-  category: text("category"),
-  type: text("type", { enum: ["income", "expense"] }).notNull(),
+  categoryId: text("categoryId")
+    .references(() => categories.id, { onDelete: "set null" }),
+  type: text("type", { enum: ["income", "expense", "transfer"] }).notNull(),
+  // For transfers: fromAccountId is source, toAccountId is destination
+  // For income: toAccountId is where money goes
+  // For expense: fromAccountId is where money comes from
+  fromAccountId: text("fromAccountId")
+    .references(() => financeAccounts.id, { onDelete: "set null" }),
+  toAccountId: text("toAccountId")
+    .references(() => financeAccounts.id, { onDelete: "set null" }),
   date: integer("date", { mode: "timestamp_ms" })
     .notNull()
     .default(sql`(unixepoch() * 1000)`),
@@ -81,3 +133,11 @@ export const transactions = sqliteTable("transaction", {
     .notNull()
     .default(sql`(unixepoch() * 1000)`),
 });
+
+// Type exports for use in application
+export type FinanceAccount = typeof financeAccounts.$inferSelect;
+export type NewFinanceAccount = typeof financeAccounts.$inferInsert;
+export type Category = typeof categories.$inferSelect;
+export type NewCategory = typeof categories.$inferInsert;
+export type Transaction = typeof transactions.$inferSelect;
+export type NewTransaction = typeof transactions.$inferInsert;
