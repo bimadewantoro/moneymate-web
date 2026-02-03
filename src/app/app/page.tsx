@@ -10,6 +10,8 @@ import {
   getActiveCategories,
   getActiveFinanceAccounts,
   getNetWorthProgression,
+  getBudgetStatus,
+  getWatchlistCategories,
 } from "@/lib/queries";
 import { StatsCards } from "@/components/StatsCards";
 import { SpendingBreakdown } from "@/components/SpendingBreakdown";
@@ -17,6 +19,8 @@ import { TrendAnalysis } from "@/components/TrendAnalysis";
 import { RecentTransactions } from "@/components/RecentTransactions";
 import { NetWorthProgression } from "@/components/NetWorthProgression";
 import { TransactionDrawer } from "@/components/TransactionDrawer";
+import { BudgetProgressCard } from "@/components/BudgetProgressCard";
+import { WatchlistWidget } from "@/components/WatchlistWidget";
 
 const ACCOUNT_ICONS: Record<string, string> = {
   bank: "🏦",
@@ -50,6 +54,8 @@ export default async function DashboardPage() {
     categories,
     accounts,
     netWorthData,
+    budgetStatus,
+    watchlistCategories,
   ] = await Promise.all([
     getUserAccountsWithBalances(session.user.id),
     getCurrentMonthStats(session.user.id),
@@ -59,6 +65,8 @@ export default async function DashboardPage() {
     getActiveCategories(session.user.id),
     getActiveFinanceAccounts(session.user.id),
     getNetWorthProgression(session.user.id, 6),
+    getBudgetStatus(session.user.id),
+    getWatchlistCategories(session.user.id),
   ]);
 
   const totalBalance = accountsWithBalances.reduce(
@@ -160,7 +168,7 @@ export default async function DashboardPage() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Welcome back, {session.user.name?.split(" ")[0]}! �
+              Welcome back, {session.user.name?.split(" ")[0]}!
             </h2>
             <p className="text-gray-500 dark:text-gray-400">
               Here&apos;s your financial overview
@@ -199,6 +207,11 @@ export default async function DashboardPage() {
           savingsRateTrend={monthStats.savingsRateTrend}
         />
 
+        {/* Watchlist Widget - Only show when there are categories to watch */}
+        {watchlistCategories.length > 0 && (
+          <WatchlistWidget watchlist={watchlistCategories} />
+        )}
+
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Spending Breakdown */}
@@ -207,6 +220,9 @@ export default async function DashboardPage() {
           {/* Monthly Trends */}
           <TrendAnalysis data={monthlyTrends} />
         </div>
+
+        {/* Budget Overview - Full Width */}
+        <BudgetProgressCard budgets={budgetStatus} />
 
         {/* Net Worth Progression - Full Width */}
         <NetWorthProgression data={netWorthData} />
