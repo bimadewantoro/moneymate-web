@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getUserFinanceAccounts, getUserCategories } from "@/lib/queries";
 import { AccountsSection } from "./AccountsSection";
 import { CategoriesSection } from "./CategoriesSection";
+import { PinSettings } from "@/components/PinSettings";
 import Link from "next/link";
 
 export default async function SettingsPage() {
@@ -66,6 +67,9 @@ export default async function SettingsPage() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-8">
+          {/* PIN Security Section */}
+          <PinSettings />
+
           {/* Finance Accounts Section */}
           <AccountsSection 
             accounts={accounts.map(acc => ({
