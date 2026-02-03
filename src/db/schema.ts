@@ -95,6 +95,7 @@ export const categories = sqliteTable("category", {
   type: text("type", { enum: ["income", "expense"] }).notNull(),
   color: text("color").notNull().default("#6366f1"), // Hex color for UI
   icon: text("icon"), // Optional icon identifier
+  monthlyBudget: integer("monthlyBudget"), // Monthly budget limit in cents (null = no budget)
   isActive: integer("isActive", { mode: "boolean" }).notNull().default(true),
   createdAt: integer("createdAt", { mode: "timestamp_ms" })
     .notNull()
