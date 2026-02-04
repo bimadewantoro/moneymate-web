@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Drawer } from "vaul";
 import { createTransactionAction } from "@/app/app/transactions/actions";
 
@@ -45,8 +45,28 @@ export function TransactionDrawer({
   const [activeType, setActiveType] = useState<"expense" | "income" | "transfer">("expense");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   const categories = activeType === "income" ? incomeCategories : expenseCategories;
+
+  const handleFocusWithin = useCallback((e: FocusEvent) => {
+    const target = e.target as HTMLElement;
+    if (target.tagName === "INPUT" || target.tagName === "SELECT" || target.tagName === "TEXTAREA") {
+      setTimeout(() => {
+        target.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 300);
+    }
+  }, []);
+
+  useEffect(() => {
+    const content = contentRef.current;
+    if (!content || !open) return;
+
+    content.addEventListener("focusin", handleFocusWithin);
+    return () => {
+      content.removeEventListener("focusin", handleFocusWithin);
+    };
+  }, [open, handleFocusWithin]);
 
   const handleSubmit = async (formData: FormData) => {
     setIsSubmitting(true);
@@ -94,9 +114,12 @@ export function TransactionDrawer({
       </Drawer.Trigger>
       <Drawer.Portal>
         <Drawer.Overlay className="fixed inset-0 bg-black/40 z-50" />
-        <Drawer.Content className="bg-white dark:bg-gray-800 flex flex-col rounded-t-2xl h-[90vh] mt-24 fixed bottom-0 left-0 right-0 z-50">
+        <Drawer.Content className="bg-white dark:bg-gray-800 flex flex-col rounded-t-2xl max-h-[90vh] max-h-[90dvh] fixed bottom-0 left-0 right-0 z-50">
           {/* Handle */}
-          <div className="p-4 bg-white dark:bg-gray-800 rounded-t-2xl flex-1 overflow-y-auto">
+          <div 
+            ref={contentRef}
+            className="p-4 bg-white dark:bg-gray-800 rounded-t-2xl flex-1 overflow-y-auto overscroll-contain pb-safe"
+          >
             <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-gray-300 dark:bg-gray-600 mb-6" />
             
             {/* Success Animation */}
@@ -164,7 +187,7 @@ export function TransactionDrawer({
                   </button>
                 </div>
 
-                <form action={handleSubmit} className="space-y-5">
+                <form action={handleSubmit} className="space-y-5 pb-8">
                   {/* Amount - Large Input */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
