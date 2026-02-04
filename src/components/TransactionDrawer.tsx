@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Drawer } from "vaul";
 import { createTransactionAction } from "@/app/app/transactions/actions";
 
@@ -45,8 +45,25 @@ export function TransactionDrawer({
   const [activeType, setActiveType] = useState<"expense" | "income" | "transfer">("expense");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   const categories = activeType === "income" ? incomeCategories : expenseCategories;
+
+  useEffect(() => {
+    if (!open) return;
+
+    const handleFocusIn = (e: FocusEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT') {
+        setTimeout(() => {
+          target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 300);
+      }
+    };
+
+    document.addEventListener('focusin', handleFocusIn);
+    return () => document.removeEventListener('focusin', handleFocusIn);
+  }, [open]);
 
   const handleSubmit = async (formData: FormData) => {
     setIsSubmitting(true);
@@ -71,7 +88,7 @@ export function TransactionDrawer({
   };
 
   return (
-    <Drawer.Root open={open} onOpenChange={setOpen}>
+    <Drawer.Root open={open} onOpenChange={setOpen} handleOnly>
       <Drawer.Trigger asChild>
         {trigger || (
           <button className="fixed bottom-6 right-6 w-14 h-14 bg-indigo-600 text-white rounded-full shadow-lg hover:bg-indigo-700 transition-colors flex items-center justify-center z-40 md:hidden">
@@ -94,10 +111,13 @@ export function TransactionDrawer({
       </Drawer.Trigger>
       <Drawer.Portal>
         <Drawer.Overlay className="fixed inset-0 bg-black/40 z-50" />
-        <Drawer.Content className="bg-white dark:bg-gray-800 flex flex-col rounded-t-2xl h-[90vh] mt-24 fixed bottom-0 left-0 right-0 z-50">
+        <Drawer.Content className="bg-white dark:bg-gray-800 flex flex-col rounded-t-2xl max-h-[90vh] mt-24 fixed bottom-0 left-0 right-0 z-50">
           {/* Handle */}
-          <div className="p-4 bg-white dark:bg-gray-800 rounded-t-2xl flex-1 overflow-y-auto">
-            <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-gray-300 dark:bg-gray-600 mb-6" />
+          <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-gray-300 dark:bg-gray-600 mt-4 mb-2" />
+          <div 
+            ref={contentRef}
+            className="p-4 pt-0 bg-white dark:bg-gray-800 flex-1 overflow-y-auto overscroll-contain pb-[env(safe-area-inset-bottom)]"
+          >
             
             {/* Success Animation */}
             {showSuccess ? (
