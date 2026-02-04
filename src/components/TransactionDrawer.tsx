@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Drawer } from "vaul";
 import { createTransactionAction } from "@/app/app/transactions/actions";
 
@@ -45,24 +45,78 @@ export function TransactionDrawer({
   const [activeType, setActiveType] = useState<"expense" | "income" | "transfer">("expense");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
   const contentRef = useRef<HTMLDivElement>(null);
+  const activeInputRef = useRef<HTMLElement | null>(null);
 
   const categories = activeType === "income" ? incomeCategories : expenseCategories;
 
+  // Handle virtual keyboard visibility using Visual Viewport API
   useEffect(() => {
     if (!open) return;
 
-    const handleFocusIn = (e: FocusEvent) => {
-      const target = e.target as HTMLElement;
-      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT') {
+    const viewport = window.visualViewport;
+    if (!viewport) return;
+
+    const handleViewportResize = () => {
+      // Calculate keyboard height by comparing window height to viewport height
+      const newKeyboardHeight = window.innerHeight - viewport.height;
+      setKeyboardHeight(Math.max(0, newKeyboardHeight));
+      
+      // Scroll active input into view when keyboard opens
+      if (newKeyboardHeight > 0 && activeInputRef.current && contentRef.current) {
         setTimeout(() => {
-          target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 300);
+          activeInputRef.current?.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center' 
+          });
+        }, 100);
       }
     };
 
-    document.addEventListener('focusin', handleFocusIn);
-    return () => document.removeEventListener('focusin', handleFocusIn);
+    viewport.addEventListener('resize', handleViewportResize);
+    viewport.addEventListener('scroll', handleViewportResize);
+
+    return () => {
+      viewport.removeEventListener('resize', handleViewportResize);
+      viewport.removeEventListener('scroll', handleViewportResize);
+    };
+  }, [open]);
+
+  // Track focused input element
+  const handleFocus = useCallback((e: React.FocusEvent<HTMLFormElement>) => {
+    const target = e.target as HTMLElement;
+    if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT') {
+      activeInputRef.current = target;
+      // Small delay to let keyboard animate in
+      setTimeout(() => {
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 300);
+    }
+  }, []);
+
+  const handleBlur = useCallback(() => {
+    // Small delay before clearing to handle focus switches between inputs
+    setTimeout(() => {
+      if (document.activeElement?.tagName !== 'INPUT' && 
+          document.activeElement?.tagName !== 'TEXTAREA' &&
+          document.activeElement?.tagName !== 'SELECT') {
+        activeInputRef.current = null;
+      }
+    }, 100);
+  }, []);
+
+  // Prevent body scroll when drawer is open
+  useEffect(() => {
+    if (open) {
+      document.body.classList.add('drawer-open');
+    } else {
+      document.body.classList.remove('drawer-open');
+      setKeyboardHeight(0);
+    }
+    return () => {
+      document.body.classList.remove('drawer-open');
+    };
   }, [open]);
 
   const handleSubmit = async (formData: FormData) => {
@@ -111,12 +165,22 @@ export function TransactionDrawer({
       </Drawer.Trigger>
       <Drawer.Portal>
         <Drawer.Overlay className="fixed inset-0 bg-black/40 z-50" />
-        <Drawer.Content className="bg-white dark:bg-gray-800 flex flex-col rounded-t-2xl max-h-[90vh] mt-24 fixed bottom-0 left-0 right-0 z-50">
+        <Drawer.Content 
+          className="bg-white dark:bg-gray-800 flex flex-col rounded-t-2xl fixed left-0 right-0 z-50 outline-none"
+          style={{
+            bottom: keyboardHeight > 0 ? keyboardHeight : 0,
+            maxHeight: keyboardHeight > 0 ? `calc(100vh - ${keyboardHeight}px)` : '90vh',
+            transition: 'bottom 0.1s ease-out, max-height 0.1s ease-out',
+          }}
+        >
           {/* Handle */}
           <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-gray-300 dark:bg-gray-600 mt-4 mb-2" />
           <div 
             ref={contentRef}
-            className="p-4 pt-0 bg-white dark:bg-gray-800 flex-1 overflow-y-auto overscroll-contain pb-[env(safe-area-inset-bottom)]"
+            className="p-4 pt-0 bg-white dark:bg-gray-800 flex-1 overflow-y-auto overscroll-contain"
+            style={{
+              paddingBottom: keyboardHeight > 0 ? '16px' : 'env(safe-area-inset-bottom, 16px)',
+            }}
           >
             
             {/* Success Animation */}
@@ -184,7 +248,7 @@ export function TransactionDrawer({
                   </button>
                 </div>
 
-                <form action={handleSubmit} className="space-y-5">
+                <form action={handleSubmit} className="space-y-5" onFocus={handleFocus} onBlur={handleBlur}>
                   {/* Amount - Large Input */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
