@@ -262,8 +262,14 @@ export function TransactionFilters({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
             <span>
-              {filters.dateRange.preset === "custom" && filters.dateRange.start && filters.dateRange.end
-                ? `${format(filters.dateRange.start, "MMM d")} - ${format(filters.dateRange.end, "MMM d")}`
+              {filters.dateRange.preset === "custom"
+                ? filters.dateRange.start && filters.dateRange.end
+                  ? `${format(filters.dateRange.start, "MMM d")} - ${format(filters.dateRange.end, "MMM d")}`
+                  : filters.dateRange.start
+                    ? `From ${format(filters.dateRange.start, "MMM d")}`
+                    : filters.dateRange.end
+                      ? `Until ${format(filters.dateRange.end, "MMM d")}`
+                      : "Custom"
                 : DATE_PRESETS.find((p) => p.value === filters.dateRange.preset)?.label || "All Time"}
             </span>
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
