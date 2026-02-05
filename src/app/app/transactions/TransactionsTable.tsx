@@ -373,6 +373,7 @@ export function TransactionsTable({
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    enableSorting: false,
     initialState: {
       pagination: {
         pageSize: 10,
