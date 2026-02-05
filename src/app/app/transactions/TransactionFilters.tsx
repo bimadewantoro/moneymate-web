@@ -205,7 +205,8 @@ export function TransactionFilters({
     (filters.transactionType !== "all" ? 1 : 0) +
     (filters.selectedCategories.length > 0 ? 1 : 0) +
     (filters.selectedAccounts.length > 0 ? 1 : 0) +
-    (filters.uncategorizedOnly ? 1 : 0);
+    (filters.uncategorizedOnly ? 1 : 0) +
+    (filters.searchQuery ? 1 : 0);
 
   // Get categories based on transaction type
   const filteredCategories = filters.transactionType === "all"
