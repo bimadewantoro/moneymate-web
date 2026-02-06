@@ -124,8 +124,11 @@ export function TransactionsTable({
         return false;
       }
 
-      // Category filter (only for non-transfers)
-      if (filters.selectedCategories.length > 0 && tx.type !== "transfer") {
+      // Category filter
+      if (filters.selectedCategories.length > 0) {
+        if (tx.type === "transfer") {
+          return false;
+        }
         if (!tx.categoryId || !filters.selectedCategories.includes(tx.categoryId)) {
           return false;
         }
@@ -373,7 +376,6 @@ export function TransactionsTable({
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    enableSorting: false,
     initialState: {
       pagination: {
         pageSize: 10,
