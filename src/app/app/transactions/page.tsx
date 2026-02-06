@@ -165,6 +165,7 @@ export default async function TransactionsPage({ searchParams }: PageProps) {
                 categories={categories}
                 initialTypeFilter={params.type as "income" | "expense" | "transfer" | undefined}
                 initialCategoryFilter={params.category}
+                initialAccountFilter={params.account}
               />
             )}
           </div>

@@ -5,15 +5,14 @@ import {
   useReactTable,
   getCoreRowModel,
   getSortedRowModel,
-  getFilteredRowModel,
   getPaginationRowModel,
   flexRender,
   createColumnHelper,
   SortingState,
-  ColumnFiltersState,
 } from "@tanstack/react-table";
 import { deleteTransactionAction } from "./actions";
 import { EditTransactionModal } from "./EditTransactionModal";
+import { TransactionFilters, FilterState, defaultFilters } from "./TransactionFilters";
 
 interface Transaction {
   id: string;
@@ -48,6 +47,7 @@ interface TransactionsTableProps {
   categories: Category[];
   initialTypeFilter?: "income" | "expense" | "transfer";
   initialCategoryFilter?: string;
+  initialAccountFilter?: string;
 }
 
 const ACCOUNT_ICONS: Record<string, string> = {
@@ -66,24 +66,34 @@ export function TransactionsTable({
   categories,
   initialTypeFilter,
   initialCategoryFilter,
+  initialAccountFilter,
 }: TransactionsTableProps) {
-  const [sorting, setSorting] = useState<SortingState>([
-    { id: "date", desc: true },
-  ]);
-  
-  // Initialize column filters from URL params
-  const initialFilters: ColumnFiltersState = [];
-  if (initialTypeFilter) {
-    initialFilters.push({ id: "type", value: initialTypeFilter });
-  }
-  if (initialCategoryFilter) {
-    initialFilters.push({ id: "categoryId", value: initialCategoryFilter });
-  }
-  
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(initialFilters);
-  const [globalFilter, setGlobalFilter] = useState("");
+  // Initialize filters from URL params
+  const initialFilters: FilterState = {
+    ...defaultFilters,
+    transactionType: initialTypeFilter || "all",
+    selectedCategories: initialCategoryFilter ? [initialCategoryFilter] : [],
+    selectedAccounts: initialAccountFilter ? [initialAccountFilter] : [],
+  };
+
+  const [filters, setFilters] = useState<FilterState>(initialFilters);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
+
+  // Derive sorting state from filters
+  const sorting: SortingState = useMemo(() => {
+    switch (filters.sortBy) {
+      case "date-asc":
+        return [{ id: "date", desc: false }];
+      case "amount-desc":
+        return [{ id: "amount", desc: true }];
+      case "amount-asc":
+        return [{ id: "amount", desc: false }];
+      case "date-desc":
+      default:
+        return [{ id: "date", desc: true }];
+    }
+  }, [filters.sortBy]);
 
   const accountMap = useMemo(
     () => new Map(accounts.map((a) => [a.id, a])),
@@ -94,6 +104,65 @@ export function TransactionsTable({
     () => new Map(categories.map((c) => [c.id, c])),
     [categories]
   );
+
+  // Apply all filters to transactions
+  const filteredTransactions = useMemo(() => {
+    return transactions.filter((tx) => {
+      // Date range filter
+      if (filters.dateRange.start || filters.dateRange.end) {
+        const txDate = new Date(tx.date);
+        if (filters.dateRange.start && txDate < filters.dateRange.start) {
+          return false;
+        }
+        if (filters.dateRange.end && txDate > filters.dateRange.end) {
+          return false;
+        }
+      }
+
+      // Transaction type filter
+      if (filters.transactionType !== "all" && tx.type !== filters.transactionType) {
+        return false;
+      }
+
+      // Category filter
+      if (filters.selectedCategories.length > 0) {
+        if (tx.type === "transfer") {
+          return false;
+        }
+        if (!tx.categoryId || !filters.selectedCategories.includes(tx.categoryId)) {
+          return false;
+        }
+      }
+
+      // Account filter - for transfers, check both source and destination
+      if (filters.selectedAccounts.length > 0) {
+        const matchesAccount = 
+          (tx.fromAccountId && filters.selectedAccounts.includes(tx.fromAccountId)) ||
+          (tx.toAccountId && filters.selectedAccounts.includes(tx.toAccountId));
+        if (!matchesAccount) {
+          return false;
+        }
+      }
+
+      // Uncategorized filter
+      if (filters.uncategorizedOnly && tx.type !== "transfer") {
+        if (tx.categoryId !== null) {
+          return false;
+        }
+      }
+
+      // Search filter - search in description
+      if (filters.searchQuery) {
+        const searchLower = filters.searchQuery.toLowerCase();
+        const descriptionMatch = tx.description?.toLowerCase().includes(searchLower);
+        if (!descriptionMatch) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  }, [transactions, filters]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("id-ID", {
@@ -289,7 +358,6 @@ export function TransactionsTable({
       columnHelper.accessor("categoryId", {
         header: "",
         cell: () => null,
-        filterFn: "equals",
         enableHiding: true,
       }),
     ],
@@ -297,22 +365,16 @@ export function TransactionsTable({
   );
 
   const table = useReactTable({
-    data: transactions,
+    data: filteredTransactions,
     columns,
     state: {
       sorting,
-      columnFilters,
-      globalFilter,
       columnVisibility: {
-        categoryId: false, // Hide the categoryId column, used only for filtering
+        categoryId: false, // Hide the categoryId column
       },
     },
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     initialState: {
       pagination: {
@@ -324,115 +386,118 @@ export function TransactionsTable({
   return (
     <div>
       {/* Filters */}
-      <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex flex-wrap gap-4">
-        {/* Search */}
-        <div className="flex-1 min-w-[200px]">
-          <input
-            type="text"
-            placeholder="Search transactions..."
-            value={globalFilter}
-            onChange={(e) => setGlobalFilter(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
-          />
-        </div>
-
-        {/* Type Filter */}
-        <select
-          value={(table.getColumn("type")?.getFilterValue() as string) ?? ""}
-          onChange={(e) =>
-            table.getColumn("type")?.setFilterValue(e.target.value || undefined)
-          }
-          className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
-        >
-          <option value="">All types</option>
-          <option value="income">💰 Income</option>
-          <option value="expense">💸 Expense</option>
-          <option value="transfer">🔄 Transfer</option>
-        </select>
+      <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+        <TransactionFilters
+          accounts={accounts}
+          categories={categories}
+          filters={filters}
+          onFiltersChange={setFilters}
+          totalResults={filteredTransactions.length}
+        />
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id} className="border-b border-gray-200 dark:border-gray-700">
-                {headerGroup.headers.map((header) => (
-                  <th
-                    key={header.id}
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                  >
-                    {header.isPlaceholder ? null : (
-                      <div
-                        className={
-                          header.column.getCanSort()
-                            ? "cursor-pointer select-none hover:text-gray-700 dark:hover:text-gray-200 flex items-center gap-1"
-                            : ""
-                        }
-                        onClick={header.column.getToggleSortingHandler()}
-                      >
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                        {{
-                          asc: " 🔼",
-                          desc: " 🔽",
-                        }[header.column.getIsSorted() as string] ?? null}
-                      </div>
-                    )}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-            {table.getRowModel().rows.map((row) => (
-              <tr
-                key={row.id}
-                className="hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors"
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="px-6 py-4 whitespace-nowrap">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {filteredTransactions.length === 0 ? (
+        <div className="px-6 py-12 text-center">
+          <div className="text-4xl mb-3">🔍</div>
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-1">
+            No transactions found
+          </h3>
+          <p className="text-gray-500 dark:text-gray-400 mb-4">
+            Try adjusting your filters to see more results
+          </p>
+          <button
+            onClick={() => setFilters(defaultFilters)}
+            className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+          >
+            Clear all filters
+          </button>
+        </div>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id} className="border-b border-gray-200 dark:border-gray-700">
+                  {headerGroup.headers.map((header) => (
+                    <th
+                      key={header.id}
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                    >
+                      {header.isPlaceholder ? null : (
+                        <div
+                          className={
+                            header.column.getCanSort()
+                              ? "cursor-pointer select-none hover:text-gray-700 dark:hover:text-gray-200 flex items-center gap-1"
+                              : ""
+                          }
+                          onClick={header.column.getToggleSortingHandler()}
+                        >
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                          {{
+                            asc: " 🔼",
+                            desc: " 🔽",
+                          }[header.column.getIsSorted() as string] ?? null}
+                        </div>
+                      )}
+                    </th>
+                  ))}
+                </tr>
+              ))}
+            </thead>
+            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+              {table.getRowModel().rows.map((row) => (
+                <tr
+                  key={row.id}
+                  className="hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors"
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <td key={cell.id} className="px-6 py-4 whitespace-nowrap">
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {/* Pagination */}
-      <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
-        <div className="text-sm text-gray-500 dark:text-gray-400">
-          Showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} to{" "}
-          {Math.min(
-            (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
-            table.getFilteredRowModel().rows.length
-          )}{" "}
-          of {table.getFilteredRowModel().rows.length} results
+      {filteredTransactions.length > 0 && (
+        <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
+          <div className="text-sm text-gray-500 dark:text-gray-400">
+            Showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} to{" "}
+            {Math.min(
+              (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
+              filteredTransactions.length
+            )}{" "}
+            of {filteredTransactions.length} results
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+              className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            >
+              Previous
+            </button>
+            <span className="px-3 py-1 text-sm text-gray-600 dark:text-gray-400">
+              Page {table.getState().pagination.pageIndex + 1} of {Math.max(1, table.getPageCount())}
+            </span>
+            <button
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+              className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            >
+              Next
+            </button>
+          </div>
         </div>
-        <div className="flex gap-2">
-          <button
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-            className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-          >
-            Previous
-          </button>
-          <span className="px-3 py-1 text-sm text-gray-600 dark:text-gray-400">
-            Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
-          </span>
-          <button
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-            className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-          >
-            Next
-          </button>
-        </div>
-      </div>
+      )}
 
       {/* Edit Transaction Modal */}
       {editingTransaction && (
