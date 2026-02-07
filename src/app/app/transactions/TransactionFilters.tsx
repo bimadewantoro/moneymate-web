@@ -11,6 +11,85 @@ import {
   endOfDay,
 } from "date-fns";
 
+// Hook to detect mobile viewport
+function useIsMobile(breakpoint: number = 640) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < breakpoint);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, [breakpoint]);
+
+  return isMobile;
+}
+
+// Mobile Sheet Component
+function MobileSheet({
+  isOpen,
+  onClose,
+  title,
+  children,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  title: string;
+  children: React.ReactNode;
+}) {
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 sm:hidden">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/50 transition-opacity"
+        onClick={onClose}
+      />
+      {/* Sheet */}
+      <div className="absolute inset-x-0 bottom-0 max-h-[85vh] bg-white dark:bg-gray-800 rounded-t-2xl shadow-xl flex flex-col animate-slide-up">
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 shrink-0">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            {title}
+          </h3>
+          <button
+            onClick={onClose}
+            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          >
+            <svg
+              className="w-5 h-5 text-gray-500 dark:text-gray-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto p-4">{children}</div>
+      </div>
+    </div>
+  );
+}
+
 interface Account {
   id: string;
   name: string;
@@ -109,6 +188,7 @@ export function TransactionFilters({
   onFiltersChange,
   totalResults,
 }: TransactionFiltersProps) {
+  const isMobile = useIsMobile();
   const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
@@ -121,8 +201,10 @@ export function TransactionFilters({
   const accountDropdownRef = useRef<HTMLDivElement>(null);
   const sortDropdownRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdowns when clicking outside
+  // Close dropdowns when clicking outside (desktop only)
   useEffect(() => {
+    if (isMobile) return; // Skip for mobile - handled by MobileSheet
+    
     function handleClickOutside(event: MouseEvent) {
       if (filterMenuRef.current && !filterMenuRef.current.contains(event.target as Node)) {
         setIsFilterMenuOpen(false);
@@ -143,7 +225,7 @@ export function TransactionFilters({
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [isMobile]);
 
   const updateFilters = (partial: Partial<FilterState>) => {
     onFiltersChange({ ...filters, ...partial });
@@ -205,8 +287,7 @@ export function TransactionFilters({
     (filters.transactionType !== "all" ? 1 : 0) +
     (filters.selectedCategories.length > 0 ? 1 : 0) +
     (filters.selectedAccounts.length > 0 ? 1 : 0) +
-    (filters.uncategorizedOnly ? 1 : 0) +
-    (filters.searchQuery ? 1 : 0);
+    (filters.uncategorizedOnly ? 1 : 0);
 
   // Get categories based on transaction type
   const filteredCategories = filters.transactionType === "all"
@@ -218,10 +299,391 @@ export function TransactionFilters({
   const incomeCategories = categories.filter((c) => c.type === "income");
   const expenseCategories = categories.filter((c) => c.type === "expense");
 
+  // Shared content for reuse in both mobile and desktop
+  const datePickerContent = (
+    <div className="space-y-4">
+      <h4 className="text-sm font-medium text-gray-900 dark:text-white hidden sm:block">Date Range</h4>
+      
+      {/* Presets */}
+      <div className="grid grid-cols-2 gap-2">
+        {DATE_PRESETS.filter((p) => p.value !== "custom").map((preset) => (
+          <button
+            key={preset.value}
+            onClick={() => {
+              handleDatePresetChange(preset.value);
+              if (isMobile) setIsDatePickerOpen(false);
+            }}
+            className={`px-3 py-3 sm:py-2 text-sm rounded-lg transition-colors ${
+              filters.dateRange.preset === preset.value
+                ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300"
+                : "bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+            }`}
+          >
+            {preset.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Custom Date Inputs */}
+      <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+        <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Custom Range</p>
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-2">
+          <div className="flex-1">
+            <label className="text-xs text-gray-500 dark:text-gray-400 mb-1 block">Start Date</label>
+            <input
+              type="date"
+              value={filters.dateRange.start ? format(filters.dateRange.start, "yyyy-MM-dd") : ""}
+              onChange={(e) => handleCustomDateChange("start", e.target.value)}
+              className="w-full px-3 py-2.5 sm:py-1.5 text-base sm:text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            />
+          </div>
+          <div className="flex-1">
+            <label className="text-xs text-gray-500 dark:text-gray-400 mb-1 block">End Date</label>
+            <input
+              type="date"
+              value={filters.dateRange.end ? format(filters.dateRange.end, "yyyy-MM-dd") : ""}
+              onChange={(e) => handleCustomDateChange("end", e.target.value)}
+              className="w-full px-3 py-2.5 sm:py-1.5 text-base sm:text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const sortContent = (
+    <div className="space-y-1">
+      {SORT_OPTIONS.map((option) => (
+        <button
+          key={option.value}
+          onClick={() => {
+            updateFilters({ sortBy: option.value as FilterState["sortBy"] });
+            setIsSortDropdownOpen(false);
+          }}
+          className={`w-full px-4 py-3 sm:py-2 text-base sm:text-sm text-left flex items-center gap-3 rounded-lg transition-colors ${
+            filters.sortBy === option.value
+              ? "bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300"
+              : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+          }`}
+        >
+          <span className="text-lg">{option.icon}</span>
+          <span>{option.label}</span>
+          {filters.sortBy === option.value && (
+            <svg className="h-4 w-4 ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          )}
+        </button>
+      ))}
+    </div>
+  );
+
+  const filterMenuContent = (
+    <div className="space-y-6">
+      {/* Category Filter */}
+      {filters.transactionType !== "transfer" && (
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+            🏷️ Categories
+          </label>
+          <div className="space-y-2 max-h-48 overflow-y-auto">
+            {filters.transactionType === "all" ? (
+              <>
+                {incomeCategories.length > 0 && (
+                  <>
+                    <div className="px-2 py-1 text-xs font-medium text-gray-500 dark:text-gray-400 sticky top-0 bg-white dark:bg-gray-800">
+                      💰 Income
+                    </div>
+                    {incomeCategories.map((cat) => (
+                      <label
+                        key={cat.id}
+                        className="flex items-center gap-3 px-2 py-2.5 sm:py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer rounded-lg"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={filters.selectedCategories.includes(cat.id)}
+                          onChange={() => handleCategoryToggle(cat.id)}
+                          className="rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500 w-5 h-5 sm:w-4 sm:h-4"
+                        />
+                        <span style={{ color: cat.color }}>{cat.icon || "📁"}</span>
+                        <span className="text-base sm:text-sm text-gray-700 dark:text-gray-300">{cat.name}</span>
+                      </label>
+                    ))}
+                  </>
+                )}
+                {expenseCategories.length > 0 && (
+                  <>
+                    <div className="px-2 py-1 text-xs font-medium text-gray-500 dark:text-gray-400 sticky top-0 bg-white dark:bg-gray-800">
+                      💸 Expense
+                    </div>
+                    {expenseCategories.map((cat) => (
+                      <label
+                        key={cat.id}
+                        className="flex items-center gap-3 px-2 py-2.5 sm:py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer rounded-lg"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={filters.selectedCategories.includes(cat.id)}
+                          onChange={() => handleCategoryToggle(cat.id)}
+                          className="rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500 w-5 h-5 sm:w-4 sm:h-4"
+                        />
+                        <span style={{ color: cat.color }}>{cat.icon || "📁"}</span>
+                        <span className="text-base sm:text-sm text-gray-700 dark:text-gray-300">{cat.name}</span>
+                      </label>
+                    ))}
+                  </>
+                )}
+              </>
+            ) : (
+              filteredCategories.map((cat) => (
+                <label
+                  key={cat.id}
+                  className="flex items-center gap-3 px-2 py-2.5 sm:py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer rounded-lg"
+                >
+                  <input
+                    type="checkbox"
+                    checked={filters.selectedCategories.includes(cat.id)}
+                    onChange={() => handleCategoryToggle(cat.id)}
+                    className="rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500 w-5 h-5 sm:w-4 sm:h-4"
+                  />
+                  <span style={{ color: cat.color }}>{cat.icon || "📁"}</span>
+                  <span className="text-base sm:text-sm text-gray-700 dark:text-gray-300">{cat.name}</span>
+                </label>
+              ))
+            )}
+          </div>
+          {filters.selectedCategories.length > 0 && (
+            <button
+              onClick={() => updateFilters({ selectedCategories: [] })}
+              className="mt-2 w-full px-3 py-2 text-sm text-indigo-600 dark:text-indigo-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+            >
+              Clear category selection
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Account Filter */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+          💳 Accounts
+        </label>
+        <div className="space-y-2 max-h-48 overflow-y-auto">
+          {accounts.map((acc) => (
+            <label
+              key={acc.id}
+              className="flex items-center gap-3 px-2 py-2.5 sm:py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer rounded-lg"
+            >
+              <input
+                type="checkbox"
+                checked={filters.selectedAccounts.includes(acc.id)}
+                onChange={() => handleAccountToggle(acc.id)}
+                className="rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500 w-5 h-5 sm:w-4 sm:h-4"
+              />
+              <span>{ACCOUNT_ICONS[acc.type]}</span>
+              <span className="text-base sm:text-sm text-gray-700 dark:text-gray-300">{acc.name}</span>
+            </label>
+          ))}
+        </div>
+        {filters.selectedAccounts.length > 0 && (
+          <button
+            onClick={() => updateFilters({ selectedAccounts: [] })}
+            className="mt-2 w-full px-3 py-2 text-sm text-indigo-600 dark:text-indigo-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+          >
+            Clear account selection
+          </button>
+        )}
+        {filters.transactionType === "transfer" && (
+          <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+            Shows transfers where selected account is source or destination
+          </p>
+        )}
+      </div>
+
+      {/* Uncategorized Toggle */}
+      {filters.transactionType !== "transfer" && (
+        <div className="flex items-center justify-between py-2">
+          <div>
+            <label className="text-base sm:text-sm font-medium text-gray-700 dark:text-gray-300">
+              ⚠️ Uncategorized Only
+            </label>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              Show transactions without a category
+            </p>
+          </div>
+          <button
+            onClick={() => {
+              updateFilters({
+                uncategorizedOnly: !filters.uncategorizedOnly,
+                selectedCategories: !filters.uncategorizedOnly ? [] : filters.selectedCategories,
+              });
+            }}
+            className={`relative inline-flex h-7 w-12 sm:h-6 sm:w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
+              filters.uncategorizedOnly ? "bg-indigo-600" : "bg-gray-200 dark:bg-gray-600"
+            }`}
+          >
+            <span
+              className={`pointer-events-none inline-block h-6 w-6 sm:h-5 sm:w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                filters.uncategorizedOnly ? "translate-x-5" : "translate-x-0"
+              }`}
+            />
+          </button>
+        </div>
+      )}
+
+      {activeFilterCount > 0 && (
+        <button
+          onClick={() => {
+            clearAllFilters();
+            setIsFilterMenuOpen(false);
+          }}
+          className="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+        >
+          Clear All Filters
+        </button>
+      )}
+    </div>
+  );
+
   return (
     <div className="space-y-4">
-      {/* Global Filters Row */}
-      <div className="flex flex-wrap items-center gap-3">
+      {/* Mobile Sheets */}
+      <MobileSheet
+        isOpen={isDatePickerOpen && isMobile}
+        onClose={() => setIsDatePickerOpen(false)}
+        title="Select Date Range"
+      >
+        {datePickerContent}
+      </MobileSheet>
+
+      <MobileSheet
+        isOpen={isSortDropdownOpen && isMobile}
+        onClose={() => setIsSortDropdownOpen(false)}
+        title="Sort By"
+      >
+        {sortContent}
+      </MobileSheet>
+
+      <MobileSheet
+        isOpen={isFilterMenuOpen && isMobile}
+        onClose={() => setIsFilterMenuOpen(false)}
+        title="Filter Options"
+      >
+        {filterMenuContent}
+      </MobileSheet>
+
+      {/* Mobile-first filter bar */}
+      <div className="flex flex-col gap-3 sm:hidden">
+        {/* Search - always full width on mobile */}
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <input
+            type="text"
+            placeholder="Search description, notes..."
+            value={filters.searchQuery}
+            onChange={(e) => updateFilters({ searchQuery: e.target.value })}
+            className="w-full pl-10 pr-10 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-base"
+          />
+          {filters.searchQuery && (
+            <button
+              onClick={() => updateFilters({ searchQuery: "" })}
+              className="absolute inset-y-0 right-0 pr-3 flex items-center"
+            >
+              <svg className="h-5 w-5 text-gray-400 hover:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+        </div>
+
+        {/* Transaction Type - horizontal scroll on mobile */}
+        <div className="flex overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">
+          <div className="inline-flex rounded-xl border border-gray-300 dark:border-gray-600 p-1 bg-gray-100 dark:bg-gray-700 min-w-max">
+            {[
+              { value: "all", label: "All", icon: "📋" },
+              { value: "income", label: "Income", icon: "💰" },
+              { value: "expense", label: "Expense", icon: "💸" },
+              { value: "transfer", label: "Transfer", icon: "🔄" },
+            ].map((type) => (
+              <button
+                key={type.value}
+                onClick={() => {
+                  updateFilters({
+                    transactionType: type.value as FilterState["transactionType"],
+                    selectedCategories: type.value === "transfer" ? [] : filters.selectedCategories,
+                  });
+                }}
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-all whitespace-nowrap ${
+                  filters.transactionType === type.value
+                    ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm"
+                    : "text-gray-600 dark:text-gray-400"
+                }`}
+              >
+                {type.icon} {type.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Filter buttons row */}
+        <div className="flex gap-2">
+          {/* Date Range Button */}
+          <button
+            onClick={() => setIsDatePickerOpen(true)}
+            className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 border rounded-xl text-sm font-medium transition-colors ${
+              filters.dateRange.preset !== "all-time"
+                ? "border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 dark:border-indigo-500"
+                : "border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200"
+            }`}
+          >
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span className="truncate">
+              {filters.dateRange.preset === "custom" && filters.dateRange.start && filters.dateRange.end
+                ? `${format(filters.dateRange.start, "MMM d")} - ${format(filters.dateRange.end, "MMM d")}`
+                : DATE_PRESETS.find((p) => p.value === filters.dateRange.preset)?.label || "Date"}
+            </span>
+          </button>
+
+          {/* Sort Button */}
+          <button
+            onClick={() => setIsSortDropdownOpen(true)}
+            className="flex items-center justify-center gap-2 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-sm font-medium"
+          >
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+            </svg>
+            <span>Sort</span>
+          </button>
+
+          {/* Filters Button */}
+          <button
+            onClick={() => setIsFilterMenuOpen(true)}
+            className={`flex items-center justify-center gap-2 px-4 py-3 border rounded-xl text-sm font-medium transition-colors ${
+              activeFilterCount > 0
+                ? "border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 dark:border-indigo-500"
+                : "border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200"
+            }`}
+          >
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+            </svg>
+            {activeFilterCount > 0 && (
+              <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-medium bg-indigo-600 text-white rounded-full">
+                {activeFilterCount}
+              </span>
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* Desktop Filters Row */}
+      <div className="hidden sm:flex flex-wrap items-center gap-3">
         {/* Search Bar */}
         <div className="flex-1 min-w-[200px] max-w-md relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -231,7 +693,7 @@ export function TransactionFilters({
           </div>
           <input
             type="text"
-            placeholder="Search description..."
+            placeholder="Search description, notes..."
             value={filters.searchQuery}
             onChange={(e) => updateFilters({ searchQuery: e.target.value })}
             className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
@@ -262,14 +724,8 @@ export function TransactionFilters({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
             <span>
-              {filters.dateRange.preset === "custom"
-                ? filters.dateRange.start && filters.dateRange.end
-                  ? `${format(filters.dateRange.start, "MMM d")} - ${format(filters.dateRange.end, "MMM d")}`
-                  : filters.dateRange.start
-                    ? `From ${format(filters.dateRange.start, "MMM d")}`
-                    : filters.dateRange.end
-                      ? `Until ${format(filters.dateRange.end, "MMM d")}`
-                      : "Custom"
+              {filters.dateRange.preset === "custom" && filters.dateRange.start && filters.dateRange.end
+                ? `${format(filters.dateRange.start, "MMM d")} - ${format(filters.dateRange.end, "MMM d")}`
                 : DATE_PRESETS.find((p) => p.value === filters.dateRange.preset)?.label || "All Time"}
             </span>
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -277,52 +733,10 @@ export function TransactionFilters({
             </svg>
           </button>
 
-          {isDatePickerOpen && (
-            <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+          {isDatePickerOpen && !isMobile && (
+            <div className="absolute left-0 sm:left-auto sm:right-0 mt-2 w-80 max-w-[calc(100vw-2rem)] bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 z-50">
               <div className="p-4">
-                <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-3">Date Range</h4>
-                
-                {/* Presets */}
-                <div className="grid grid-cols-2 gap-2 mb-4">
-                  {DATE_PRESETS.filter((p) => p.value !== "custom").map((preset) => (
-                    <button
-                      key={preset.value}
-                      onClick={() => handleDatePresetChange(preset.value)}
-                      className={`px-3 py-2 text-sm rounded-lg transition-colors ${
-                        filters.dateRange.preset === preset.value
-                          ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300"
-                          : "bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
-                      }`}
-                    >
-                      {preset.label}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Custom Date Inputs */}
-                <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Custom Range</p>
-                  <div className="flex gap-2">
-                    <div className="flex-1">
-                      <label className="text-xs text-gray-500 dark:text-gray-400">Start</label>
-                      <input
-                        type="date"
-                        value={filters.dateRange.start ? format(filters.dateRange.start, "yyyy-MM-dd") : ""}
-                        onChange={(e) => handleCustomDateChange("start", e.target.value)}
-                        className="w-full px-2 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <label className="text-xs text-gray-500 dark:text-gray-400">End</label>
-                      <input
-                        type="date"
-                        value={filters.dateRange.end ? format(filters.dateRange.end, "yyyy-MM-dd") : ""}
-                        onChange={(e) => handleCustomDateChange("end", e.target.value)}
-                        className="w-full px-2 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                      />
-                    </div>
-                  </div>
-                </div>
+                {datePickerContent}
               </div>
             </div>
           )}
@@ -374,31 +788,10 @@ export function TransactionFilters({
             </svg>
           </button>
 
-          {isSortDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+          {isSortDropdownOpen && !isMobile && (
+            <div className="absolute left-0 sm:left-auto sm:right-0 mt-2 w-48 max-w-[calc(100vw-2rem)] bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 z-50">
               <div className="py-2">
-                {SORT_OPTIONS.map((option) => (
-                  <button
-                    key={option.value}
-                    onClick={() => {
-                      updateFilters({ sortBy: option.value as FilterState["sortBy"] });
-                      setIsSortDropdownOpen(false);
-                    }}
-                    className={`w-full px-4 py-2 text-sm text-left flex items-center gap-2 ${
-                      filters.sortBy === option.value
-                        ? "bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300"
-                        : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    }`}
-                  >
-                    <span>{option.icon}</span>
-                    <span>{option.label}</span>
-                    {filters.sortBy === option.value && (
-                      <svg className="h-4 w-4 ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                    )}
-                  </button>
-                ))}
+                {sortContent}
               </div>
             </div>
           )}
@@ -425,8 +818,8 @@ export function TransactionFilters({
             )}
           </button>
 
-          {isFilterMenuOpen && (
-            <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+          {isFilterMenuOpen && !isMobile && (
+            <div className="absolute left-0 sm:left-auto sm:right-0 mt-2 w-80 max-w-[calc(100vw-2rem)] bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 z-50">
               <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
                 <h4 className="text-sm font-medium text-gray-900 dark:text-white">Filter Options</h4>
                 {activeFilterCount > 0 && (
