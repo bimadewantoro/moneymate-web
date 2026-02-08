@@ -45,6 +45,12 @@ export default async function DashboardPage() {
     redirect("/auth/signin");
   }
 
+  // Check if user needs onboarding (no accounts yet)
+  const existingAccounts = await getUserAccountsWithBalances(session.user.id);
+  if (existingAccounts.length === 0) {
+    redirect("/app/onboarding");
+  }
+
   const [
     accountsWithBalances,
     monthStats,
@@ -57,7 +63,7 @@ export default async function DashboardPage() {
     budgetStatus,
     watchlistCategories,
   ] = await Promise.all([
-    getUserAccountsWithBalances(session.user.id),
+    Promise.resolve(existingAccounts), // Reuse the already fetched data
     getCurrentMonthStats(session.user.id),
     getSpendingByCategory(session.user.id),
     getMonthlyTrends(session.user.id, 6),
