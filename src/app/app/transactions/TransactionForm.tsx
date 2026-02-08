@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { createTransactionAction } from "./actions";
+import { ScanReceiptButton } from "@/components/ScanReceiptButton";
+import type { ReceiptData } from "@/app/actions/scan-receipt";
 
 interface Account {
   id: string;
@@ -39,6 +41,76 @@ export function TransactionForm({
   const [isOpen, setIsOpen] = useState(false);
   const [activeType, setActiveType] = useState<"expense" | "income" | "transfer">("expense");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Form field states for receipt scanning
+  const [formValues, setFormValues] = useState({
+    amount: "",
+    description: "",
+    categoryId: "",
+    fromAccountId: "",
+    toAccountId: "",
+    date: new Date().toISOString().split("T")[0],
+  });
+
+  // Refs for form inputs
+  const amountRef = useRef<HTMLInputElement>(null);
+  const descriptionRef = useRef<HTMLInputElement>(null);
+  const categoryRef = useRef<HTMLSelectElement>(null);
+  const dateRef = useRef<HTMLInputElement>(null);
+
+  // Update input values when formValues change
+  useEffect(() => {
+    if (amountRef.current) amountRef.current.value = formValues.amount;
+    if (descriptionRef.current) descriptionRef.current.value = formValues.description;
+    if (categoryRef.current) categoryRef.current.value = formValues.categoryId;
+    if (dateRef.current) dateRef.current.value = formValues.date;
+  }, [formValues]);
+
+  const handleScanComplete = (data: ReceiptData) => {
+    // Map the scanned category to an existing category
+    const categoryMapping: Record<string, string[]> = {
+      "Food & Dining": ["food", "dining", "restaurant", "meal", "lunch", "dinner", "breakfast"],
+      "Groceries": ["grocery", "groceries", "supermarket", "market"],
+      "Transportation": ["transport", "transportation", "fuel", "gas", "parking", "taxi", "grab", "gojek"],
+      "Shopping": ["shopping", "shop", "retail", "store", "mall"],
+      "Entertainment": ["entertainment", "movie", "game", "hobby"],
+      "Bills & Utilities": ["bill", "utility", "electric", "water", "internet", "phone"],
+      "Health & Medical": ["health", "medical", "pharmacy", "doctor", "hospital"],
+      "Education": ["education", "school", "course", "book"],
+      "Travel": ["travel", "hotel", "flight", "vacation"],
+    };
+
+    // Find matching category from user's categories
+    const categories = activeType === "income" ? incomeCategories : expenseCategories;
+    let matchedCategoryId = "";
+
+    // Try to match by scanned category name
+    const scannedCategoryKeywords = categoryMapping[data.category] || [];
+    for (const category of categories) {
+      const categoryNameLower = category.name.toLowerCase();
+      if (
+        categoryNameLower.includes(data.category.toLowerCase()) ||
+        scannedCategoryKeywords.some((kw) => categoryNameLower.includes(kw))
+      ) {
+        matchedCategoryId = category.id;
+        break;
+      }
+    }
+
+    // Update form values
+    setFormValues({
+      ...formValues,
+      amount: data.amount.toString(),
+      description: data.merchant + (data.items?.length ? ` (${data.items.length} items)` : ""),
+      categoryId: matchedCategoryId,
+      date: data.date,
+    });
+
+    // Ensure the form is open
+    if (!isOpen) {
+      setIsOpen(true);
+    }
+  };
 
   const handleSubmit = async (formData: FormData) => {
     setIsSubmitting(true);
@@ -72,27 +144,33 @@ export function TransactionForm({
             Record income, expenses, or transfers
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => setIsOpen(!isOpen)}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className={`h-4 w-4 transition-transform ${isOpen ? "rotate-45" : ""}`}
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+        <div className="flex items-center gap-2">
+          <ScanReceiptButton
+            onScanComplete={handleScanComplete}
+            disabled={accounts.length === 0}
+          />
+          <button
+            type="button"
+            onClick={() => setIsOpen(!isOpen)}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 4v16m8-8H4"
-            />
-          </svg>
-          {isOpen ? "Close" : "New Transaction"}
-        </button>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className={`h-4 w-4 transition-transform ${isOpen ? "rotate-45" : ""}`}
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+            {isOpen ? "Close" : "New Transaction"}
+          </button>
+        </div>
       </div>
 
       {isOpen && (
@@ -146,12 +224,14 @@ export function TransactionForm({
                     Rp
                   </span>
                   <input
+                    ref={amountRef}
                     type="number"
                     name="amount"
                     required
                     min="0.01"
                     step="0.01"
                     placeholder="0"
+                    defaultValue={formValues.amount}
                     className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   />
                 </div>
@@ -206,7 +286,9 @@ export function TransactionForm({
                     Category
                   </label>
                   <select
+                    ref={categoryRef}
                     name="categoryId"
+                    defaultValue={formValues.categoryId}
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   >
                     <option value="">No category</option>
@@ -225,9 +307,10 @@ export function TransactionForm({
                   Date
                 </label>
                 <input
+                  ref={dateRef}
                   type="date"
                   name="date"
-                  defaultValue={new Date().toISOString().split("T")[0]}
+                  defaultValue={formValues.date}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
               </div>
@@ -239,8 +322,10 @@ export function TransactionForm({
                 Description
               </label>
               <input
+                ref={descriptionRef}
                 type="text"
                 name="description"
+                defaultValue={formValues.description}
                 placeholder={
                   activeType === "transfer"
                     ? "e.g., Move savings to investment"
