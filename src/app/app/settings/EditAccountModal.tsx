@@ -61,7 +61,7 @@ export function EditAccountModal({
         name: formData.name,
         type: formData.type,
         initialBalance: parseFloat(formData.initialBalance) || 0,
-        currency: formData.currency,
+        currency: "IDR", // Currency is temporarily disabled - IDR is set as default
         isActive: formData.isActive,
       });
 
@@ -176,23 +176,7 @@ export function EditAccountModal({
               />
             </div>
 
-            {/* Currency */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Currency
-              </label>
-              <select
-                value={formData.currency}
-                onChange={(e) =>
-                  setFormData({ ...formData, currency: e.target.value })
-                }
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-              >
-                <option value="IDR">IDR (Rupiah)</option>
-                <option value="USD">USD (Dollar)</option>
-                <option value="EUR">EUR (Euro)</option>
-              </select>
-            </div>
+            {/* Currency is temporarily disabled - IDR is set as default */}
 
             {/* Active Status */}
             <div className="flex items-center gap-3">
