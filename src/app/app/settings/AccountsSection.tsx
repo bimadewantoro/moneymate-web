@@ -96,10 +96,10 @@ export function AccountsSection({ accounts }: AccountsSectionProps) {
     return ACCOUNT_TYPES.find((t) => t.value === type)?.icon || "💳";
   };
 
-  const formatCurrency = (amount: number, currency: string) => {
+  const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("id-ID", {
       style: "currency",
-      currency: currency,
+      currency: "IDR",
       minimumFractionDigits: 0,
     }).format(amount);
   };
@@ -142,7 +142,7 @@ export function AccountsSection({ accounts }: AccountsSectionProps) {
       {isAddingAccount && (
         <div className="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
           <form action={handleAddAccount} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Account Name
@@ -183,19 +183,8 @@ export function AccountsSection({ accounts }: AccountsSectionProps) {
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Currency
-                </label>
-                <select
-                  name="currency"
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                >
-                  <option value="IDR">IDR (Rupiah)</option>
-                  <option value="USD">USD (Dollar)</option>
-                  <option value="EUR">EUR (Euro)</option>
-                </select>
-              </div>
+              {/* Currency is temporarily disabled - IDR is set as default */}
+              <input type="hidden" name="currency" value="IDR" />
             </div>
             <div className="flex gap-2 justify-end">
               <button
@@ -264,7 +253,7 @@ export function AccountsSection({ accounts }: AccountsSectionProps) {
                     </select>
                     <span className="text-xs text-gray-400">•</span>
                     <span className="text-xs text-gray-500 dark:text-gray-400">
-                      Initial: {formatCurrency(account.initialBalance, account.currency)}
+                      Initial: {formatCurrency(account.initialBalance)}
                     </span>
                   </div>
                 </div>
