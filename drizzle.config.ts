@@ -6,7 +6,7 @@ dotenv.config({ path: ".env.local" });
 const isDevelopment = process.env.NODE_ENV !== "production";
 
 export default defineConfig({
-  schema: "./src/db/schema.ts",
+  schema: "./src/server/db/schema.ts",
   out: "./drizzle",
   dialect: "turso",
   dbCredentials: {

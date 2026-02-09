@@ -2,10 +2,22 @@ import { auth } from "@/auth";
 
 export default auth((req) => {
   const isAuthenticated = !!req.auth;
-  const isAppRoute = req.nextUrl.pathname.startsWith("/app");
+  const { pathname } = req.nextUrl;
 
-  if (isAppRoute && !isAuthenticated) {
-    const newUrl = new URL("/auth/signin", req.nextUrl.origin);
+  // Protected routes: dashboard pages (under route group, URL starts with /)
+  // We protect: /transactions, /settings, /onboarding, and the dashboard root /
+  // But NOT: /signin, /api, /_next, static assets
+  const publicPaths = ["/signin", "/api", "/_next", "/favicon.ico"];
+  const isPublicPath = publicPaths.some((p) => pathname.startsWith(p));
+
+  // The marketing page is at / via (marketing) route group
+  // The dashboard is also at / via (dashboard) route group
+  // We need to protect dashboard-only routes
+  const dashboardPaths = ["/dashboard", "/transactions", "/settings", "/onboarding"];
+  const isDashboardRoute = dashboardPaths.some((p) => pathname.startsWith(p));
+
+  if (isDashboardRoute && !isAuthenticated) {
+    const newUrl = new URL("/signin", req.nextUrl.origin);
     return Response.redirect(newUrl);
   }
 });
