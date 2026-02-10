@@ -105,20 +105,20 @@ export function AccountsSection({ accounts }: AccountsSectionProps) {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-      <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+    <div className="bg-white rounded-2xl shadow-sm border border-slate-100">
+      <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
         <div>
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+          <h2 className="text-lg font-semibold text-slate-900">
             Finance Accounts
           </h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-sm text-slate-500">
             Manage your bank accounts, wallets, and investment accounts
           </p>
         </div>
         <button
           type="button"
           onClick={() => setIsAddingAccount(true)}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium"
+          className="inline-flex items-center gap-2 px-4 py-2 brand-gradient text-white rounded-lg hover:shadow-md transition-colors text-sm font-medium"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -140,11 +140,11 @@ export function AccountsSection({ accounts }: AccountsSectionProps) {
 
       {/* Add Account Form */}
       {isAddingAccount && (
-        <div className="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
+        <div className="px-6 py-4 bg-slate-50 border-b border-slate-100">
           <form action={handleAddAccount} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-slate-700 mb-1">
                   Account Name
                 </label>
                 <input
@@ -152,17 +152,17 @@ export function AccountsSection({ accounts }: AccountsSectionProps) {
                   name="name"
                   required
                   placeholder="e.g., BCA, OVO, Cash"
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600 bg-white text-slate-900"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-slate-700 mb-1">
                   Type
                 </label>
                 <select
                   name="type"
                   required
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600 bg-white text-slate-900"
                 >
                   {ACCOUNT_TYPES.map((type) => (
                     <option key={type.value} value={type.value}>
@@ -172,7 +172,7 @@ export function AccountsSection({ accounts }: AccountsSectionProps) {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-slate-700 mb-1">
                   Initial Balance
                 </label>
                 <input
@@ -180,7 +180,7 @@ export function AccountsSection({ accounts }: AccountsSectionProps) {
                   name="initialBalance"
                   step="0.01"
                   defaultValue="0"
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600 bg-white text-slate-900"
                 />
               </div>
               {/* Currency is temporarily disabled - IDR is set as default */}
@@ -190,14 +190,14 @@ export function AccountsSection({ accounts }: AccountsSectionProps) {
               <button
                 type="button"
                 onClick={() => setIsAddingAccount(false)}
-                className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                className="px-4 py-2 text-slate-700 hover:bg-slate-50 rounded-lg transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+                className="px-4 py-2 brand-gradient text-white rounded-lg hover:shadow-md disabled:opacity-50 transition-colors"
               >
                 {isSubmitting ? "Creating..." : "Create Account"}
               </button>
@@ -207,14 +207,14 @@ export function AccountsSection({ accounts }: AccountsSectionProps) {
       )}
 
       {/* Accounts List */}
-      <div className="divide-y divide-gray-200 dark:divide-gray-700">
+      <div className="divide-y divide-slate-100">
         {accounts.length === 0 ? (
           <div className="px-6 py-12 text-center">
             <div className="text-4xl mb-3">🏦</div>
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-1">
+            <h3 className="text-lg font-medium text-slate-900 mb-1">
               No accounts yet
             </h3>
-            <p className="text-gray-500 dark:text-gray-400">
+            <p className="text-slate-500">
               Add your first account to start tracking your finances
             </p>
           </div>
@@ -222,7 +222,7 @@ export function AccountsSection({ accounts }: AccountsSectionProps) {
           accounts.map((account) => (
             <div
               key={account.id}
-              className={`px-6 py-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors ${
+              className={`px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors ${
                 !account.isActive ? "opacity-50" : ""
               }`}
             >
@@ -232,7 +232,7 @@ export function AccountsSection({ accounts }: AccountsSectionProps) {
                   <InlineEdit
                     value={account.name}
                     onSave={(name) => handleUpdateName(account.id, name)}
-                    className="font-medium text-gray-900 dark:text-white"
+                    className="font-medium text-slate-900"
                   />
                   <div className="flex items-center gap-2 mt-1">
                     <select
@@ -243,7 +243,7 @@ export function AccountsSection({ accounts }: AccountsSectionProps) {
                           e.target.value as typeof account.type
                         )
                       }
-                      className="text-xs px-2 py-1 border border-gray-200 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-400"
+                      className="text-xs px-2 py-1 border border-slate-100 rounded bg-white text-slate-600"
                     >
                       {ACCOUNT_TYPES.map((type) => (
                         <option key={type.value} value={type.value}>
@@ -251,8 +251,8 @@ export function AccountsSection({ accounts }: AccountsSectionProps) {
                         </option>
                       ))}
                     </select>
-                    <span className="text-xs text-gray-400">•</span>
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                    <span className="text-xs text-slate-400">•</span>
+                    <span className="text-xs text-slate-500">
                       Initial: {formatCurrency(account.initialBalance)}
                     </span>
                   </div>
@@ -262,7 +262,7 @@ export function AccountsSection({ accounts }: AccountsSectionProps) {
                 <button
                   type="button"
                   onClick={() => setEditingAccount(account)}
-                  className="p-2 text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors"
+                  className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                   title="Edit account"
                 >
                   <svg
@@ -284,7 +284,7 @@ export function AccountsSection({ accounts }: AccountsSectionProps) {
                   type="button"
                   onClick={() => handleDelete(account.id)}
                   disabled={deletingId === account.id}
-                  className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors disabled:opacity-50"
+                  className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
                   title="Delete account"
                 >
                   <svg

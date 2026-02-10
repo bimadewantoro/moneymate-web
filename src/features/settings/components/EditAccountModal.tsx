@@ -84,21 +84,21 @@ export function EditAccountModal({
     <div className="fixed inset-0 z-50 overflow-y-auto">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/50 transition-opacity"
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
         onClick={onClose}
       />
 
       {/* Modal */}
       <div className="flex min-h-full items-center justify-center p-4">
-        <div className="relative w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-xl">
+        <div className="relative w-full max-w-md bg-white rounded-2xl shadow-xl">
           {/* Header */}
-          <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+          <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
+            <h2 className="text-lg font-semibold text-slate-900">
               Edit Account
             </h2>
             <button
               onClick={onClose}
-              className="p-2 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              className="p-2 text-slate-400 hover:text-slate-500 rounded-lg hover:bg-slate-50 transition-colors"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -121,7 +121,7 @@ export function EditAccountModal({
           <form onSubmit={handleSubmit} className="px-6 py-4 space-y-4">
             {/* Account Name */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-slate-700 mb-1">
                 Account Name
               </label>
               <input
@@ -132,13 +132,13 @@ export function EditAccountModal({
                 }
                 required
                 placeholder="e.g., BCA, OVO, Cash"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600 bg-white text-slate-900"
               />
             </div>
 
             {/* Account Type */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-slate-700 mb-1">
                 Type
               </label>
               <select
@@ -150,7 +150,7 @@ export function EditAccountModal({
                   })
                 }
                 required
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600 bg-white text-slate-900"
               >
                 {ACCOUNT_TYPES.map((type) => (
                   <option key={type.value} value={type.value}>
@@ -162,7 +162,7 @@ export function EditAccountModal({
 
             {/* Initial Balance */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-slate-700 mb-1">
                 Initial Balance
               </label>
               <input
@@ -172,7 +172,7 @@ export function EditAccountModal({
                   setFormData({ ...formData, initialBalance: e.target.value })
                 }
                 step="0.01"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600 bg-white text-slate-900"
               />
             </div>
 
@@ -187,29 +187,29 @@ export function EditAccountModal({
                 onChange={(e) =>
                   setFormData({ ...formData, isActive: e.target.checked })
                 }
-                className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                className="w-4 h-4 text-blue-600 border-slate-200 rounded focus:ring-blue-600"
               />
               <label
                 htmlFor="isActive"
-                className="text-sm font-medium text-gray-700 dark:text-gray-300"
+                className="text-sm font-medium text-slate-700"
               >
                 Active Account
               </label>
             </div>
 
             {/* Footer */}
-            <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                className="px-4 py-2 text-slate-700 hover:bg-slate-50 rounded-lg transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+                className="px-4 py-2 brand-gradient text-white rounded-lg hover:shadow-md disabled:opacity-50 transition-colors"
               >
                 {isSubmitting ? "Saving..." : "Save Changes"}
               </button>
