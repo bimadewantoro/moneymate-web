@@ -84,12 +84,12 @@ export function Step3PinSetup({ onComplete, onBack, isSubmitting }: Step3PinSetu
               key={i}
               className={`w-12 h-12 rounded-xl border-2 flex items-center justify-center transition-all ${
                 currentValue.length > i
-                  ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-900/30"
-                  : "border-gray-300 dark:border-gray-600"
+                  ? "border-blue-600 bg-blue-50"
+                  : "border-slate-200"
               }`}
             >
               {currentValue.length > i && (
-                <div className="w-3 h-3 bg-indigo-500 rounded-full" />
+                <div className="w-3 h-3 bg-blue-600 rounded-full" />
               )}
             </div>
           ))}
@@ -106,9 +106,9 @@ export function Step3PinSetup({ onComplete, onBack, isSubmitting }: Step3PinSetu
                 disabled={!key || isSubmitting}
                 className={`h-14 rounded-xl font-semibold text-xl transition-all ${
                   key === "delete"
-                    ? "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600"
+                    ? "bg-slate-100 text-slate-600 hover:bg-slate-200"
                     : key
-                    ? "bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600 active:bg-gray-200 dark:active:bg-gray-500"
+                    ? "bg-slate-50 text-slate-900 hover:bg-slate-100 active:bg-slate-200"
                     : "invisible"
                 }`}
               >
@@ -141,16 +141,16 @@ export function Step3PinSetup({ onComplete, onBack, isSubmitting }: Step3PinSetu
   return (
     <div>
       {/* Header */}
-      <div className="px-6 py-8 text-center border-b border-gray-100 dark:border-gray-700 bg-gradient-to-b from-green-50 to-white dark:from-gray-800 dark:to-gray-800">
-        <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-2xl flex items-center justify-center mx-auto mb-4">
+      <div className="px-6 py-8 text-center border-b border-slate-100 bg-gradient-to-b from-green-50/50 to-white">
+        <div className="w-16 h-16 bg-green-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
           <span className="text-3xl">🔐</span>
         </div>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+        <h2 className="text-2xl font-bold text-slate-900 mb-2">
           {pinStep === "choice" && "Secure Your App"}
           {pinStep === "enter" && "Create Your PIN"}
           {pinStep === "confirm" && "Confirm Your PIN"}
         </h2>
-        <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto">
+        <p className="text-slate-500 max-w-md mx-auto">
           {pinStep === "choice" &&
             "Add a 6-digit PIN for extra security. The app will lock after 5 minutes of inactivity."}
           {pinStep === "enter" && "Enter a 6-digit PIN to protect your financial data"}
@@ -163,11 +163,11 @@ export function Step3PinSetup({ onComplete, onBack, isSubmitting }: Step3PinSetu
         {pinStep === "choice" && (
           <div className="space-y-4">
             {/* Security Features */}
-            <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-4 mb-6">
-              <h4 className="font-medium text-gray-900 dark:text-white mb-3">
+            <div className="bg-slate-50 rounded-xl p-4 mb-6">
+              <h4 className="font-medium text-slate-900 mb-3">
                 PIN Security Features:
               </h4>
-              <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+              <ul className="space-y-2 text-sm text-slate-600">
                 <li className="flex items-center gap-2">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -220,7 +220,7 @@ export function Step3PinSetup({ onComplete, onBack, isSubmitting }: Step3PinSetu
             <button
               type="button"
               onClick={handleSetupPin}
-              className="w-full py-4 px-4 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors font-medium text-lg flex items-center justify-center gap-3"
+              className="w-full py-4 px-4 brand-gradient text-white rounded-xl hover:shadow-md transition-colors font-medium text-lg flex items-center justify-center gap-3"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -243,7 +243,7 @@ export function Step3PinSetup({ onComplete, onBack, isSubmitting }: Step3PinSetu
               type="button"
               onClick={handleSkip}
               disabled={isSubmitting}
-              className="w-full py-4 px-4 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium text-lg disabled:opacity-50"
+              className="w-full py-4 px-4 border border-slate-200 text-slate-700 rounded-xl hover:bg-slate-50 transition-colors font-medium text-lg disabled:opacity-50"
             >
               {isSubmitting ? (
                 <span className="flex items-center justify-center gap-2">
@@ -296,12 +296,12 @@ export function Step3PinSetup({ onComplete, onBack, isSubmitting }: Step3PinSetu
       </div>
 
       {/* Footer */}
-      <div className="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-100 dark:border-gray-700 flex gap-3">
+      <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex gap-3">
         <button
           type="button"
           onClick={handleBackFromPin}
           disabled={isSubmitting}
-          className="flex-1 py-3 px-4 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors font-medium flex items-center justify-center gap-2 disabled:opacity-50"
+          className="flex-1 py-3 px-4 border border-slate-200 text-slate-700 rounded-xl hover:bg-slate-50 transition-colors font-medium flex items-center justify-center gap-2 disabled:opacity-50"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -325,7 +325,7 @@ export function Step3PinSetup({ onComplete, onBack, isSubmitting }: Step3PinSetu
               isSubmitting ||
               (pinStep === "enter" ? pin.length !== 6 : confirmPin.length !== 6)
             }
-            className="flex-1 py-3 px-4 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center justify-center gap-2"
+            className="flex-1 py-3 px-4 brand-gradient text-white rounded-xl hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center justify-center gap-2"
           >
             {isSubmitting ? (
               <span className="flex items-center gap-2">

@@ -130,13 +130,13 @@ export function CategoriesSection({ categories }: CategoriesSectionProps) {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-      <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+    <div className="bg-white rounded-2xl shadow-sm border border-slate-100">
+      <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
         <div>
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+          <h2 className="text-lg font-semibold text-slate-900">
             Categories
           </h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-sm text-slate-500">
             Organize your transactions with custom categories
           </p>
         </div>
@@ -146,7 +146,7 @@ export function CategoriesSection({ categories }: CategoriesSectionProps) {
               type="button"
               onClick={handleInitializeDefaults}
               disabled={isInitializing}
-              className="inline-flex items-center gap-2 px-4 py-2 text-indigo-600 dark:text-indigo-400 border border-indigo-600 dark:border-indigo-400 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors text-sm font-medium disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-4 py-2 text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50 transition-colors text-sm font-medium disabled:opacity-50"
             >
               {isInitializing ? "Creating..." : "Use Defaults"}
             </button>
@@ -154,7 +154,7 @@ export function CategoriesSection({ categories }: CategoriesSectionProps) {
           <button
             type="button"
             onClick={() => setIsAddingCategory(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium"
+            className="inline-flex items-center gap-2 px-4 py-2 brand-gradient text-white rounded-lg hover:shadow-md transition-colors text-sm font-medium"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -176,15 +176,15 @@ export function CategoriesSection({ categories }: CategoriesSectionProps) {
       </div>
 
       {/* Tabs */}
-      <div className="px-6 pt-4 border-b border-gray-200 dark:border-gray-700">
+      <div className="px-6 pt-4 border-b border-slate-100">
         <div className="flex gap-4">
           <button
             type="button"
             onClick={() => setActiveTab("expense")}
             className={`pb-3 px-1 text-sm font-medium border-b-2 transition-colors ${
               activeTab === "expense"
-                ? "border-red-500 text-red-600 dark:text-red-400"
-                : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                ? "border-red-500 text-red-600"
+                : "border-transparent text-slate-500 hover:text-slate-700"
             }`}
           >
             Expense ({expenseCategories.length})
@@ -194,8 +194,8 @@ export function CategoriesSection({ categories }: CategoriesSectionProps) {
             onClick={() => setActiveTab("income")}
             className={`pb-3 px-1 text-sm font-medium border-b-2 transition-colors ${
               activeTab === "income"
-                ? "border-green-500 text-green-600 dark:text-green-400"
-                : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                ? "border-green-500 text-green-600"
+                : "border-transparent text-slate-500 hover:text-slate-700"
             }`}
           >
             Income ({incomeCategories.length})
@@ -205,11 +205,11 @@ export function CategoriesSection({ categories }: CategoriesSectionProps) {
 
       {/* Add Category Form */}
       {isAddingCategory && (
-        <div className="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
+        <div className="px-6 py-4 bg-slate-50 border-b border-slate-100">
           <form action={handleAddCategory} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-slate-700 mb-1">
                   Category Name
                 </label>
                 <input
@@ -217,25 +217,25 @@ export function CategoriesSection({ categories }: CategoriesSectionProps) {
                   name="name"
                   required
                   placeholder="e.g., Food, Salary"
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600 bg-white text-slate-900"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-slate-700 mb-1">
                   Type
                 </label>
                 <select
                   name="type"
                   required
                   defaultValue={activeTab}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600 bg-white text-slate-900"
                 >
                   <option value="expense">Expense</option>
                   <option value="income">Income</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-slate-700 mb-1">
                   Monthly Limit
                 </label>
                 <input
@@ -244,27 +244,27 @@ export function CategoriesSection({ categories }: CategoriesSectionProps) {
                   min="0"
                   step="1000"
                   placeholder="Optional"
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600 bg-white text-slate-900"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-slate-700 mb-1">
                   Color
                 </label>
                 <input
                   type="color"
                   name="color"
                   defaultValue="#6366f1"
-                  className="w-full h-10 px-1 py-1 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer"
+                  className="w-full h-10 px-1 py-1 border border-slate-200 rounded-lg cursor-pointer"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-slate-700 mb-1">
                   Icon
                 </label>
                 <select
                   name="icon"
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600 bg-white text-slate-900"
                 >
                   <option value="">No icon</option>
                   {DEFAULT_ICONS.map((icon) => (
@@ -279,14 +279,14 @@ export function CategoriesSection({ categories }: CategoriesSectionProps) {
               <button
                 type="button"
                 onClick={() => setIsAddingCategory(false)}
-                className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                className="px-4 py-2 text-slate-700 hover:bg-slate-50 rounded-lg transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+                className="px-4 py-2 brand-gradient text-white rounded-lg hover:shadow-md disabled:opacity-50 transition-colors"
               >
                 {isSubmitting ? "Creating..." : "Create Category"}
               </button>
@@ -296,14 +296,14 @@ export function CategoriesSection({ categories }: CategoriesSectionProps) {
       )}
 
       {/* Categories List */}
-      <div className="divide-y divide-gray-200 dark:divide-gray-700">
+      <div className="divide-y divide-slate-100">
         {displayCategories.length === 0 ? (
           <div className="px-6 py-12 text-center">
             <div className="text-4xl mb-3">📁</div>
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-1">
+            <h3 className="text-lg font-medium text-slate-900 mb-1">
               No {activeTab} categories yet
             </h3>
-            <p className="text-gray-500 dark:text-gray-400">
+            <p className="text-slate-500">
               {categories.length === 0
                 ? 'Click "Use Defaults" to get started quickly, or add your own'
                 : "Add a category to organize your transactions"}
@@ -313,7 +313,7 @@ export function CategoriesSection({ categories }: CategoriesSectionProps) {
           displayCategories.map((category) => (
             <div
               key={category.id}
-              className={`px-6 py-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors ${
+              className={`px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors ${
                 !category.isActive ? "opacity-50" : ""
               }`}
             >
@@ -340,10 +340,10 @@ export function CategoriesSection({ categories }: CategoriesSectionProps) {
                     <InlineEdit
                       value={category.name}
                       onSave={(name) => handleUpdateName(category.id, name)}
-                      className="font-medium text-gray-900 dark:text-white"
+                      className="font-medium text-slate-900"
                     />
                     {category.type === "expense" && category.monthlyBudget && (
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                      <p className="text-xs text-slate-500">
                         Budget: {formatCurrency(category.monthlyBudget)}/mo
                       </p>
                     )}
@@ -354,8 +354,8 @@ export function CategoriesSection({ categories }: CategoriesSectionProps) {
                 <span
                   className={`text-xs px-2 py-1 rounded-full ${
                     category.type === "income"
-                      ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                      : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                      ? "bg-green-100 text-green-700"
+                      : "bg-red-100 text-red-700"
                   }`}
                 >
                   {category.type}
@@ -363,7 +363,7 @@ export function CategoriesSection({ categories }: CategoriesSectionProps) {
                 <button
                   type="button"
                   onClick={() => setEditingCategory(category)}
-                  className="p-2 text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors"
+                  className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                   title="Edit category"
                 >
                   <svg
@@ -385,7 +385,7 @@ export function CategoriesSection({ categories }: CategoriesSectionProps) {
                   type="button"
                   onClick={() => handleDelete(category.id)}
                   disabled={deletingId === category.id}
-                  className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors disabled:opacity-50"
+                  className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
                   title="Delete category"
                 >
                   <svg

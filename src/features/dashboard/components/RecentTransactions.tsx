@@ -74,28 +74,28 @@ export function RecentTransactions({
 
   if (transactions.length === 0) {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-100">
+        <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-lg font-semibold text-slate-900">
               Recent Transactions
             </h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-sm text-slate-500">
               Your latest activity
             </p>
           </div>
         </div>
         <div className="px-6 py-12 text-center">
           <div className="text-4xl mb-3">📝</div>
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-1">
+          <h3 className="text-lg font-medium text-slate-900 mb-1">
             No transactions yet
           </h3>
-          <p className="text-gray-500 dark:text-gray-400 mb-4">
+          <p className="text-slate-500 mb-4">
             Start tracking your money by adding your first transaction
           </p>
           <Link
             href="/transactions"
-            className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+            className="inline-flex items-center px-4 py-2 brand-gradient text-white rounded-lg hover:shadow-md transition-colors"
           >
             Add Transaction
           </Link>
@@ -105,25 +105,25 @@ export function RecentTransactions({
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-      <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+    <div className="bg-white rounded-2xl shadow-sm border border-slate-100">
+      <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
         <div>
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+          <h2 className="text-lg font-semibold text-slate-900">
             Recent Transactions
           </h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-sm text-slate-500">
             Your latest activity
           </p>
         </div>
         <Link
           href="/transactions"
-          className="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium"
+          className="text-sm text-blue-600 hover:text-blue-700 font-medium"
         >
           View All →
         </Link>
       </div>
 
-      <div className="divide-y divide-gray-100 dark:divide-gray-700/50">
+      <div className="divide-y divide-slate-100">
         {transactions.map((tx) => {
           const category = tx.categoryId ? categoryMap.get(tx.categoryId) : null;
           const fromAccount = tx.fromAccountId ? accountMap.get(tx.fromAccountId) : null;
@@ -132,7 +132,7 @@ export function RecentTransactions({
           return (
             <div
               key={tx.id}
-              className="px-6 py-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors"
+              className="px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors"
             >
               <div className="flex items-center gap-4">
                 <div
@@ -158,10 +158,10 @@ export function RecentTransactions({
                   )}
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900 dark:text-white">
+                  <p className="font-medium text-slate-900">
                     {tx.description || (tx.type === "transfer" ? "Transfer" : category?.name || "Transaction")}
                   </p>
-                  <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                  <div className="flex items-center gap-2 text-xs text-slate-500">
                     <span>{formatDate(tx.date)}</span>
                     <span>•</span>
                     {tx.type === "transfer" ? (
@@ -190,10 +190,10 @@ export function RecentTransactions({
                 <p
                   className={`font-semibold ${
                     tx.type === "income"
-                      ? "text-green-600 dark:text-green-400"
+                      ? "text-green-600"
                       : tx.type === "expense"
-                      ? "text-red-600 dark:text-red-400"
-                      : "text-blue-600 dark:text-blue-400"
+                      ? "text-red-600"
+                      : "text-blue-600"
                   }`}
                 >
                   {tx.type === "income" ? "+" : tx.type === "expense" ? "-" : ""}

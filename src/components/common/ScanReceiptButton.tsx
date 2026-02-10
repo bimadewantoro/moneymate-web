@@ -105,7 +105,7 @@ export function ScanReceiptButton({
         type="button"
         onClick={handleButtonClick}
         disabled={disabled || isScanning}
-        className={`inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
+        className={`inline-flex items-center gap-2 px-4 py-2 brand-gradient text-white rounded-lg hover:shadow-md transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
       >
         {isScanning ? (
           <>

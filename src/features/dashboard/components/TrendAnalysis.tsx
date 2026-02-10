@@ -29,12 +29,12 @@ export function TrendAnalysis({ data }: TrendAnalysisProps) {
   const avgExpense = data.length > 0 ? totalExpense / data.length : 0;
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-      <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+    <div className="bg-white rounded-2xl shadow-sm border border-slate-100">
+      <div className="px-6 py-4 border-b border-slate-100">
+        <h2 className="text-lg font-semibold text-slate-900">
           Income vs Expenses
         </h2>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
+        <p className="text-sm text-slate-500">
           Last 6 months trend
         </p>
       </div>
@@ -45,19 +45,19 @@ export function TrendAnalysis({ data }: TrendAnalysisProps) {
         {/* Summary Stats */}
         {data.some(d => d.income > 0 || d.expense > 0) && (
           <div className="mt-6 grid grid-cols-2 gap-4">
-            <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
-              <p className="text-xs font-medium text-green-600 dark:text-green-400 mb-1">
+            <div className="p-4 bg-green-50 rounded-lg">
+              <p className="text-xs font-medium text-green-600 mb-1">
                 Avg. Monthly Income
               </p>
-              <p className="text-lg font-bold text-green-700 dark:text-green-300">
+              <p className="text-lg font-bold text-green-700">
                 {formatCurrency(avgIncome)}
               </p>
             </div>
-            <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
-              <p className="text-xs font-medium text-red-600 dark:text-red-400 mb-1">
+            <div className="p-4 bg-red-50 rounded-lg">
+              <p className="text-xs font-medium text-red-600 mb-1">
                 Avg. Monthly Expense
               </p>
-              <p className="text-lg font-bold text-red-700 dark:text-red-300">
+              <p className="text-lg font-bold text-red-700">
                 {formatCurrency(avgExpense)}
               </p>
             </div>

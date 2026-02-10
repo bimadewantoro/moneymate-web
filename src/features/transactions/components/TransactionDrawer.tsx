@@ -2,7 +2,33 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Drawer } from "vaul";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
+import {
+  Loader2,
+  X,
+  ArrowDownLeft,
+  ArrowUpRight,
+  ArrowRightLeft,
+  CheckCircle,
+  AlertCircle,
+  CalendarDays,
+  Camera,
+  ChevronDown,
+  Sparkles,
+} from "lucide-react";
 import { createTransactionAction } from "@/features/transactions/actions";
+import {
+  scanReceipt,
+  type ReceiptData,
+} from "@/features/ai/actions/scan-receipt";
+import { useTransactionDrawer } from "@/features/transactions/contexts/TransactionDrawerContext";
+
+/* ─── Types ─────────────────────────────── */
 
 interface Account {
   id: string;
@@ -22,9 +48,9 @@ interface TransactionDrawerProps {
   accounts: Account[];
   incomeCategories: Category[];
   expenseCategories: Category[];
-  trigger?: React.ReactNode;
-  defaultOpen?: boolean;
 }
+
+/* ─── Constants ─────────────────────────── */
 
 const ACCOUNT_ICONS: Record<string, string> = {
   bank: "🏦",
@@ -34,24 +60,89 @@ const ACCOUNT_ICONS: Record<string, string> = {
   other: "💳",
 };
 
+const TYPE_CONFIG = {
+  expense: {
+    label: "Expense",
+    icon: ArrowDownLeft,
+    activeTab: "bg-red-500 text-white shadow-md shadow-red-500/25",
+    focusRing:
+      "focus-within:ring-2 focus-within:ring-red-500/15 focus-within:border-red-300",
+    submitBtn:
+      "bg-red-500 hover:bg-red-600 active:bg-red-700 shadow-lg shadow-red-500/20",
+    chipSelected: "border-red-500 bg-red-50 text-red-700 shadow-sm",
+  },
+  income: {
+    label: "Income",
+    icon: ArrowUpRight,
+    activeTab: "bg-emerald-500 text-white shadow-md shadow-emerald-500/25",
+    focusRing:
+      "focus-within:ring-2 focus-within:ring-emerald-500/15 focus-within:border-emerald-300",
+    submitBtn:
+      "bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 shadow-lg shadow-emerald-500/20",
+    chipSelected: "border-emerald-500 bg-emerald-50 text-emerald-700 shadow-sm",
+  },
+  transfer: {
+    label: "Transfer",
+    icon: ArrowRightLeft,
+    activeTab: "bg-blue-500 text-white shadow-md shadow-blue-500/25",
+    focusRing:
+      "focus-within:ring-2 focus-within:ring-blue-500/15 focus-within:border-blue-300",
+    submitBtn:
+      "bg-blue-500 hover:bg-blue-600 active:bg-blue-700 shadow-lg shadow-blue-500/20",
+    chipSelected: "border-blue-500 bg-blue-50 text-blue-700 shadow-sm",
+  },
+} as const;
+
+type TransactionType = keyof typeof TYPE_CONFIG;
+
+/* ═══════════════════════════════════════════
+   Main Component
+   ═══════════════════════════════════════════ */
+
 export function TransactionDrawer({
   accounts,
   incomeCategories,
   expenseCategories,
-  trigger,
-  defaultOpen = false,
 }: TransactionDrawerProps) {
-  const [open, setOpen] = useState(defaultOpen);
-  const [activeType, setActiveType] = useState<"expense" | "income" | "transfer">("expense");
+  const { open, setOpen } = useTransactionDrawer();
+  const isDesktop = useMediaQuery("(min-width: 768px)");
+
+  const [activeType, setActiveType] = useState<TransactionType>("expense");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
-  const contentRef = useRef<HTMLDivElement>(null);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [isScanning, setIsScanning] = useState(false);
+  const [toast, setToast] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
 
-  const categories = activeType === "income" ? incomeCategories : expenseCategories;
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const categories =
+    activeType === "income" ? incomeCategories : expenseCategories;
+  const config = TYPE_CONFIG[activeType];
+
+  /* ── Effects ── */
+
+  useEffect(() => {
+    if (open) {
+      setShowSuccess(false);
+      setSelectedCategory("");
+      setActiveType("expense");
+      formRef.current?.reset();
+    }
+  }, [open]);
 
   const handleFocusWithin = useCallback((e: FocusEvent) => {
     const target = e.target as HTMLElement;
-    if (target.tagName === "INPUT" || target.tagName === "SELECT" || target.tagName === "TEXTAREA") {
+    if (
+      target.tagName === "INPUT" ||
+      target.tagName === "SELECT" ||
+      target.tagName === "TEXTAREA"
+    ) {
       setTimeout(() => {
         target.scrollIntoView({ behavior: "smooth", block: "center" });
       }, 300);
@@ -59,297 +150,527 @@ export function TransactionDrawer({
   }, []);
 
   useEffect(() => {
-    const content = contentRef.current;
-    if (!content || !open) return;
-
-    content.addEventListener("focusin", handleFocusWithin);
-    return () => {
-      content.removeEventListener("focusin", handleFocusWithin);
-    };
+    const el = scrollRef.current;
+    if (!el || !open) return;
+    el.addEventListener("focusin", handleFocusWithin);
+    return () => el.removeEventListener("focusin", handleFocusWithin);
   }, [open, handleFocusWithin]);
+
+  useEffect(() => {
+    if (!toast) return;
+    const id = setTimeout(() => setToast(null), 4000);
+    return () => clearTimeout(id);
+  }, [toast]);
+
+  /* ── Scan receipt ── */
+
+  const handleScanClick = () => fileInputRef.current?.click();
+
+  const handleScanFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setToast({ type: "error", message: "Please select an image file" });
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      setToast({ type: "error", message: "Image too large — max 10 MB" });
+      return;
+    }
+
+    setIsScanning(true);
+    try {
+      const base64 = await fileToBase64(file);
+      const result = await scanReceipt(base64);
+
+      if (result.success && result.data) {
+        applyScanData(result.data);
+        setToast({
+          type: "success",
+          message: `Scanned: ${result.data.merchant} — Rp ${result.data.amount.toLocaleString("id-ID")}`,
+        });
+      } else {
+        setToast({
+          type: "error",
+          message: result.error || "Failed to scan receipt",
+        });
+      }
+    } catch {
+      setToast({ type: "error", message: "Scan failed. Try again." });
+    } finally {
+      setIsScanning(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
+  const fileToBase64 = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve((reader.result as string).split(",")[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+
+  const applyScanData = (data: ReceiptData) => {
+    const form = formRef.current;
+    if (!form) return;
+
+    const amountInput = form.elements.namedItem("amount") as HTMLInputElement;
+    if (amountInput) amountInput.value = String(data.amount);
+
+    const descInput = form.elements.namedItem(
+      "description"
+    ) as HTMLInputElement;
+    if (descInput) descInput.value = data.merchant || "";
+
+    const dateInput = form.elements.namedItem("date") as HTMLInputElement;
+    if (dateInput && data.date) dateInput.value = data.date;
+
+    const matchedCat = categories.find(
+      (c) => c.name.toLowerCase() === data.category?.toLowerCase()
+    );
+    if (matchedCat) setSelectedCategory(matchedCat.id);
+    setActiveType("expense");
+  };
+
+  /* ── Submit ── */
 
   const handleSubmit = async (formData: FormData) => {
     setIsSubmitting(true);
     try {
       formData.set("type", activeType);
+      if (selectedCategory) formData.set("categoryId", selectedCategory);
+
       const result = await createTransactionAction(formData);
       if (result.success) {
         setShowSuccess(true);
         setTimeout(() => {
           setShowSuccess(false);
           setOpen(false);
-        }, 1000);
+        }, 1400);
       } else {
-        alert(result.error);
+        setToast({ type: "error", message: result.error });
       }
-    } catch (error) {
-      console.error("Error creating transaction:", error);
-      alert("Failed to create transaction");
+    } catch {
+      setToast({ type: "error", message: "Failed to create transaction" });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  return (
-    <Drawer.Root open={open} onOpenChange={setOpen}>
-      <Drawer.Trigger asChild>
-        {trigger || (
-          <button className="fixed bottom-6 right-6 w-14 h-14 bg-indigo-600 text-white rounded-full shadow-lg hover:bg-indigo-700 transition-colors flex items-center justify-center z-40 md:hidden">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 4v16m8-8H4"
-              />
-            </svg>
-          </button>
-        )}
-      </Drawer.Trigger>
-      <Drawer.Portal>
-        <Drawer.Overlay className="fixed inset-0 bg-black/40 z-50" />
-        <Drawer.Content className="bg-white dark:bg-gray-800 flex flex-col rounded-t-2xl max-h-[90vh] max-h-[90dvh] fixed bottom-0 left-0 right-0 z-50">
-          {/* Handle */}
-          <div 
-            ref={contentRef}
-            className="p-4 bg-white dark:bg-gray-800 rounded-t-2xl flex-1 overflow-y-auto overscroll-contain pb-safe"
-          >
-            <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-gray-300 dark:bg-gray-600 mb-6" />
-            
-            {/* Success Animation */}
-            {showSuccess ? (
-              <div className="flex flex-col items-center justify-center py-20">
-                <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-4 animate-bounce">
-                  <svg
-                    className="w-10 h-10 text-green-600 dark:text-green-400"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={3}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                </div>
-                <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Transaction Added!
-                </p>
-              </div>
-            ) : (
-              <>
-                <Drawer.Title className="text-xl font-bold text-gray-900 dark:text-white mb-6 text-center">
-                  Add Transaction
-                </Drawer.Title>
+  /* ── Shared form content ── */
 
-                {/* Transaction Type Tabs */}
-                <div className="flex gap-2 mb-6">
-                  <button
-                    type="button"
-                    onClick={() => setActiveType("expense")}
-                    className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all ${
-                      activeType === "expense"
-                        ? "bg-red-500 text-white shadow-lg shadow-red-500/30"
-                        : "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400"
-                    }`}
-                  >
-                    💸 Expense
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveType("income")}
-                    className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all ${
-                      activeType === "income"
-                        ? "bg-green-500 text-white shadow-lg shadow-green-500/30"
-                        : "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400"
-                    }`}
-                  >
-                    💰 Income
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveType("transfer")}
-                    className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all ${
-                      activeType === "transfer"
-                        ? "bg-blue-500 text-white shadow-lg shadow-blue-500/30"
-                        : "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400"
-                    }`}
-                  >
-                    🔄 Transfer
-                  </button>
-                </div>
-
-                <form action={handleSubmit} className="space-y-5 pb-8">
-                  {/* Amount - Large Input */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Amount
-                    </label>
-                    <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg">
-                        Rp
-                      </span>
-                      <input
-                        type="number"
-                        name="amount"
-                        required
-                        min="0.01"
-                        step="0.01"
-                        placeholder="0"
-                        className="w-full pl-12 pr-4 py-4 text-2xl font-bold border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Account Selection */}
-                  <div className="grid grid-cols-1 gap-4">
-                    {(activeType === "expense" || activeType === "transfer") && (
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                          {activeType === "transfer" ? "From Account" : "Account"}
-                        </label>
-                        <select
-                          name="fromAccountId"
-                          required
-                          className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                        >
-                          <option value="">Select account</option>
-                          {accounts.map((account) => (
-                            <option key={account.id} value={account.id}>
-                              {ACCOUNT_ICONS[account.type]} {account.name}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    )}
-
-                    {(activeType === "income" || activeType === "transfer") && (
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                          {activeType === "transfer" ? "To Account" : "Account"}
-                        </label>
-                        <select
-                          name="toAccountId"
-                          required
-                          className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                        >
-                          <option value="">Select account</option>
-                          {accounts.map((account) => (
-                            <option key={account.id} value={account.id}>
-                              {ACCOUNT_ICONS[account.type]} {account.name}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Category (not for transfers) */}
-                  {activeType !== "transfer" && categories.length > 0 && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Category
-                      </label>
-                      <div className="grid grid-cols-4 gap-2">
-                        {categories.slice(0, 8).map((category) => (
-                          <label
-                            key={category.id}
-                            className="cursor-pointer"
-                          >
-                            <input
-                              type="radio"
-                              name="categoryId"
-                              value={category.id}
-                              className="sr-only peer"
-                            />
-                            <div className="flex flex-col items-center p-3 rounded-xl border-2 border-gray-200 dark:border-gray-600 peer-checked:border-indigo-500 peer-checked:bg-indigo-50 dark:peer-checked:bg-indigo-900/20 transition-all">
-                              <span className="text-xl mb-1">{category.icon || "📁"}</span>
-                              <span className="text-xs text-gray-600 dark:text-gray-400 truncate w-full text-center">
-                                {category.name}
-                              </span>
-                            </div>
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Description */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Description (optional)
-                    </label>
-                    <input
-                      type="text"
-                      name="description"
-                      placeholder="What's this for?"
-                      className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                    />
-                  </div>
-
-                  {/* Date */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Date
-                    </label>
-                    <input
-                      type="date"
-                      name="date"
-                      defaultValue={new Date().toISOString().split("T")[0]}
-                      className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                    />
-                  </div>
-
-                  {/* Submit Button */}
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className={`w-full py-4 rounded-xl font-semibold text-white transition-all disabled:opacity-50 ${
-                      activeType === "expense"
-                        ? "bg-red-500 hover:bg-red-600"
-                        : activeType === "income"
-                        ? "bg-green-500 hover:bg-green-600"
-                        : "bg-blue-500 hover:bg-blue-600"
-                    }`}
-                  >
-                    {isSubmitting ? (
-                      <span className="flex items-center justify-center gap-2">
-                        <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                            fill="none"
-                          />
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          />
-                        </svg>
-                        Saving...
-                      </span>
-                    ) : (
-                      `Add ${activeType.charAt(0).toUpperCase() + activeType.slice(1)}`
-                    )}
-                  </button>
-                </form>
-              </>
-            )}
+  const formContent = (
+    <>
+      {showSuccess ? (
+        /* ── Success ── */
+        <div className="flex flex-col items-center justify-center py-20 md:py-24 animate-fade-in-up">
+          <div className="relative mb-5">
+            <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center animate-scale-in">
+              <CheckCircle className="w-10 h-10 text-emerald-500" />
+            </div>
+            <div className="absolute inset-0 w-20 h-20 bg-emerald-100 rounded-full animate-ping opacity-20" />
           </div>
-        </Drawer.Content>
-      </Drawer.Portal>
-    </Drawer.Root>
+          <p className="text-lg font-bold text-slate-900">
+            Transaction Added!
+          </p>
+          <p className="text-sm text-slate-500 mt-1">
+            Your records are up to date
+          </p>
+        </div>
+      ) : (
+        <div className="px-5 md:px-7 pb-6 space-y-5">
+          {/* ═══ Scan Receipt Banner ═══ */}
+          <button
+            type="button"
+            onClick={handleScanClick}
+            disabled={isScanning}
+            className="w-full group relative overflow-hidden rounded-2xl border-2 border-dashed border-blue-200 bg-gradient-to-r from-blue-50 via-white to-emerald-50 p-4 flex items-center gap-4 hover:border-blue-300 hover:shadow-sm active:scale-[0.99] transition-all disabled:opacity-60"
+          >
+            {/* Icon */}
+            <div className="shrink-0 w-12 h-12 brand-gradient rounded-xl flex items-center justify-center shadow-md shadow-blue-700/15 group-hover:shadow-lg transition-shadow">
+              {isScanning ? (
+                <Loader2 className="w-5 h-5 text-white animate-spin" />
+              ) : (
+                <Camera className="w-5 h-5 text-white" />
+              )}
+            </div>
+            {/* Text */}
+            <div className="flex-1 text-left min-w-0">
+              <p className="text-sm font-bold text-slate-800">
+                {isScanning ? "Scanning receipt…" : "Scan Receipt"}
+              </p>
+              <p className="text-xs text-slate-500 mt-0.5">
+                {isScanning
+                  ? "AI is reading your receipt"
+                  : "Take a photo to auto-fill details"}
+              </p>
+            </div>
+            {/* Badge */}
+            {!isScanning && (
+              <span className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-100 text-blue-700 text-[11px] font-semibold">
+                <Sparkles className="w-3 h-3" />
+                AI
+              </span>
+            )}
+          </button>
+
+          {/* ═══ Type tabs ═══ */}
+          <div className="flex gap-1 p-1 bg-slate-100/80 rounded-xl">
+            {(Object.keys(TYPE_CONFIG) as TransactionType[]).map((type) => {
+              const tc = TYPE_CONFIG[type];
+              const Icon = tc.icon;
+              const isActive = activeType === type;
+              return (
+                <button
+                  key={type}
+                  type="button"
+                  onClick={() => {
+                    setActiveType(type);
+                    setSelectedCategory("");
+                  }}
+                  className={[
+                    "flex-1 flex items-center justify-center gap-1.5",
+                    "py-2.5 rounded-[10px] text-[13px] font-semibold",
+                    "transition-all duration-200",
+                    isActive
+                      ? tc.activeTab
+                      : "text-slate-500 hover:text-slate-700",
+                  ].join(" ")}
+                >
+                  <Icon className="w-4 h-4" />
+                  {tc.label}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* ═══ Form ═══ */}
+          <form ref={formRef} action={handleSubmit} className="space-y-4">
+            {/* ── Amount ── */}
+            <div
+              className={[
+                "rounded-2xl border-2 border-slate-200 bg-slate-50/60 transition-all",
+                config.focusRing,
+              ].join(" ")}
+            >
+              <label className="block px-4 pt-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                Amount
+              </label>
+              <div className="flex items-baseline gap-1 px-4 pb-3">
+                <span className="text-base font-bold text-slate-400 select-none">
+                  Rp
+                </span>
+                <input
+                  type="number"
+                  name="amount"
+                  required
+                  min="1"
+                  step="1"
+                  placeholder="0"
+                  inputMode="numeric"
+                  autoComplete="off"
+                  className="amount-input flex-1 bg-transparent text-3xl font-extrabold text-slate-900 placeholder:text-slate-300 focus:outline-none min-w-0 leading-tight"
+                />
+              </div>
+            </div>
+
+            {/* ── Accounts ── */}
+            <div
+              className={[
+                "grid gap-3",
+                activeType === "transfer"
+                  ? "grid-cols-1 md:grid-cols-2"
+                  : "grid-cols-1",
+              ].join(" ")}
+            >
+              {(activeType === "expense" || activeType === "transfer") && (
+                <FieldSelect
+                  label={
+                    activeType === "transfer" ? "From Account" : "Account"
+                  }
+                  name="fromAccountId"
+                  accounts={accounts}
+                  focusRing={config.focusRing}
+                />
+              )}
+              {(activeType === "income" || activeType === "transfer") && (
+                <FieldSelect
+                  label={
+                    activeType === "transfer" ? "To Account" : "Account"
+                  }
+                  name="toAccountId"
+                  accounts={accounts}
+                  focusRing={config.focusRing}
+                />
+              )}
+            </div>
+
+            {/* ── Category chips ── */}
+            {activeType !== "transfer" && categories.length > 0 && (
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                  Category
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {categories.map((cat) => {
+                    const isSelected = selectedCategory === cat.id;
+                    return (
+                      <button
+                        key={cat.id}
+                        type="button"
+                        onClick={() =>
+                          setSelectedCategory(isSelected ? "" : cat.id)
+                        }
+                        className={[
+                          "inline-flex items-center gap-1.5 px-3 py-2",
+                          "rounded-xl text-sm font-medium",
+                          "border-2 transition-all duration-150",
+                          isSelected
+                            ? config.chipSelected
+                            : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50",
+                        ].join(" ")}
+                      >
+                        <span className="text-base leading-none">
+                          {cat.icon || "📁"}
+                        </span>
+                        {cat.name}
+                      </button>
+                    );
+                  })}
+                  <input
+                    type="hidden"
+                    name="categoryId"
+                    value={selectedCategory}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* ── Description + Date ── */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                  Description
+                </label>
+                <div
+                  className={[
+                    "rounded-xl border-2 border-slate-200 transition-all",
+                    config.focusRing,
+                  ].join(" ")}
+                >
+                  <input
+                    type="text"
+                    name="description"
+                    placeholder="What's this for?"
+                    autoComplete="off"
+                    className="w-full px-3.5 py-2.5 bg-transparent text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none rounded-xl"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                  Date
+                </label>
+                <div
+                  className={[
+                    "relative rounded-xl border-2 border-slate-200 transition-all",
+                    config.focusRing,
+                  ].join(" ")}
+                >
+                  <CalendarDays className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                  <input
+                    type="date"
+                    name="date"
+                    defaultValue={new Date().toISOString().split("T")[0]}
+                    className="w-full pl-10 pr-3.5 py-2.5 bg-transparent text-sm text-slate-900 focus:outline-none rounded-xl"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* ── Submit ── */}
+            <div className="pt-1">
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className={[
+                  "w-full py-3.5 rounded-xl font-semibold text-white text-[15px]",
+                  "transition-all duration-200 disabled:opacity-50",
+                  "active:scale-[0.98]",
+                  config.submitBtn,
+                ].join(" ")}
+              >
+                {isSubmitting ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Saving…
+                  </span>
+                ) : (
+                  `Add ${config.label}`
+                )}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+    </>
+  );
+
+  /* ═══ Render ═══ */
+
+  return (
+    <>
+      {/* Hidden file input (shared) */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        onChange={handleScanFile}
+        className="hidden"
+      />
+
+      {isDesktop ? (
+        /* ═══ Desktop → Radix Dialog ═══ */
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogContent hideCloseButton>
+            {/* Header */}
+            <header className="flex items-center justify-between px-7 pt-5 pb-4">
+              <DialogTitle>New Transaction</DialogTitle>
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                className="p-2 -mr-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </header>
+
+            {/* Scrollable body */}
+            <div ref={scrollRef} className="overflow-y-auto overscroll-contain">
+              {formContent}
+            </div>
+          </DialogContent>
+        </Dialog>
+      ) : (
+        /* ═══ Mobile → vaul Drawer ═══ */
+        <Drawer.Root open={open} onOpenChange={setOpen}>
+          <Drawer.Portal>
+            <Drawer.Overlay className="fixed inset-0 bg-black/40 backdrop-blur-[2px] z-50" />
+
+            <Drawer.Content
+              className={[
+                "fixed bottom-0 left-0 right-0 z-50 outline-none",
+                "flex flex-col bg-white",
+                "rounded-t-[20px] max-h-[94dvh]",
+              ].join(" ")}
+            >
+              {/* Drag handle */}
+              <div className="flex justify-center pt-3 pb-1">
+                <div className="w-9 h-1 rounded-full bg-slate-300/80" />
+              </div>
+
+              {/* Header */}
+              <header className="flex items-center justify-between px-5 pt-1 pb-3">
+                <Drawer.Title className="text-xl font-bold text-slate-900 tracking-tight">
+                  New Transaction
+                </Drawer.Title>
+                <button
+                  type="button"
+                  onClick={() => setOpen(false)}
+                  className="p-2 -mr-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </header>
+
+              {/* Scrollable body */}
+              <div
+                ref={scrollRef}
+                className="overflow-y-auto overscroll-contain"
+              >
+                {formContent}
+              </div>
+
+              {/* Safe area */}
+              <div className="pb-safe" />
+            </Drawer.Content>
+          </Drawer.Portal>
+        </Drawer.Root>
+      )}
+
+      {/* ═══ Toast ═══ */}
+      {toast && (
+        <div
+          className={[
+            "fixed z-[60] animate-in slide-in-from-bottom-5",
+            "bottom-24 left-4 right-4",
+            "md:bottom-8 md:left-auto md:right-6 md:max-w-sm",
+            "flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-xl",
+            toast.type === "success"
+              ? "bg-emerald-600 text-white"
+              : "bg-red-600 text-white",
+          ].join(" ")}
+        >
+          {toast.type === "success" ? (
+            <CheckCircle className="w-5 h-5 shrink-0" />
+          ) : (
+            <AlertCircle className="w-5 h-5 shrink-0" />
+          )}
+          <span className="text-sm font-medium flex-1">{toast.message}</span>
+          <button
+            onClick={() => setToast(null)}
+            className="p-1 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+    </>
+  );
+}
+
+/* ─── Sub-components ────────────────────── */
+
+function FieldSelect({
+  label,
+  name,
+  accounts,
+  focusRing,
+}: {
+  label: string;
+  name: string;
+  accounts: Account[];
+  focusRing: string;
+}) {
+  return (
+    <div>
+      <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+        {label}
+      </label>
+      <div
+        className={[
+          "relative rounded-xl border-2 border-slate-200 transition-all",
+          focusRing,
+        ].join(" ")}
+      >
+        <select
+          name={name}
+          required
+          className="w-full px-3.5 py-2.5 bg-transparent text-sm text-slate-900 focus:outline-none appearance-none pr-9 cursor-pointer rounded-xl"
+        >
+          <option value="">Select account</option>
+          {accounts.map((a) => (
+            <option key={a.id} value={a.id}>
+              {ACCOUNT_ICONS[a.type]} {a.name}
+            </option>
+          ))}
+        </select>
+        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+      </div>
+    </div>
   );
 }

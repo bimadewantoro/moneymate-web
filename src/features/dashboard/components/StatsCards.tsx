@@ -25,7 +25,7 @@ function TrendIndicator({ value, inverted = false }: { value: number; inverted?:
 
   if (Math.abs(value) < 0.1) {
     return (
-      <span className="text-xs text-gray-500 dark:text-gray-400">
+      <span className="text-xs text-slate-500">
         No change
       </span>
     );
@@ -35,10 +35,10 @@ function TrendIndicator({ value, inverted = false }: { value: number; inverted?:
     <span
       className={`inline-flex items-center gap-0.5 text-xs font-medium ${
         isPositive
-          ? "text-green-600 dark:text-green-400"
+          ? "text-green-600"
           : isNegative
-          ? "text-red-600 dark:text-red-400"
-          : "text-gray-500 dark:text-gray-400"
+          ? "text-red-600"
+          : "text-slate-500"
       }`}
     >
       {isPositive ? (
@@ -67,29 +67,29 @@ export function StatsCards({
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {/* Total Balance */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
         <div className="flex items-center justify-between mb-3">
-          <div className="p-2 bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/30 dark:to-purple-900/30 rounded-lg">
+          <div className="p-2 bg-blue-50 rounded-lg">
             <span className="text-xl">💎</span>
           </div>
           <span
             className={`text-xs px-2 py-0.5 rounded-full ${
               totalBalance >= 0
-                ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                ? "bg-green-100 text-green-700"
+                : "bg-red-100 text-red-700"
             }`}
           >
             {totalBalance >= 0 ? "Positive" : "Negative"}
           </span>
         </div>
-        <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+        <p className="text-sm font-medium text-slate-500 mb-1">
           Total Balance
         </p>
         <p
           className={`text-2xl font-bold ${
             totalBalance >= 0
-              ? "text-gray-900 dark:text-white"
-              : "text-red-600 dark:text-red-400"
+              ? "text-slate-900"
+              : "text-red-600"
           }`}
         >
           {formatCurrency(totalBalance)}
@@ -97,60 +97,60 @@ export function StatsCards({
       </div>
 
       {/* Monthly Income */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
         <div className="flex items-center justify-between mb-3">
-          <div className="p-2 bg-gradient-to-br from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 rounded-lg">
+          <div className="p-2 bg-gradient-to-br from-green-100 to-emerald-100 rounded-lg">
             <span className="text-xl">💰</span>
           </div>
           <TrendIndicator value={incomeTrend} />
         </div>
-        <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+        <p className="text-sm font-medium text-slate-500 mb-1">
           This Month Income
         </p>
-        <p className="text-2xl font-bold text-green-600 dark:text-green-400">
+        <p className="text-2xl font-bold text-green-600">
           +{formatCurrency(monthlyIncome)}
         </p>
       </div>
 
       {/* Monthly Expenses */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
         <div className="flex items-center justify-between mb-3">
-          <div className="p-2 bg-gradient-to-br from-red-100 to-orange-100 dark:from-red-900/30 dark:to-orange-900/30 rounded-lg">
+          <div className="p-2 bg-gradient-to-br from-red-100 to-orange-100 rounded-lg">
             <span className="text-xl">💸</span>
           </div>
           <TrendIndicator value={expenseTrend} inverted />
         </div>
-        <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+        <p className="text-sm font-medium text-slate-500 mb-1">
           This Month Expenses
         </p>
-        <p className="text-2xl font-bold text-red-600 dark:text-red-400">
+        <p className="text-2xl font-bold text-red-600">
           -{formatCurrency(monthlyExpenses)}
         </p>
       </div>
 
       {/* Savings Rate */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
         <div className="flex items-center justify-between mb-3">
-          <div className="p-2 bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-blue-900/30 dark:to-cyan-900/30 rounded-lg">
+          <div className="p-2 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-lg">
             <span className="text-xl">📊</span>
           </div>
           <TrendIndicator value={savingsRateTrend} />
         </div>
-        <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+        <p className="text-sm font-medium text-slate-500 mb-1">
           Savings Rate
         </p>
         <p
           className={`text-2xl font-bold ${
             savingsRate >= 20
-              ? "text-green-600 dark:text-green-400"
+              ? "text-green-600"
               : savingsRate >= 0
-              ? "text-yellow-600 dark:text-yellow-400"
-              : "text-red-600 dark:text-red-400"
+              ? "text-yellow-600"
+              : "text-red-600"
           }`}
         >
           {savingsRate.toFixed(1)}%
         </p>
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+        <p className="text-xs text-slate-500 mt-1">
           {savingsRate >= 20
             ? "Great job! 🎉"
             : savingsRate >= 10

@@ -77,7 +77,7 @@ export function InlineEdit({
         onKeyDown={handleKeyDown}
         disabled={isSaving}
         placeholder={placeholder}
-        className={`px-2 py-1 border border-indigo-500 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${inputClassName}`}
+        className={`px-2 py-1 border border-blue-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 bg-white text-slate-900 ${inputClassName}`}
       />
     );
   }
@@ -85,7 +85,7 @@ export function InlineEdit({
   return (
     <span
       onClick={() => setIsEditing(true)}
-      className={`cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 px-2 py-1 rounded-md transition-colors ${className}`}
+      className={`cursor-pointer hover:bg-slate-50 px-2 py-1 rounded-md transition-colors ${className}`}
       title="Click to edit"
     >
       {value || placeholder}

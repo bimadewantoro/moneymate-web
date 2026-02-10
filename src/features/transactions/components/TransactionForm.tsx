@@ -134,13 +134,13 @@ export function TransactionForm({
   const categories = activeType === "income" ? incomeCategories : expenseCategories;
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-      <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+    <div className="bg-white rounded-2xl shadow-sm border border-slate-100">
+      <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
         <div>
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+          <h2 className="text-lg font-semibold text-slate-900">
             Add Transaction
           </h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-sm text-slate-500">
             Record income, expenses, or transfers
           </p>
         </div>
@@ -152,7 +152,7 @@ export function TransactionForm({
           <button
             type="button"
             onClick={() => setIsOpen(!isOpen)}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium"
+            className="inline-flex items-center gap-2 px-4 py-2 brand-gradient text-white rounded-lg hover:shadow-md transition-colors text-sm font-medium"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -182,8 +182,8 @@ export function TransactionForm({
               onClick={() => setActiveType("expense")}
               className={`flex-1 py-3 px-4 rounded-lg font-medium transition-colors ${
                 activeType === "expense"
-                  ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
-                  : "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600"
+                  ? "bg-red-100 text-red-700"
+                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
               }`}
             >
               💸 Expense
@@ -193,8 +193,8 @@ export function TransactionForm({
               onClick={() => setActiveType("income")}
               className={`flex-1 py-3 px-4 rounded-lg font-medium transition-colors ${
                 activeType === "income"
-                  ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                  : "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600"
+                  ? "bg-green-100 text-green-700"
+                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
               }`}
             >
               💰 Income
@@ -204,8 +204,8 @@ export function TransactionForm({
               onClick={() => setActiveType("transfer")}
               className={`flex-1 py-3 px-4 rounded-lg font-medium transition-colors ${
                 activeType === "transfer"
-                  ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
-                  : "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600"
+                  ? "bg-blue-100 text-blue-700"
+                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
               }`}
             >
               🔄 Transfer
@@ -216,11 +216,11 @@ export function TransactionForm({
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {/* Amount */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-slate-700 mb-1">
                   Amount *
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
                     Rp
                   </span>
                   <input
@@ -232,7 +232,7 @@ export function TransactionForm({
                     step="0.01"
                     placeholder="0"
                     defaultValue={formValues.amount}
-                    className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    className="w-full pl-10 pr-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600 bg-white text-slate-900"
                   />
                 </div>
               </div>
@@ -240,13 +240,13 @@ export function TransactionForm({
               {/* From Account (for expense and transfer) */}
               {(activeType === "expense" || activeType === "transfer") && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-slate-700 mb-1">
                     {activeType === "transfer" ? "From Account *" : "Account *"}
                   </label>
                   <select
                     name="fromAccountId"
                     required
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600 bg-white text-slate-900"
                   >
                     <option value="">Select account</option>
                     {accounts.map((account) => (
@@ -261,13 +261,13 @@ export function TransactionForm({
               {/* To Account (for income and transfer) */}
               {(activeType === "income" || activeType === "transfer") && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-slate-700 mb-1">
                     {activeType === "transfer" ? "To Account *" : "Account *"}
                   </label>
                   <select
                     name="toAccountId"
                     required
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600 bg-white text-slate-900"
                   >
                     <option value="">Select account</option>
                     {accounts.map((account) => (
@@ -282,14 +282,14 @@ export function TransactionForm({
               {/* Category (not for transfers) */}
               {activeType !== "transfer" && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-slate-700 mb-1">
                     Category
                   </label>
                   <select
                     ref={categoryRef}
                     name="categoryId"
                     defaultValue={formValues.categoryId}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600 bg-white text-slate-900"
                   >
                     <option value="">No category</option>
                     {categories.map((category) => (
@@ -303,7 +303,7 @@ export function TransactionForm({
 
               {/* Date */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-slate-700 mb-1">
                   Date
                 </label>
                 <input
@@ -311,14 +311,14 @@ export function TransactionForm({
                   type="date"
                   name="date"
                   defaultValue={formValues.date}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600 bg-white text-slate-900"
                 />
               </div>
             </div>
 
             {/* Description */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-slate-700 mb-1">
                 Description
               </label>
               <input
@@ -333,7 +333,7 @@ export function TransactionForm({
                     ? "e.g., Monthly salary"
                     : "e.g., Lunch at restaurant"
                 }
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600 bg-white text-slate-900"
               />
             </div>
 
@@ -342,7 +342,7 @@ export function TransactionForm({
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                className="px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
               >
                 Cancel
               </button>

@@ -53,123 +53,101 @@ export default async function TransactionsPage({ searchParams }: PageProps) {
   const filterTitle = getFilterTitle();
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Header */}
-      <nav className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center gap-4">
+    <div className="min-h-screen bg-slate-50">
+      {/* ═══ Mobile Header ═══ */}
+      <header className="md:hidden sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-slate-200/60 px-5 py-3">
+        <h1 className="text-lg font-bold tracking-tight text-slate-900">Transactions</h1>
+        {filterTitle ? (
+          <div className="flex items-center gap-2 text-sm text-slate-500">
+            <span>Filtered: {filterTitle}</span>
+            <Link href="/transactions" className="text-blue-600 hover:underline font-medium">Clear</Link>
+          </div>
+        ) : (
+          <p className="text-sm text-slate-500">Track and manage all your transactions</p>
+        )}
+      </header>
+
+      {/* ═══ Desktop Header ═══ */}
+      <header className="hidden md:flex items-center justify-between px-8 py-6 border-b border-slate-100 bg-white">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+            Transactions
+          </h1>
+          {filterTitle ? (
+            <div className="flex items-center gap-2 text-sm text-slate-500 mt-1">
+              <span>Filtered by: {filterTitle}</span>
               <Link
-                href="/dashboard"
-                className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                href="/transactions"
+                className="text-blue-600 hover:underline font-medium"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 19l-7-7 7-7"
-                  />
-                </svg>
+                Clear
               </Link>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                  Transactions
-                </h1>
-                {filterTitle && (
-                  <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                    <span>Filtered by: {filterTitle}</span>
-                    <Link
-                      href="/transactions"
-                      className="text-indigo-600 dark:text-indigo-400 hover:underline"
-                    >
-                      Clear
-                    </Link>
-                  </div>
-                )}
-              </div>
             </div>
-            <div className="flex items-center gap-3">
-              {session.user.image && (
-                <img
-                  src={session.user.image}
-                  alt={session.user.name || "User"}
-                  className="w-8 h-8 rounded-full"
-                />
-              )}
-              <span className="text-sm font-medium text-gray-900 dark:text-white hidden sm:block">
-                {session.user.name}
-              </span>
-            </div>
-          </div>
+          ) : (
+            <p className="text-slate-500 text-sm">
+              Track and manage all your transactions
+            </p>
+          )}
         </div>
-      </nav>
+      </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="space-y-6">
-          {/* Add Transaction Form */}
-          <TransactionForm
+      <main className="px-4 sm:px-6 lg:px-8 py-6 space-y-6 max-w-7xl mx-auto">
+
+      {/* Add Transaction Form */}
+      <TransactionForm
+        accounts={accounts}
+        incomeCategories={categories.filter((c) => c.type === "income")}
+        expenseCategories={categories.filter((c) => c.type === "expense")}
+      />
+
+      {/* Transactions Table */}
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-100">
+        <div className="px-6 py-4 border-b border-slate-100">
+          <h2 className="text-lg font-semibold text-slate-900">
+            Transaction History
+          </h2>
+          <p className="text-sm text-slate-500">
+            {displayTransactions.length} transaction{displayTransactions.length !== 1 ? "s" : ""}
+          </p>
+        </div>
+
+        {accounts.length === 0 ? (
+          <div className="px-6 py-12 text-center">
+            <div className="text-4xl mb-3">🏦</div>
+            <h3 className="text-lg font-semibold text-slate-900 mb-1">
+              No accounts yet
+            </h3>
+            <p className="text-slate-500 mb-4">
+              Set up your accounts first to start tracking transactions
+            </p>
+            <Link
+              href="/settings"
+              className="inline-flex items-center px-5 py-2.5 brand-gradient text-white rounded-xl hover:shadow-md transition-shadow font-medium"
+            >
+              Go to Settings
+            </Link>
+          </div>
+        ) : displayTransactions.length === 0 ? (
+          <div className="px-6 py-12 text-center">
+            <div className="text-4xl mb-3">📝</div>
+            <h3 className="text-lg font-semibold text-slate-900 mb-1">
+              No transactions yet
+            </h3>
+            <p className="text-slate-500">
+              Add your first transaction using the form above
+            </p>
+          </div>
+        ) : (
+          <TransactionsTable
+            transactions={displayTransactions}
             accounts={accounts}
-            incomeCategories={categories.filter((c) => c.type === "income")}
-            expenseCategories={categories.filter((c) => c.type === "expense")}
+            categories={categories}
+            initialTypeFilter={params.type as "income" | "expense" | "transfer" | undefined}
+            initialCategoryFilter={params.category}
+            initialAccountFilter={params.account}
           />
-
-          {/* Transactions Table */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Transaction History
-              </h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                {displayTransactions.length} transaction{displayTransactions.length !== 1 ? "s" : ""}
-              </p>
-            </div>
-
-            {accounts.length === 0 ? (
-              <div className="px-6 py-12 text-center">
-                <div className="text-4xl mb-3">🏦</div>
-                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-1">
-                  No accounts yet
-                </h3>
-                <p className="text-gray-500 dark:text-gray-400 mb-4">
-                  Set up your accounts first to start tracking transactions
-                </p>
-                <Link
-                  href="/settings"
-                  className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-                >
-                  Go to Settings
-                </Link>
-              </div>
-            ) : displayTransactions.length === 0 ? (
-              <div className="px-6 py-12 text-center">
-                <div className="text-4xl mb-3">📝</div>
-                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-1">
-                  No transactions yet
-                </h3>
-                <p className="text-gray-500 dark:text-gray-400">
-                  Add your first transaction using the form above
-                </p>
-              </div>
-            ) : (
-              <TransactionsTable
-                transactions={displayTransactions}
-                accounts={accounts}
-                categories={categories}
-                initialTypeFilter={params.type as "income" | "expense" | "transfer" | undefined}
-                initialCategoryFilter={params.category}
-                initialAccountFilter={params.account}
-              />
-            )}
-          </div>
-        </div>
+        )}
+      </div>
       </main>
     </div>
   );

@@ -1,30 +1,69 @@
 @import "tailwindcss";
 
+/* ═══════════════════════════════════════════
+   MoneyMate Brand Design System
+   Navy Blue → Lime Green gradient identity
+   ═══════════════════════════════════════════ */
+
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #0f172a;
+  /* Brand gradient endpoints */
+  --brand-navy: #1d4ed8;
+  --brand-green: #22c55e;
+  /* Semantic colors */
+  --income: #16a34a;
+  --expense: #ef4444;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-brand-navy: var(--brand-navy);
+  --color-brand-green: var(--brand-green);
+  --color-income: var(--income);
+  --color-expense: var(--expense);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
+/* ─── Brand Gradient Utilities ────────────── */
+.brand-gradient {
+  background: linear-gradient(135deg, var(--brand-navy) 0%, var(--brand-green) 100%);
+}
+
+.brand-gradient-text {
+  background: linear-gradient(135deg, var(--brand-navy) 0%, var(--brand-green) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Mesh Gradient for Hero ─────────────── */
+.mesh-gradient {
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(219, 234, 254, 0.6) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(220, 252, 231, 0.5) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(241, 245, 249, 0.8) 0%, transparent 50%),
+    #ffffff;
+}
+
+/* ─── Glass Card Effect ──────────────────── */
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+/* ─── Safe Areas ─────────────────────────── */
 .pb-safe {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
@@ -39,30 +78,19 @@ body {
   }
 }
 
-/* Mobile sheet animation */
+/* ─── Animations ─────────────────────────── */
 @keyframes slide-up {
-  from {
-    transform: translateY(100%);
-  }
-  to {
-    transform: translateY(0);
-  }
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
 }
 
 .animate-slide-up {
   animation: slide-up 0.3s ease-out;
 }
 
-/* Toast slide-in animation */
 @keyframes slide-in-from-bottom {
-  from {
-    transform: translateY(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
 .animate-in {
@@ -72,4 +100,51 @@ body {
 
 .slide-in-from-bottom-5 {
   animation-name: slide-in-from-bottom;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 3s ease-in-out infinite;
+}
+
+/* ─── Drawer / Modal ─────────────────────── */
+@keyframes scale-in {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes fade-in-up {
+  from { transform: translateY(8px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.animate-scale-in {
+  animation: scale-in 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.3s ease-out;
+}
+
+/* Hide number-input spinner in drawer */
+.amount-input::-webkit-outer-spin-button,
+.amount-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.amount-input[type="number"] {
+  -moz-appearance: textfield;
 }

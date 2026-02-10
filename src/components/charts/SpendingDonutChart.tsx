@@ -49,15 +49,15 @@ function CustomTooltip({
   if (active && payload && payload.length) {
     const item = payload[0].payload;
     return (
-      <div className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
+      <div className="bg-white p-3 rounded-lg shadow-lg border border-slate-100">
         <div className="flex items-center gap-2 mb-1">
           <span>{item.icon || "📁"}</span>
-          <span className="font-medium text-gray-900 dark:text-white">{item.name}</span>
+          <span className="font-medium text-slate-900">{item.name}</span>
         </div>
-        <p className="text-lg font-bold text-gray-900 dark:text-white">
+        <p className="text-lg font-bold text-slate-900">
           {formatCurrency(item.total)}
         </p>
-        <p className="text-xs text-gray-500 dark:text-gray-400">
+        <p className="text-xs text-slate-500">
           {item.percentage}% of total • {item.count} transactions
         </p>
       </div>
@@ -81,17 +81,17 @@ function CustomLegend({
         <button
           key={index}
           onClick={() => onCategoryClick?.(entry.payload.categoryId)}
-          className="flex items-center gap-1.5 px-2 py-1 rounded-full text-xs hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          className="flex items-center gap-1.5 px-2 py-1 rounded-full text-xs hover:bg-slate-50 transition-colors"
         >
           <div
             className="w-2.5 h-2.5 rounded-full"
             style={{ backgroundColor: entry.color }}
           />
-          <span className="text-gray-700 dark:text-gray-300">{entry.value}</span>
+          <span className="text-slate-700">{entry.value}</span>
         </button>
       ))}
       {payload.length > 6 && (
-        <span className="text-xs text-gray-500 dark:text-gray-400 px-2 py-1">
+        <span className="text-xs text-slate-500 px-2 py-1">
           +{payload.length - 6} more
         </span>
       )}
@@ -106,7 +106,7 @@ export function SpendingDonutChart({ data, onCategoryClick }: SpendingDonutChart
 
   if (data.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-[300px] text-gray-500 dark:text-gray-400">
+      <div className="flex flex-col items-center justify-center h-[300px] text-slate-500">
         <div className="text-4xl mb-3">📊</div>
         <p className="text-sm">No expense data yet</p>
         <p className="text-xs mt-1">Add some expenses to see your spending breakdown</p>
@@ -155,8 +155,8 @@ export function SpendingDonutChart({ data, onCategoryClick }: SpendingDonutChart
       {/* Center text */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ marginTop: '-30px' }}>
         <div className="text-center">
-          <p className="text-xs text-gray-500 dark:text-gray-400">Total</p>
-          <p className="text-lg font-bold text-gray-900 dark:text-white">
+          <p className="text-xs text-slate-500">Total</p>
+          <p className="text-lg font-bold text-slate-900">
             {formatCurrency(totalSpending)}
           </p>
         </div>

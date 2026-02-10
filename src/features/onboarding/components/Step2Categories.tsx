@@ -63,28 +63,28 @@ export function Step2Categories({
   return (
     <div>
       {/* Header */}
-      <div className="px-6 py-8 text-center border-b border-gray-100 dark:border-gray-700 bg-gradient-to-b from-purple-50 to-white dark:from-gray-800 dark:to-gray-800">
-        <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900/30 rounded-2xl flex items-center justify-center mx-auto mb-4">
+      <div className="px-6 py-8 text-center border-b border-slate-100 bg-gradient-to-b from-blue-50/50 to-white">
+        <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
           <span className="text-3xl">🏷️</span>
         </div>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+        <h2 className="text-2xl font-bold text-slate-900 mb-2">
           Choose Your Categories
         </h2>
-        <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto">
+        <p className="text-slate-500 max-w-md mx-auto">
           Select the categories you want to use. All are selected by default, tap to deselect.
         </p>
       </div>
 
       {/* Tabs */}
-      <div className="px-6 pt-4 border-b border-gray-200 dark:border-gray-700">
+      <div className="px-6 pt-4 border-b border-slate-200">
         <div className="flex gap-4">
           <button
             type="button"
             onClick={() => setActiveTab("expense")}
             className={`pb-3 px-1 text-sm font-medium border-b-2 transition-colors ${
               activeTab === "expense"
-                ? "border-red-500 text-red-600 dark:text-red-400"
-                : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400"
+                ? "border-red-500 text-red-600"
+                : "border-transparent text-slate-500 hover:text-slate-700"
             }`}
           >
             Expenses ({expenseCategories.filter((c) => selected.has(c.name)).length}/{expenseCategories.length})
@@ -94,8 +94,8 @@ export function Step2Categories({
             onClick={() => setActiveTab("income")}
             className={`pb-3 px-1 text-sm font-medium border-b-2 transition-colors ${
               activeTab === "income"
-                ? "border-green-500 text-green-600 dark:text-green-400"
-                : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400"
+                ? "border-green-500 text-green-600"
+                : "border-transparent text-slate-500 hover:text-slate-700"
             }`}
           >
             Income ({incomeCategories.filter((c) => selected.has(c.name)).length}/{incomeCategories.length})
@@ -104,23 +104,23 @@ export function Step2Categories({
       </div>
 
       {/* Quick Actions */}
-      <div className="px-6 py-3 flex items-center justify-between bg-gray-50 dark:bg-gray-900/50 border-b border-gray-100 dark:border-gray-700">
-        <span className="text-sm text-gray-500 dark:text-gray-400">
+      <div className="px-6 py-3 flex items-center justify-between bg-slate-50 border-b border-slate-100">
+        <span className="text-sm text-slate-500">
           {selectedCount} of {displayCategories.length} selected
         </span>
         <div className="flex gap-2">
           <button
             type="button"
             onClick={selectAll}
-            className="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 font-medium"
+            className="text-sm text-blue-600 hover:text-blue-700 font-medium"
           >
             Select All
           </button>
-          <span className="text-gray-300 dark:text-gray-600">|</span>
+          <span className="text-slate-300">|</span>
           <button
             type="button"
             onClick={deselectAll}
-            className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 font-medium"
+            className="text-sm text-slate-500 hover:text-slate-700 font-medium"
           >
             Deselect All
           </button>
@@ -139,8 +139,8 @@ export function Step2Categories({
                 onClick={() => toggleCategory(category.name)}
                 className={`p-4 rounded-xl border-2 text-center transition-all ${
                   isSelected
-                    ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20"
-                    : "border-gray-200 dark:border-gray-600 opacity-50 hover:opacity-75"
+                    ? "border-blue-600 bg-blue-50"
+                    : "border-slate-200 opacity-50 hover:opacity-75"
                 }`}
               >
                 <div
@@ -154,8 +154,8 @@ export function Step2Categories({
                 <div
                   className={`text-sm font-medium ${
                     isSelected
-                      ? "text-gray-900 dark:text-white"
-                      : "text-gray-400 dark:text-gray-500"
+                      ? "text-slate-900"
+                      : "text-slate-400"
                   }`}
                 >
                   {category.name}
@@ -163,7 +163,7 @@ export function Step2Categories({
                 {/* Selection indicator */}
                 <div className="mt-2">
                   {isSelected ? (
-                    <div className="w-5 h-5 bg-indigo-500 rounded-full flex items-center justify-center mx-auto">
+                    <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center mx-auto">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="h-3 w-3 text-white"
@@ -178,7 +178,7 @@ export function Step2Categories({
                       </svg>
                     </div>
                   ) : (
-                    <div className="w-5 h-5 border-2 border-gray-300 dark:border-gray-600 rounded-full mx-auto" />
+                    <div className="w-5 h-5 border-2 border-slate-200 rounded-full mx-auto" />
                   )}
                 </div>
               </button>
@@ -188,11 +188,11 @@ export function Step2Categories({
       </div>
 
       {/* Footer */}
-      <div className="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-100 dark:border-gray-700 flex gap-3">
+      <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex gap-3">
         <button
           type="button"
           onClick={onBack}
-          className="flex-1 py-3 px-4 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors font-medium flex items-center justify-center gap-2"
+          className="flex-1 py-3 px-4 border border-slate-200 text-slate-700 rounded-xl hover:bg-slate-50 transition-colors font-medium flex items-center justify-center gap-2"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -212,7 +212,7 @@ export function Step2Categories({
           type="button"
           onClick={handleContinue}
           disabled={totalSelected === 0}
-          className="flex-1 py-3 px-4 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center justify-center gap-2"
+          className="flex-1 py-3 px-4 brand-gradient text-white rounded-xl hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center justify-center gap-2"
         >
           Continue
           <svg

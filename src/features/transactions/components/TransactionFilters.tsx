@@ -54,22 +54,22 @@ function MobileSheet({
     <div className="fixed inset-0 z-50 sm:hidden">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/50 transition-opacity"
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
         onClick={onClose}
       />
       {/* Sheet */}
-      <div className="absolute inset-x-0 bottom-0 max-h-[85vh] bg-white dark:bg-gray-800 rounded-t-2xl shadow-xl flex flex-col animate-slide-up">
+      <div className="absolute inset-x-0 bottom-0 max-h-[85vh] bg-white rounded-t-2xl shadow-xl flex flex-col animate-slide-up">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 shrink-0">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+        <div className="flex items-center justify-between p-4 border-b border-slate-100 shrink-0">
+          <h3 className="text-lg font-semibold text-slate-900">
             {title}
           </h3>
           <button
             onClick={onClose}
-            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            className="p-2 rounded-full hover:bg-slate-100 transition-colors"
           >
             <svg
-              className="w-5 h-5 text-gray-500 dark:text-gray-400"
+              className="w-5 h-5 text-slate-500"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -302,7 +302,7 @@ export function TransactionFilters({
   // Shared content for reuse in both mobile and desktop
   const datePickerContent = (
     <div className="space-y-4">
-      <h4 className="text-sm font-medium text-gray-900 dark:text-white hidden sm:block">Date Range</h4>
+      <h4 className="text-sm font-medium text-slate-900 hidden sm:block">Date Range</h4>
       
       {/* Presets */}
       <div className="grid grid-cols-2 gap-2">
@@ -315,8 +315,8 @@ export function TransactionFilters({
             }}
             className={`px-3 py-3 sm:py-2 text-sm rounded-lg transition-colors ${
               filters.dateRange.preset === preset.value
-                ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300"
-                : "bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                ? "bg-blue-100 text-blue-700"
+                : "bg-slate-100 text-slate-700 hover:bg-slate-200"
             }`}
           >
             {preset.label}
@@ -325,25 +325,25 @@ export function TransactionFilters({
       </div>
 
       {/* Custom Date Inputs */}
-      <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
-        <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Custom Range</p>
+      <div className="border-t border-slate-100 pt-4">
+        <p className="text-sm font-medium text-slate-700 mb-3">Custom Range</p>
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-2">
           <div className="flex-1">
-            <label className="text-xs text-gray-500 dark:text-gray-400 mb-1 block">Start Date</label>
+            <label className="text-xs text-slate-500 mb-1 block">Start Date</label>
             <input
               type="date"
               value={filters.dateRange.start ? format(filters.dateRange.start, "yyyy-MM-dd") : ""}
               onChange={(e) => handleCustomDateChange("start", e.target.value)}
-              className="w-full px-3 py-2.5 sm:py-1.5 text-base sm:text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="w-full px-3 py-2.5 sm:py-1.5 text-base sm:text-sm border border-slate-200 rounded-lg bg-white text-slate-900"
             />
           </div>
           <div className="flex-1">
-            <label className="text-xs text-gray-500 dark:text-gray-400 mb-1 block">End Date</label>
+            <label className="text-xs text-slate-500 mb-1 block">End Date</label>
             <input
               type="date"
               value={filters.dateRange.end ? format(filters.dateRange.end, "yyyy-MM-dd") : ""}
               onChange={(e) => handleCustomDateChange("end", e.target.value)}
-              className="w-full px-3 py-2.5 sm:py-1.5 text-base sm:text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="w-full px-3 py-2.5 sm:py-1.5 text-base sm:text-sm border border-slate-200 rounded-lg bg-white text-slate-900"
             />
           </div>
         </div>
@@ -362,8 +362,8 @@ export function TransactionFilters({
           }}
           className={`w-full px-4 py-3 sm:py-2 text-base sm:text-sm text-left flex items-center gap-3 rounded-lg transition-colors ${
             filters.sortBy === option.value
-              ? "bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300"
-              : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+              ? "bg-blue-50 text-blue-700"
+              : "text-slate-700 hover:bg-slate-100"
           }`}
         >
           <span className="text-lg">{option.icon}</span>
@@ -383,7 +383,7 @@ export function TransactionFilters({
       {/* Category Filter */}
       {filters.transactionType !== "transfer" && (
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+          <label className="block text-sm font-medium text-slate-700 mb-3">
             🏷️ Categories
           </label>
           <div className="space-y-2 max-h-48 overflow-y-auto">
@@ -391,44 +391,44 @@ export function TransactionFilters({
               <>
                 {incomeCategories.length > 0 && (
                   <>
-                    <div className="px-2 py-1 text-xs font-medium text-gray-500 dark:text-gray-400 sticky top-0 bg-white dark:bg-gray-800">
+                    <div className="px-2 py-1 text-xs font-medium text-slate-500 sticky top-0 bg-white">
                       💰 Income
                     </div>
                     {incomeCategories.map((cat) => (
                       <label
                         key={cat.id}
-                        className="flex items-center gap-3 px-2 py-2.5 sm:py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer rounded-lg"
+                        className="flex items-center gap-3 px-2 py-2.5 sm:py-2 hover:bg-slate-100 cursor-pointer rounded-lg"
                       >
                         <input
                           type="checkbox"
                           checked={filters.selectedCategories.includes(cat.id)}
                           onChange={() => handleCategoryToggle(cat.id)}
-                          className="rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500 w-5 h-5 sm:w-4 sm:h-4"
+                          className="rounded border-slate-200 text-blue-600 focus:ring-blue-600 w-5 h-5 sm:w-4 sm:h-4"
                         />
                         <span style={{ color: cat.color }}>{cat.icon || "📁"}</span>
-                        <span className="text-base sm:text-sm text-gray-700 dark:text-gray-300">{cat.name}</span>
+                        <span className="text-base sm:text-sm text-slate-700">{cat.name}</span>
                       </label>
                     ))}
                   </>
                 )}
                 {expenseCategories.length > 0 && (
                   <>
-                    <div className="px-2 py-1 text-xs font-medium text-gray-500 dark:text-gray-400 sticky top-0 bg-white dark:bg-gray-800">
+                    <div className="px-2 py-1 text-xs font-medium text-slate-500 sticky top-0 bg-white">
                       💸 Expense
                     </div>
                     {expenseCategories.map((cat) => (
                       <label
                         key={cat.id}
-                        className="flex items-center gap-3 px-2 py-2.5 sm:py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer rounded-lg"
+                        className="flex items-center gap-3 px-2 py-2.5 sm:py-2 hover:bg-slate-100 cursor-pointer rounded-lg"
                       >
                         <input
                           type="checkbox"
                           checked={filters.selectedCategories.includes(cat.id)}
                           onChange={() => handleCategoryToggle(cat.id)}
-                          className="rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500 w-5 h-5 sm:w-4 sm:h-4"
+                          className="rounded border-slate-200 text-blue-600 focus:ring-blue-600 w-5 h-5 sm:w-4 sm:h-4"
                         />
                         <span style={{ color: cat.color }}>{cat.icon || "📁"}</span>
-                        <span className="text-base sm:text-sm text-gray-700 dark:text-gray-300">{cat.name}</span>
+                        <span className="text-base sm:text-sm text-slate-700">{cat.name}</span>
                       </label>
                     ))}
                   </>
@@ -438,16 +438,16 @@ export function TransactionFilters({
               filteredCategories.map((cat) => (
                 <label
                   key={cat.id}
-                  className="flex items-center gap-3 px-2 py-2.5 sm:py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer rounded-lg"
+                  className="flex items-center gap-3 px-2 py-2.5 sm:py-2 hover:bg-slate-100 cursor-pointer rounded-lg"
                 >
                   <input
                     type="checkbox"
                     checked={filters.selectedCategories.includes(cat.id)}
                     onChange={() => handleCategoryToggle(cat.id)}
-                    className="rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500 w-5 h-5 sm:w-4 sm:h-4"
+                    className="rounded border-slate-200 text-blue-600 focus:ring-blue-600 w-5 h-5 sm:w-4 sm:h-4"
                   />
                   <span style={{ color: cat.color }}>{cat.icon || "📁"}</span>
-                  <span className="text-base sm:text-sm text-gray-700 dark:text-gray-300">{cat.name}</span>
+                  <span className="text-base sm:text-sm text-slate-700">{cat.name}</span>
                 </label>
               ))
             )}
@@ -455,7 +455,7 @@ export function TransactionFilters({
           {filters.selectedCategories.length > 0 && (
             <button
               onClick={() => updateFilters({ selectedCategories: [] })}
-              className="mt-2 w-full px-3 py-2 text-sm text-indigo-600 dark:text-indigo-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+              className="mt-2 w-full px-3 py-2 text-sm text-blue-600 hover:bg-slate-100 rounded-lg"
             >
               Clear category selection
             </button>
@@ -465,36 +465,36 @@ export function TransactionFilters({
 
       {/* Account Filter */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+        <label className="block text-sm font-medium text-slate-700 mb-3">
           💳 Accounts
         </label>
         <div className="space-y-2 max-h-48 overflow-y-auto">
           {accounts.map((acc) => (
             <label
               key={acc.id}
-              className="flex items-center gap-3 px-2 py-2.5 sm:py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer rounded-lg"
+              className="flex items-center gap-3 px-2 py-2.5 sm:py-2 hover:bg-slate-100 cursor-pointer rounded-lg"
             >
               <input
                 type="checkbox"
                 checked={filters.selectedAccounts.includes(acc.id)}
                 onChange={() => handleAccountToggle(acc.id)}
-                className="rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500 w-5 h-5 sm:w-4 sm:h-4"
+                className="rounded border-slate-200 text-blue-600 focus:ring-blue-600 w-5 h-5 sm:w-4 sm:h-4"
               />
               <span>{ACCOUNT_ICONS[acc.type]}</span>
-              <span className="text-base sm:text-sm text-gray-700 dark:text-gray-300">{acc.name}</span>
+              <span className="text-base sm:text-sm text-slate-700">{acc.name}</span>
             </label>
           ))}
         </div>
         {filters.selectedAccounts.length > 0 && (
           <button
             onClick={() => updateFilters({ selectedAccounts: [] })}
-            className="mt-2 w-full px-3 py-2 text-sm text-indigo-600 dark:text-indigo-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+            className="mt-2 w-full px-3 py-2 text-sm text-blue-600 hover:bg-slate-100 rounded-lg"
           >
             Clear account selection
           </button>
         )}
         {filters.transactionType === "transfer" && (
-          <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+          <p className="mt-2 text-xs text-slate-500">
             Shows transfers where selected account is source or destination
           </p>
         )}
@@ -504,10 +504,10 @@ export function TransactionFilters({
       {filters.transactionType !== "transfer" && (
         <div className="flex items-center justify-between py-2">
           <div>
-            <label className="text-base sm:text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label className="text-base sm:text-sm font-medium text-slate-700">
               ⚠️ Uncategorized Only
             </label>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
+            <p className="text-xs text-slate-500">
               Show transactions without a category
             </p>
           </div>
@@ -518,8 +518,8 @@ export function TransactionFilters({
                 selectedCategories: !filters.uncategorizedOnly ? [] : filters.selectedCategories,
               });
             }}
-            className={`relative inline-flex h-7 w-12 sm:h-6 sm:w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
-              filters.uncategorizedOnly ? "bg-indigo-600" : "bg-gray-200 dark:bg-gray-600"
+            className={`relative inline-flex h-7 w-12 sm:h-6 sm:w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 ${
+              filters.uncategorizedOnly ? "bg-blue-600" : "bg-slate-200"
             }`}
           >
             <span
@@ -537,7 +537,7 @@ export function TransactionFilters({
             clearAllFilters();
             setIsFilterMenuOpen(false);
           }}
-          className="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+          className="w-full px-4 py-3 bg-slate-100 text-slate-700 rounded-lg text-sm font-medium hover:bg-slate-200 transition-colors"
         >
           Clear All Filters
         </button>
@@ -577,7 +577,7 @@ export function TransactionFilters({
         {/* Search - always full width on mobile */}
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </div>
@@ -586,14 +586,14 @@ export function TransactionFilters({
             placeholder="Search description, notes..."
             value={filters.searchQuery}
             onChange={(e) => updateFilters({ searchQuery: e.target.value })}
-            className="w-full pl-10 pr-10 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-base"
+            className="w-full pl-10 pr-10 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-blue-600 bg-white text-slate-900 text-base"
           />
           {filters.searchQuery && (
             <button
               onClick={() => updateFilters({ searchQuery: "" })}
               className="absolute inset-y-0 right-0 pr-3 flex items-center"
             >
-              <svg className="h-5 w-5 text-gray-400 hover:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="h-5 w-5 text-slate-400 hover:text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
@@ -602,7 +602,7 @@ export function TransactionFilters({
 
         {/* Transaction Type - horizontal scroll on mobile */}
         <div className="flex overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">
-          <div className="inline-flex rounded-xl border border-gray-300 dark:border-gray-600 p-1 bg-gray-100 dark:bg-gray-700 min-w-max">
+          <div className="inline-flex rounded-xl border border-slate-200 p-1 bg-slate-100 min-w-max">
             {[
               { value: "all", label: "All", icon: "📋" },
               { value: "income", label: "Income", icon: "💰" },
@@ -619,8 +619,8 @@ export function TransactionFilters({
                 }}
                 className={`px-4 py-2 text-sm font-medium rounded-lg transition-all whitespace-nowrap ${
                   filters.transactionType === type.value
-                    ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm"
-                    : "text-gray-600 dark:text-gray-400"
+                    ? "bg-white text-slate-900 shadow-sm"
+                    : "text-slate-600"
                 }`}
               >
                 {type.icon} {type.label}
@@ -636,8 +636,8 @@ export function TransactionFilters({
             onClick={() => setIsDatePickerOpen(true)}
             className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 border rounded-xl text-sm font-medium transition-colors ${
               filters.dateRange.preset !== "all-time"
-                ? "border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 dark:border-indigo-500"
-                : "border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200"
+                ? "border-blue-600 bg-blue-50 text-blue-700"
+                : "border-slate-200 bg-white text-slate-700"
             }`}
           >
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -653,7 +653,7 @@ export function TransactionFilters({
           {/* Sort Button */}
           <button
             onClick={() => setIsSortDropdownOpen(true)}
-            className="flex items-center justify-center gap-2 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-sm font-medium"
+            className="flex items-center justify-center gap-2 px-4 py-3 border border-slate-200 rounded-xl bg-white text-slate-700 text-sm font-medium"
           >
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
@@ -666,15 +666,15 @@ export function TransactionFilters({
             onClick={() => setIsFilterMenuOpen(true)}
             className={`flex items-center justify-center gap-2 px-4 py-3 border rounded-xl text-sm font-medium transition-colors ${
               activeFilterCount > 0
-                ? "border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 dark:border-indigo-500"
-                : "border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200"
+                ? "border-blue-600 bg-blue-50 text-blue-700"
+                : "border-slate-200 bg-white text-slate-700"
             }`}
           >
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
             </svg>
             {activeFilterCount > 0 && (
-              <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-medium bg-indigo-600 text-white rounded-full">
+              <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-medium bg-blue-600 text-white rounded-full">
                 {activeFilterCount}
               </span>
             )}
@@ -687,7 +687,7 @@ export function TransactionFilters({
         {/* Search Bar */}
         <div className="flex-1 min-w-[200px] max-w-md relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </div>
@@ -696,14 +696,14 @@ export function TransactionFilters({
             placeholder="Search description, notes..."
             value={filters.searchQuery}
             onChange={(e) => updateFilters({ searchQuery: e.target.value })}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+            className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600 bg-white text-slate-900 text-sm"
           />
           {filters.searchQuery && (
             <button
               onClick={() => updateFilters({ searchQuery: "" })}
               className="absolute inset-y-0 right-0 pr-3 flex items-center"
             >
-              <svg className="h-4 w-4 text-gray-400 hover:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="h-4 w-4 text-slate-400 hover:text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
@@ -716,8 +716,8 @@ export function TransactionFilters({
             onClick={() => setIsDatePickerOpen(!isDatePickerOpen)}
             className={`inline-flex items-center gap-2 px-3 py-2 border rounded-lg text-sm transition-colors ${
               filters.dateRange.preset !== "all-time"
-                ? "border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 dark:border-indigo-500"
-                : "border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600"
+                ? "border-blue-600 bg-blue-50 text-blue-700"
+                : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
             }`}
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -734,7 +734,7 @@ export function TransactionFilters({
           </button>
 
           {isDatePickerOpen && !isMobile && (
-            <div className="absolute left-0 sm:left-auto sm:right-0 mt-2 w-80 max-w-[calc(100vw-2rem)] bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+            <div className="absolute left-0 sm:left-auto sm:right-0 mt-2 w-80 max-w-[calc(100vw-2rem)] bg-white rounded-xl shadow-lg border border-slate-100 z-50">
               <div className="p-4">
                 {datePickerContent}
               </div>
@@ -743,7 +743,7 @@ export function TransactionFilters({
         </div>
 
         {/* Transaction Type Segmented Control */}
-        <div className="inline-flex rounded-lg border border-gray-300 dark:border-gray-600 p-1 bg-gray-100 dark:bg-gray-700">
+        <div className="inline-flex rounded-lg border border-slate-200 p-1 bg-slate-100">
           {[
             { value: "all", label: "All", icon: "📋" },
             { value: "income", label: "Income", icon: "💰" },
@@ -761,8 +761,8 @@ export function TransactionFilters({
               }}
               className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
                 filters.transactionType === type.value
-                  ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm"
-                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                  ? "bg-white text-slate-900 shadow-sm"
+                  : "text-slate-600 hover:text-slate-900"
               }`}
             >
               <span className="hidden sm:inline">{type.icon} </span>
@@ -775,7 +775,7 @@ export function TransactionFilters({
         <div className="relative" ref={sortDropdownRef}>
           <button
             onClick={() => setIsSortDropdownOpen(!isSortDropdownOpen)}
-            className="inline-flex items-center gap-2 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-sm hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
+            className="inline-flex items-center gap-2 px-3 py-2 border border-slate-200 rounded-lg bg-white text-slate-700 text-sm hover:bg-slate-50 transition-colors"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
@@ -789,7 +789,7 @@ export function TransactionFilters({
           </button>
 
           {isSortDropdownOpen && !isMobile && (
-            <div className="absolute left-0 sm:left-auto sm:right-0 mt-2 w-48 max-w-[calc(100vw-2rem)] bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+            <div className="absolute left-0 sm:left-auto sm:right-0 mt-2 w-48 max-w-[calc(100vw-2rem)] bg-white rounded-xl shadow-lg border border-slate-100 z-50">
               <div className="py-2">
                 {sortContent}
               </div>
@@ -803,8 +803,8 @@ export function TransactionFilters({
             onClick={() => setIsFilterMenuOpen(!isFilterMenuOpen)}
             className={`inline-flex items-center gap-2 px-3 py-2 border rounded-lg text-sm transition-colors ${
               activeFilterCount > 0
-                ? "border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 dark:border-indigo-500"
-                : "border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600"
+                ? "border-blue-600 bg-blue-50 text-blue-700"
+                : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
             }`}
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -812,20 +812,20 @@ export function TransactionFilters({
             </svg>
             <span>Filters</span>
             {activeFilterCount > 0 && (
-              <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-medium bg-indigo-600 text-white rounded-full">
+              <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-medium bg-blue-600 text-white rounded-full">
                 {activeFilterCount}
               </span>
             )}
           </button>
 
           {isFilterMenuOpen && !isMobile && (
-            <div className="absolute left-0 sm:left-auto sm:right-0 mt-2 w-80 max-w-[calc(100vw-2rem)] bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 z-50">
-              <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-                <h4 className="text-sm font-medium text-gray-900 dark:text-white">Filter Options</h4>
+            <div className="absolute left-0 sm:left-auto sm:right-0 mt-2 w-80 max-w-[calc(100vw-2rem)] bg-white rounded-xl shadow-lg border border-slate-100 z-50">
+              <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+                <h4 className="text-sm font-medium text-slate-900">Filter Options</h4>
                 {activeFilterCount > 0 && (
                   <button
                     onClick={clearAllFilters}
-                    className="text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
+                    className="text-xs text-blue-600 hover:text-blue-700"
                   >
                     Clear all
                   </button>
@@ -836,13 +836,13 @@ export function TransactionFilters({
                 {/* Category Filter */}
                 {filters.transactionType !== "transfer" && (
                   <div ref={categoryDropdownRef}>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
                       🏷️ Categories
                     </label>
                     <div className="relative">
                       <button
                         onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
-                        className="w-full px-3 py-2 text-left border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-sm flex items-center justify-between"
+                        className="w-full px-3 py-2 text-left border border-slate-200 rounded-lg bg-white text-slate-700 text-sm flex items-center justify-between"
                       >
                         <span>
                           {filters.selectedCategories.length === 0
@@ -855,49 +855,49 @@ export function TransactionFilters({
                       </button>
 
                       {isCategoryDropdownOpen && (
-                        <div className="absolute left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+                        <div className="absolute left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-white rounded-lg shadow-lg border border-slate-100 z-50">
                           {filters.transactionType === "all" ? (
                             <>
                               {incomeCategories.length > 0 && (
                                 <>
-                                  <div className="px-3 py-2 text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50">
+                                  <div className="px-3 py-2 text-xs font-medium text-slate-500 bg-slate-50">
                                     💰 Income
                                   </div>
                                   {incomeCategories.map((cat) => (
                                     <label
                                       key={cat.id}
-                                      className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                                      className="flex items-center gap-2 px-3 py-2 hover:bg-slate-100 cursor-pointer"
                                     >
                                       <input
                                         type="checkbox"
                                         checked={filters.selectedCategories.includes(cat.id)}
                                         onChange={() => handleCategoryToggle(cat.id)}
-                                        className="rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500"
+                                        className="rounded border-slate-200 text-blue-600 focus:ring-blue-600"
                                       />
                                       <span style={{ color: cat.color }}>{cat.icon || "📁"}</span>
-                                      <span className="text-sm text-gray-700 dark:text-gray-300">{cat.name}</span>
+                                      <span className="text-sm text-slate-700">{cat.name}</span>
                                     </label>
                                   ))}
                                 </>
                               )}
                               {expenseCategories.length > 0 && (
                                 <>
-                                  <div className="px-3 py-2 text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50">
+                                  <div className="px-3 py-2 text-xs font-medium text-slate-500 bg-slate-50">
                                     💸 Expense
                                   </div>
                                   {expenseCategories.map((cat) => (
                                     <label
                                       key={cat.id}
-                                      className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                                      className="flex items-center gap-2 px-3 py-2 hover:bg-slate-100 cursor-pointer"
                                     >
                                       <input
                                         type="checkbox"
                                         checked={filters.selectedCategories.includes(cat.id)}
                                         onChange={() => handleCategoryToggle(cat.id)}
-                                        className="rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500"
+                                        className="rounded border-slate-200 text-blue-600 focus:ring-blue-600"
                                       />
                                       <span style={{ color: cat.color }}>{cat.icon || "📁"}</span>
-                                      <span className="text-sm text-gray-700 dark:text-gray-300">{cat.name}</span>
+                                      <span className="text-sm text-slate-700">{cat.name}</span>
                                     </label>
                                   ))}
                                 </>
@@ -907,23 +907,23 @@ export function TransactionFilters({
                             filteredCategories.map((cat) => (
                               <label
                                 key={cat.id}
-                                className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                                className="flex items-center gap-2 px-3 py-2 hover:bg-slate-100 cursor-pointer"
                               >
                                 <input
                                   type="checkbox"
                                   checked={filters.selectedCategories.includes(cat.id)}
                                   onChange={() => handleCategoryToggle(cat.id)}
-                                  className="rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500"
+                                  className="rounded border-slate-200 text-blue-600 focus:ring-blue-600"
                                 />
                                 <span style={{ color: cat.color }}>{cat.icon || "📁"}</span>
-                                <span className="text-sm text-gray-700 dark:text-gray-300">{cat.name}</span>
+                                <span className="text-sm text-slate-700">{cat.name}</span>
                               </label>
                             ))
                           )}
                           {filters.selectedCategories.length > 0 && (
                             <button
                               onClick={() => updateFilters({ selectedCategories: [] })}
-                              className="w-full px-3 py-2 text-xs text-indigo-600 dark:text-indigo-400 hover:bg-gray-100 dark:hover:bg-gray-700 text-left border-t border-gray-200 dark:border-gray-700"
+                              className="w-full px-3 py-2 text-xs text-blue-600 hover:bg-slate-100 text-left border-t border-slate-100"
                             >
                               Clear selection
                             </button>
@@ -936,13 +936,13 @@ export function TransactionFilters({
 
                 {/* Account Filter */}
                 <div ref={accountDropdownRef}>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
                     💳 Accounts
                   </label>
                   <div className="relative">
                     <button
                       onClick={() => setIsAccountDropdownOpen(!isAccountDropdownOpen)}
-                      className="w-full px-3 py-2 text-left border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-sm flex items-center justify-between"
+                      className="w-full px-3 py-2 text-left border border-slate-200 rounded-lg bg-white text-slate-700 text-sm flex items-center justify-between"
                     >
                       <span>
                         {filters.selectedAccounts.length === 0
@@ -955,26 +955,26 @@ export function TransactionFilters({
                     </button>
 
                     {isAccountDropdownOpen && (
-                      <div className="absolute left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+                      <div className="absolute left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-white rounded-lg shadow-lg border border-slate-100 z-50">
                         {accounts.map((acc) => (
                           <label
                             key={acc.id}
-                            className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                            className="flex items-center gap-2 px-3 py-2 hover:bg-slate-100 cursor-pointer"
                           >
                             <input
                               type="checkbox"
                               checked={filters.selectedAccounts.includes(acc.id)}
                               onChange={() => handleAccountToggle(acc.id)}
-                              className="rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500"
+                              className="rounded border-slate-200 text-blue-600 focus:ring-blue-600"
                             />
                             <span>{ACCOUNT_ICONS[acc.type]}</span>
-                            <span className="text-sm text-gray-700 dark:text-gray-300">{acc.name}</span>
+                            <span className="text-sm text-slate-700">{acc.name}</span>
                           </label>
                         ))}
                         {filters.selectedAccounts.length > 0 && (
                           <button
                             onClick={() => updateFilters({ selectedAccounts: [] })}
-                            className="w-full px-3 py-2 text-xs text-indigo-600 dark:text-indigo-400 hover:bg-gray-100 dark:hover:bg-gray-700 text-left border-t border-gray-200 dark:border-gray-700"
+                            className="w-full px-3 py-2 text-xs text-blue-600 hover:bg-slate-100 text-left border-t border-slate-100"
                           >
                             Clear selection
                           </button>
@@ -983,7 +983,7 @@ export function TransactionFilters({
                     )}
                   </div>
                   {filters.transactionType === "transfer" && (
-                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    <p className="mt-1 text-xs text-slate-500">
                       Shows transfers where selected account is source or destination
                     </p>
                   )}
@@ -993,10 +993,10 @@ export function TransactionFilters({
                 {filters.transactionType !== "transfer" && (
                   <div className="flex items-center justify-between">
                     <div>
-                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      <label className="text-sm font-medium text-slate-700">
                         ⚠️ Uncategorized Only
                       </label>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                      <p className="text-xs text-slate-500">
                         Show transactions without a category
                       </p>
                     </div>
@@ -1007,8 +1007,8 @@ export function TransactionFilters({
                           selectedCategories: !filters.uncategorizedOnly ? [] : filters.selectedCategories,
                         });
                       }}
-                      className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
-                        filters.uncategorizedOnly ? "bg-indigo-600" : "bg-gray-200 dark:bg-gray-600"
+                      className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 ${
+                        filters.uncategorizedOnly ? "bg-blue-600" : "bg-slate-200"
                       }`}
                     >
                       <span
@@ -1032,14 +1032,14 @@ export function TransactionFilters({
         filters.dateRange.preset !== "all-time" ||
         filters.transactionType !== "all") && (
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs text-gray-500 dark:text-gray-400">Active filters:</span>
+          <span className="text-xs text-slate-500">Active filters:</span>
           
           {filters.dateRange.preset !== "all-time" && (
-            <span className="inline-flex items-center gap-1 px-2 py-1 bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 rounded-full text-xs">
+            <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs">
               📅 {DATE_PRESETS.find((p) => p.value === filters.dateRange.preset)?.label || "Custom"}
               <button
                 onClick={() => handleDatePresetChange("all-time")}
-                className="hover:text-indigo-900 dark:hover:text-indigo-100"
+                className="hover:text-blue-900"
               >
                 ×
               </button>
@@ -1047,11 +1047,11 @@ export function TransactionFilters({
           )}
 
           {filters.transactionType !== "all" && (
-            <span className="inline-flex items-center gap-1 px-2 py-1 bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 rounded-full text-xs">
+            <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs">
               {filters.transactionType === "income" ? "💰" : filters.transactionType === "expense" ? "💸" : "🔄"} {filters.transactionType}
               <button
                 onClick={() => updateFilters({ transactionType: "all" })}
-                className="hover:text-indigo-900 dark:hover:text-indigo-100"
+                className="hover:text-blue-900"
               >
                 ×
               </button>
@@ -1063,12 +1063,12 @@ export function TransactionFilters({
             return cat ? (
               <span
                 key={catId}
-                className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-xs"
+                className="inline-flex items-center gap-1 px-2 py-1 bg-slate-100 text-slate-700 rounded-full text-xs"
               >
                 <span style={{ color: cat.color }}>{cat.icon || "📁"}</span> {cat.name}
                 <button
                   onClick={() => handleCategoryToggle(catId)}
-                  className="hover:text-gray-900 dark:hover:text-white"
+                  className="hover:text-slate-900"
                 >
                   ×
                 </button>
@@ -1081,12 +1081,12 @@ export function TransactionFilters({
             return acc ? (
               <span
                 key={accId}
-                className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-xs"
+                className="inline-flex items-center gap-1 px-2 py-1 bg-slate-100 text-slate-700 rounded-full text-xs"
               >
                 {ACCOUNT_ICONS[acc.type]} {acc.name}
                 <button
                   onClick={() => handleAccountToggle(accId)}
-                  className="hover:text-gray-900 dark:hover:text-white"
+                  className="hover:text-slate-900"
                 >
                   ×
                 </button>
@@ -1095,11 +1095,11 @@ export function TransactionFilters({
           })}
 
           {filters.uncategorizedOnly && (
-            <span className="inline-flex items-center gap-1 px-2 py-1 bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300 rounded-full text-xs">
+            <span className="inline-flex items-center gap-1 px-2 py-1 bg-amber-100 text-amber-700 rounded-full text-xs">
               ⚠️ Uncategorized
               <button
                 onClick={() => updateFilters({ uncategorizedOnly: false })}
-                className="hover:text-amber-900 dark:hover:text-amber-100"
+                className="hover:text-amber-900"
               >
                 ×
               </button>
@@ -1108,7 +1108,7 @@ export function TransactionFilters({
 
           <button
             onClick={clearAllFilters}
-            className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 underline"
+            className="text-xs text-slate-500 hover:text-slate-700 underline"
           >
             Clear all
           </button>
@@ -1116,7 +1116,7 @@ export function TransactionFilters({
       )}
 
       {/* Results count */}
-      <div className="text-sm text-gray-500 dark:text-gray-400">
+      <div className="text-sm text-slate-500">
         {totalResults} transaction{totalResults !== 1 ? "s" : ""} found
       </div>
     </div>
