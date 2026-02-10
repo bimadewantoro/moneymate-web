@@ -50,7 +50,7 @@ export async function completeOnboardingAction(
     );
 
     revalidatePath("/dashboard");
-    revalidatePath("/settings");
+    revalidatePath("/budget");
     revalidatePath("/transactions");
 
     return okVoid();

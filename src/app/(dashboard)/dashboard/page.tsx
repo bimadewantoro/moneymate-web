@@ -174,7 +174,7 @@ export default async function DashboardPage() {
             </span>
           </Link>
           <Link
-            href="/settings"
+            href="/budget"
             className="flex flex-col items-center gap-1.5"
           >
             <span className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition-colors">
@@ -213,7 +213,7 @@ export default async function DashboardPage() {
                 <p className="text-sm text-slate-500">Live balances</p>
               </div>
               <Link
-                href="/settings"
+                href="/budget"
                 className="text-sm text-blue-700 hover:text-blue-800 font-medium"
               >
                 Manage →
@@ -230,7 +230,7 @@ export default async function DashboardPage() {
                   Add your first account to start tracking
                 </p>
                 <Link
-                  href="/settings"
+                  href="/budget"
                   className="inline-flex items-center px-4 py-2 brand-gradient text-white rounded-xl hover:shadow-md transition-shadow"
                 >
                   Add Account
