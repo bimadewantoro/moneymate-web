@@ -6,9 +6,7 @@ import { usePathname } from "next/navigation";
 import {
   Home,
   ArrowLeftRight,
-  ScanLine,
   PiggyBank,
-  Settings,
   LogOut,
 } from "lucide-react";
 import { useTransactionDrawer } from "@/features/transactions/contexts/TransactionDrawerContext";
@@ -16,8 +14,7 @@ import { useTransactionDrawer } from "@/features/transactions/contexts/Transacti
 const SIDEBAR_ITEMS = [
   { href: "/dashboard", label: "Dashboard", icon: Home },
   { href: "/transactions", label: "Transactions", icon: ArrowLeftRight },
-  { href: "/settings", label: "Budget", icon: PiggyBank },
-  { href: "/settings", label: "Settings", icon: Settings },
+  { href: "/budget", label: "Budget", icon: PiggyBank },
 ];
 
 interface SidebarProps {
@@ -43,6 +40,16 @@ export function Sidebar({ userName, userImage }: SidebarProps) {
 
       {/* Nav Items */}
       <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
+        {/* Scan CTA */}
+        <button
+          type="button"
+          onClick={openDrawer}
+          className="brand-gradient flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-white mt-4 shadow-md shadow-blue-700/20 hover:shadow-lg transition-shadow w-full"
+        >
+          <span className="w-5 h-5 flex items-center justify-center text-lg leading-none">+</span>
+          Add Transaction
+        </button>
+
         {SIDEBAR_ITEMS.map((item) => {
           const isActive = pathname.startsWith(item.href);
           const Icon = item.icon;
@@ -61,38 +68,30 @@ export function Sidebar({ userName, userImage }: SidebarProps) {
             </Link>
           );
         })}
-
-        {/* Scan CTA */}
-        <button
-          type="button"
-          onClick={openDrawer}
-          className="brand-gradient flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-white mt-4 shadow-md shadow-blue-700/20 hover:shadow-lg transition-shadow w-full"
-        >
-          <span className="w-5 h-5 flex items-center justify-center text-lg leading-none">+</span>
-          Add Transaction
-        </button>
       </nav>
 
       {/* User */}
       <div className="border-t border-slate-100 px-4 py-4 flex items-center gap-3">
-        {userImage ? (
-          <Image
-            src={userImage}
-            alt={userName || "User"}
-            width={36}
-            height={36}
-            className="w-9 h-9 rounded-full ring-2 ring-slate-200"
-          />
-        ) : (
-          <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-semibold text-sm">
-            {userName?.[0] || "U"}
+        <Link href="/profile" className="flex items-center gap-3 flex-1 min-w-0 rounded-lg hover:bg-slate-50 transition-colors -m-1 p-1">
+          {userImage ? (
+            <Image
+              src={userImage}
+              alt={userName || "User"}
+              width={36}
+              height={36}
+              className="w-9 h-9 rounded-full ring-2 ring-slate-200"
+            />
+          ) : (
+            <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-semibold text-sm">
+              {userName?.[0] || "U"}
+            </div>
+          )}
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-slate-900 truncate">
+              {userName || "User"}
+            </p>
           </div>
-        )}
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-slate-900 truncate">
-            {userName || "User"}
-          </p>
-        </div>
+        </Link>
         <form action="/api/auth/signout" method="POST">
           <button
             type="submit"

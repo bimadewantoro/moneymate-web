@@ -51,7 +51,7 @@ export async function createAccountAction(
       currency,
     });
 
-    revalidatePath("/settings");
+    revalidatePath("/budget");
     return ok(account);
   } catch (error) {
     console.error("Failed to create account:", error);
@@ -90,7 +90,7 @@ export async function updateAccountAction(
       return err("Account not found");
     }
 
-    revalidatePath("/settings");
+    revalidatePath("/budget");
     return ok(account);
   } catch (error) {
     console.error("Failed to update account:", error);
@@ -113,7 +113,7 @@ export async function deleteAccountAction(
       return err("Account not found");
     }
 
-    revalidatePath("/settings");
+    revalidatePath("/budget");
     return okVoid();
   } catch (error) {
     console.error("Failed to delete account:", error);
@@ -155,7 +155,7 @@ export async function createCategoryAction(
       monthlyBudget,
     });
 
-    revalidatePath("/settings");
+    revalidatePath("/budget");
     revalidatePath("/dashboard");
     return ok(category);
   } catch (error) {
@@ -187,7 +187,7 @@ export async function updateCategoryAction(
       return err("Category not found");
     }
 
-    revalidatePath("/settings");
+    revalidatePath("/budget");
     revalidatePath("/dashboard");
     return ok(category);
   } catch (error) {
@@ -211,7 +211,7 @@ export async function deleteCategoryAction(
       return err("Category not found");
     }
 
-    revalidatePath("/settings");
+    revalidatePath("/budget");
     return okVoid();
   } catch (error) {
     console.error("Failed to delete category:", error);
@@ -227,7 +227,7 @@ export async function initializeDefaultCategoriesAction(): Promise<Result<void>>
 
   try {
     await createDefaultCategories(session.user.id);
-    revalidatePath("/settings");
+    revalidatePath("/budget");
     revalidatePath("/dashboard");
     return okVoid();
   } catch (error) {

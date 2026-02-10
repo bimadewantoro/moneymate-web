@@ -5,7 +5,7 @@ export default auth((req) => {
   const { pathname } = req.nextUrl;
 
   // Protected routes: dashboard pages (under route group, URL starts with /)
-  // We protect: /transactions, /settings, /onboarding, and the dashboard root /
+  // We protect: /transactions, /budget, /profile, /onboarding, and the dashboard root /
   // But NOT: /signin, /api, /_next, static assets
   const publicPaths = ["/signin", "/api", "/_next", "/favicon.ico"];
   const isPublicPath = publicPaths.some((p) => pathname.startsWith(p));
@@ -13,7 +13,7 @@ export default auth((req) => {
   // The marketing page is at / via (marketing) route group
   // The dashboard is also at / via (dashboard) route group
   // We need to protect dashboard-only routes
-  const dashboardPaths = ["/dashboard", "/transactions", "/settings", "/onboarding"];
+  const dashboardPaths = ["/dashboard", "/transactions", "/budget", "/profile", "/onboarding"];
   const isDashboardRoute = dashboardPaths.some((p) => pathname.startsWith(p));
 
   if (isDashboardRoute && !isAuthenticated) {

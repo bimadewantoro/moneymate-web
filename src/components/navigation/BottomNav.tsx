@@ -15,8 +15,8 @@ const NAV_ITEMS = [
   { href: "/dashboard", label: "Home", icon: Home },
   { href: "/transactions", label: "Activity", icon: ArrowLeftRight },
   { href: "__add__", label: "Add", icon: Plus }, // center FAB — opens drawer
-  { href: "/settings", label: "Budget", icon: PiggyBank },
-  { href: "/settings#profile", label: "Profile", icon: UserCircle },
+  { href: "/budget", label: "Budget", icon: PiggyBank },
+  { href: "/profile", label: "Profile", icon: UserCircle },
 ];
 
 export function BottomNav() {
