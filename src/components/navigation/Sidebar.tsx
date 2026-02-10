@@ -11,6 +11,7 @@ import {
   Settings,
   LogOut,
 } from "lucide-react";
+import { useTransactionDrawer } from "@/features/transactions/contexts/TransactionDrawerContext";
 
 const SIDEBAR_ITEMS = [
   { href: "/dashboard", label: "Dashboard", icon: Home },
@@ -26,6 +27,7 @@ interface SidebarProps {
 
 export function Sidebar({ userName, userImage }: SidebarProps) {
   const pathname = usePathname();
+  const { openDrawer } = useTransactionDrawer();
 
   return (
     <aside className="hidden md:flex md:flex-col md:w-64 lg:w-72 border-r border-slate-200 bg-white h-screen sticky top-0">
@@ -61,13 +63,14 @@ export function Sidebar({ userName, userImage }: SidebarProps) {
         })}
 
         {/* Scan CTA */}
-        <Link
-          href="/transactions"
-          className="brand-gradient flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-white mt-4 shadow-md shadow-blue-700/20 hover:shadow-lg transition-shadow"
+        <button
+          type="button"
+          onClick={openDrawer}
+          className="brand-gradient flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-white mt-4 shadow-md shadow-blue-700/20 hover:shadow-lg transition-shadow w-full"
         >
-          <ScanLine className="w-5 h-5" />
-          Scan Receipt
-        </Link>
+          <span className="w-5 h-5 flex items-center justify-center text-lg leading-none">+</span>
+          Add Transaction
+        </button>
       </nav>
 
       {/* User */}
