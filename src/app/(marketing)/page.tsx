@@ -1,240 +1,325 @@
 import { auth } from "@/auth";
 import Link from "next/link";
+import {
+  BarChart3,
+  Wallet,
+  TrendingUp,
+  ShieldCheck,
+  PiggyBank,
+  ScanLine,
+  ArrowUpRight,
+  ArrowDownLeft,
+} from "lucide-react";
+
+const FEATURES = [
+  {
+    icon: BarChart3,
+    title: "Expense Tracking",
+    description:
+      "Monitor every transaction in real-time. Categorize spending and see exactly where your money goes.",
+  },
+  {
+    icon: PiggyBank,
+    title: "Smart Budgeting",
+    description:
+      "Set monthly limits per category. Visual progress bars & alerts keep you from overspending.",
+  },
+  {
+    icon: TrendingUp,
+    title: "Visual Insights",
+    description:
+      "Beautiful charts and analytics reveal spending patterns so you make informed decisions.",
+  },
+  {
+    icon: Wallet,
+    title: "Multiple Accounts",
+    description:
+      "Manage bank accounts, e-wallets, cash, and investments all in one unified dashboard.",
+  },
+  {
+    icon: ScanLine,
+    title: "Receipt Scanner",
+    description:
+      "Snap a photo of any receipt and let AI auto-fill transaction details — instant and accurate.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Secure & Private",
+    description:
+      "Your financial data is protected with Google auth and optional PIN lock. Privacy first.",
+  },
+];
 
 export default async function Home() {
   const session = await auth();
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-950 via-slate-900 to-indigo-950 overflow-hidden">
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-indigo-500/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute top-1/2 -left-40 w-96 h-96 bg-purple-500/15 rounded-full blur-3xl animate-pulse delay-1000" />
-        <div className="absolute -bottom-40 right-1/3 w-72 h-72 bg-cyan-500/15 rounded-full blur-3xl animate-pulse delay-500" />
-      </div>
-
-      {/* Navigation */}
-      <nav className="relative z-10 px-6 py-4">
+    <div className="min-h-screen bg-white overflow-hidden">
+      {/* ═══════ NAV ═══════ */}
+      <nav className="relative z-20 px-5 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-linear-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
+          <div className="flex items-center gap-2.5">
+            <div className="brand-gradient w-10 h-10 rounded-2xl flex items-center justify-center shadow-sm">
               <span className="text-white font-bold text-lg">M</span>
             </div>
-            <span className="text-xl font-bold text-white">MoneyMate</span>
+            <span className="text-xl font-bold tracking-tight brand-gradient-text">
+              MoneyMate
+            </span>
           </div>
-          <div className="flex items-center gap-4">
-            {session ? (
-              <Link
-                href="/dashboard"
-                className="px-5 py-2.5 bg-white/10 backdrop-blur-sm text-white rounded-full font-medium hover:bg-white/20 transition-all border border-white/10"
-              >
-                Dashboard
-              </Link>
-            ) : (
-              <Link
-                href="/signin"
-                className="px-5 py-2.5 bg-white/10 backdrop-blur-sm text-white rounded-full font-medium hover:bg-white/20 transition-all border border-white/10"
-              >
-                Sign In
-              </Link>
-            )}
-          </div>
+
+          {session ? (
+            <Link
+              href="/dashboard"
+              className="brand-gradient px-5 py-2.5 text-white rounded-full text-sm font-semibold shadow-md shadow-blue-700/20 hover:shadow-lg transition-shadow"
+            >
+              Dashboard
+            </Link>
+          ) : (
+            <Link
+              href="/signin"
+              className="brand-gradient px-5 py-2.5 text-white rounded-full text-sm font-semibold shadow-md shadow-blue-700/20 hover:shadow-lg transition-shadow"
+            >
+              Sign In
+            </Link>
+          )}
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <main className="relative z-10 px-6 pt-16 pb-24">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center max-w-4xl mx-auto">
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full mb-8">
-              <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-              <span className="text-sm text-gray-300">Smart money management for everyone</span>
+      {/* ═══════ HERO ═══════ */}
+      <section className="relative mesh-gradient px-5 pt-12 pb-20 sm:pt-20 sm:pb-28">
+        {/* Decorative blobs */}
+        <div className="absolute top-20 left-0 w-72 h-72 bg-blue-200/40 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 right-0 w-80 h-80 bg-green-200/30 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="relative z-10 max-w-7xl mx-auto">
+          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+            {/* Copy */}
+            <div className="flex-1 text-center lg:text-left max-w-2xl mx-auto lg:mx-0">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-green-50 border border-green-200 rounded-full mb-6">
+                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse-soft" />
+                <span className="text-xs font-medium text-green-700">
+                  Free &amp; open-source
+                </span>
+              </div>
+
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900 mb-5 leading-[1.1]">
+                Master Your{" "}
+                <span className="brand-gradient-text">Money, Mate.</span>
+              </h1>
+
+              <p className="text-lg text-slate-500 leading-relaxed max-w-lg mx-auto lg:mx-0 mb-8">
+                Track expenses, set budgets, and gain powerful insights into
+                your spending habits — all from your pocket.
+              </p>
+
+              <div className="flex flex-col sm:flex-row items-center gap-3 justify-center lg:justify-start">
+                {session ? (
+                  <Link
+                    href="/dashboard"
+                    className="group brand-gradient px-8 py-4 text-white rounded-full font-semibold text-lg shadow-lg shadow-blue-700/25 hover:shadow-xl hover:-translate-y-0.5 transition-all"
+                  >
+                    Go to Dashboard
+                    <span className="ml-2 inline-block group-hover:translate-x-1 transition-transform">
+                      →
+                    </span>
+                  </Link>
+                ) : (
+                  <>
+                    <Link
+                      href="/signin"
+                      className="group brand-gradient px-8 py-4 text-white rounded-full font-semibold text-lg shadow-lg shadow-blue-700/25 hover:shadow-xl hover:-translate-y-0.5 transition-all"
+                    >
+                      Get Started Free
+                      <span className="ml-2 inline-block group-hover:translate-x-1 transition-transform">
+                        →
+                      </span>
+                    </Link>
+                    <a
+                      href="#features"
+                      className="px-8 py-4 bg-white/60 backdrop-blur-sm text-slate-700 rounded-full font-semibold text-lg hover:bg-white transition-all border border-slate-200"
+                    >
+                      Learn More
+                    </a>
+                  </>
+                )}
+              </div>
+
+              {/* Trust badges */}
+              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-6 mt-10">
+                <div className="flex items-center gap-2 text-slate-400">
+                  <ShieldCheck className="w-4 h-4" />
+                  <span className="text-xs font-medium">Google Auth</span>
+                </div>
+                <div className="flex items-center gap-2 text-slate-400">
+                  <TrendingUp className="w-4 h-4" />
+                  <span className="text-xs font-medium">Real-time Tracking</span>
+                </div>
+                <div className="flex items-center gap-2 text-slate-400">
+                  <Wallet className="w-4 h-4" />
+                  <span className="text-xs font-medium">100 % Free</span>
+                </div>
+              </div>
             </div>
 
-            {/* Headline */}
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
-              Take Control of Your{" "}
-              <span className="bg-linear-to-r from-indigo-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
-                Financial Future
-              </span>
-            </h1>
+            {/* ── Phone Mock-up ── */}
+            <div className="shrink-0 relative w-70 sm:w-75">
+              <div className="animate-float">
+                {/* Phone frame */}
+                <div className="relative bg-white rounded-[2.5rem] shadow-2xl shadow-slate-300/50 border border-slate-200 p-3 overflow-hidden">
+                  {/* Notch */}
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-28 h-6 bg-white rounded-b-2xl z-10" />
 
-            {/* Subheadline */}
-            <p className="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed">
-              Track expenses, set budgets, and gain powerful insights into your spending habits. 
-              Your personal finance companion that makes money management effortless.
+                  {/* Screen content */}
+                  <div className="rounded-4xl overflow-hidden bg-slate-50">
+                    {/* Status bar */}
+                    <div className="brand-gradient px-5 pt-8 pb-6 text-white">
+                      <p className="text-xs text-white/70 mb-1">
+                        Total Balance
+                      </p>
+                      <p className="text-2xl font-bold tracking-tight">
+                        Rp 12.450.000
+                      </p>
+                      <div className="flex items-center gap-3 mt-3">
+                        <span className="flex items-center gap-1 text-xs text-green-300">
+                          <ArrowUpRight className="w-3 h-3" /> Rp 8.200.000
+                        </span>
+                        <span className="flex items-center gap-1 text-xs text-red-300">
+                          <ArrowDownLeft className="w-3 h-3" /> Rp 3.150.000
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Mini transaction list */}
+                    <div className="px-4 py-3 space-y-3">
+                      {[
+                        {
+                          label: "Salary",
+                          amount: "+ Rp 8.200.000",
+                          color: "text-green-600",
+                          bg: "bg-green-50",
+                          icon: ArrowUpRight,
+                        },
+                        {
+                          label: "Groceries",
+                          amount: "- Rp 450.000",
+                          color: "text-red-500",
+                          bg: "bg-red-50",
+                          icon: ArrowDownLeft,
+                        },
+                        {
+                          label: "Freelance",
+                          amount: "+ Rp 1.500.000",
+                          color: "text-green-600",
+                          bg: "bg-green-50",
+                          icon: ArrowUpRight,
+                        },
+                      ].map((tx) => (
+                        <div
+                          key={tx.label}
+                          className="flex items-center justify-between"
+                        >
+                          <div className="flex items-center gap-2.5">
+                            <div
+                              className={`w-8 h-8 ${tx.bg} rounded-xl flex items-center justify-center`}
+                            >
+                              <tx.icon
+                                className={`w-3.5 h-3.5 ${tx.color}`}
+                              />
+                            </div>
+                            <span className="text-xs font-medium text-slate-700">
+                              {tx.label}
+                            </span>
+                          </div>
+                          <span
+                            className={`text-xs font-semibold ${tx.color}`}
+                          >
+                            {tx.amount}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════ FEATURES ═══════ */}
+      <section
+        id="features"
+        className="px-5 py-16 sm:py-24 max-w-7xl mx-auto"
+      >
+        <div className="text-center mb-12">
+          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 mb-3">
+            Everything you need to{" "}
+            <span className="brand-gradient-text">grow your wealth</span>
+          </h2>
+          <p className="text-slate-500 max-w-2xl mx-auto">
+            Powerful features wrapped in a beautiful, mobile-first experience.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {FEATURES.map((f) => (
+            <div
+              key={f.title}
+              className="group glass-card rounded-2xl p-6 hover:shadow-md hover:-translate-y-1 transition-all duration-300 border border-slate-100"
+            >
+              <div className="w-12 h-12 brand-gradient rounded-xl flex items-center justify-center mb-4 shadow-sm group-hover:scale-110 transition-transform">
+                <f.icon className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-lg font-semibold text-slate-900 mb-2 tracking-tight">
+                {f.title}
+              </h3>
+              <p className="text-sm text-slate-500 leading-relaxed">
+                {f.description}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ═══════ CTA ═══════ */}
+      <section className="px-5 pb-20">
+        <div className="max-w-3xl mx-auto brand-gradient rounded-3xl p-10 sm:p-14 text-center text-white relative overflow-hidden">
+          <div className="absolute -top-16 -right-16 w-56 h-56 bg-white/10 rounded-full blur-3xl" />
+          <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-white/5 rounded-full blur-3xl" />
+
+          <div className="relative">
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-3">
+              Ready to master your money?
+            </h2>
+            <p className="text-white/70 mb-8 max-w-md mx-auto">
+              Join thousands who&apos;ve taken control of their finances with
+              MoneyMate.
             </p>
-
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-              {session ? (
-                <Link
-                  href="/dashboard"
-                  className="group px-8 py-4 bg-linear-to-r from-indigo-600 to-purple-600 text-white rounded-full font-semibold text-lg hover:shadow-2xl hover:shadow-indigo-500/25 transition-all duration-300 hover:-translate-y-0.5"
-                >
-                  Go to Dashboard
-                  <span className="ml-2 inline-block group-hover:translate-x-1 transition-transform">→</span>
-                </Link>
-              ) : (
-                <>
-                  <Link
-                    href="/signin"
-                    className="group px-8 py-4 bg-linear-to-r from-indigo-600 to-purple-600 text-white rounded-full font-semibold text-lg hover:shadow-2xl hover:shadow-indigo-500/25 transition-all duration-300 hover:-translate-y-0.5"
-                  >
-                    Get Started Free
-                    <span className="ml-2 inline-block group-hover:translate-x-1 transition-transform">→</span>
-                  </Link>
-                  <Link
-                    href="#features"
-                    className="px-8 py-4 bg-white/5 backdrop-blur-sm text-white rounded-full font-semibold text-lg hover:bg-white/10 transition-all border border-white/10"
-                  >
-                    Learn More
-                  </Link>
-                </>
-              )}
-            </div>
-
-            {/* Stats */}
-            <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-16 mb-20">
-              <div className="text-center">
-                <p className="text-3xl sm:text-4xl font-bold text-white">100%</p>
-                <p className="text-sm text-gray-400 mt-1">Free to Use</p>
-              </div>
-              <div className="hidden sm:block w-px h-12 bg-white/10" />
-              <div className="text-center">
-                <p className="text-3xl sm:text-4xl font-bold text-white">Secure</p>
-                <p className="text-sm text-gray-400 mt-1">Google Auth</p>
-              </div>
-              <div className="hidden sm:block w-px h-12 bg-white/10" />
-              <div className="text-center">
-                <p className="text-3xl sm:text-4xl font-bold text-white">Real-time</p>
-                <p className="text-sm text-gray-400 mt-1">Budget Tracking</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Features Section */}
-          <div id="features" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {/* Feature Card 1 */}
-            <div className="group p-8 bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl hover:bg-white/10 hover:border-white/20 transition-all duration-300 hover:-translate-y-1">
-              <div className="w-14 h-14 bg-linear-to-br from-green-400/20 to-emerald-500/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-3">
-                Expense Tracking
-              </h3>
-              <p className="text-gray-400 leading-relaxed">
-                Monitor every transaction in real-time. Categorize your spending and see exactly where your money goes.
-              </p>
-            </div>
-
-            {/* Feature Card 2 */}
-            <div className="group p-8 bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl hover:bg-white/10 hover:border-white/20 transition-all duration-300 hover:-translate-y-1">
-              <div className="w-14 h-14 bg-linear-to-br from-indigo-400/20 to-purple-500/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-3">
-                Smart Budgeting
-              </h3>
-              <p className="text-gray-400 leading-relaxed">
-                Set monthly limits for each category. Get visual progress bars and alerts when approaching your budget.
-              </p>
-            </div>
-
-            {/* Feature Card 3 */}
-            <div className="group p-8 bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl hover:bg-white/10 hover:border-white/20 transition-all duration-300 hover:-translate-y-1">
-              <div className="w-14 h-14 bg-linear-to-br from-cyan-400/20 to-blue-500/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-3">
-                Visual Insights
-              </h3>
-              <p className="text-gray-400 leading-relaxed">
-                Beautiful charts and analytics help you understand spending patterns and make informed decisions.
-              </p>
-            </div>
-
-            {/* Feature Card 4 */}
-            <div className="group p-8 bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl hover:bg-white/10 hover:border-white/20 transition-all duration-300 hover:-translate-y-1">
-              <div className="w-14 h-14 bg-linear-to-br from-orange-400/20 to-amber-500/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-3">
-                Multiple Accounts
-              </h3>
-              <p className="text-gray-400 leading-relaxed">
-                Manage bank accounts, e-wallets, cash, and investments all in one place with accurate balance tracking.
-              </p>
-            </div>
-
-            {/* Feature Card 5 */}
-            <div className="group p-8 bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl hover:bg-white/10 hover:border-white/20 transition-all duration-300 hover:-translate-y-1">
-              <div className="w-14 h-14 bg-linear-to-br from-pink-400/20 to-rose-500/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-pink-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-3">
-                Budget Watchlist
-              </h3>
-              <p className="text-gray-400 leading-relaxed">
-                Stay informed with smart alerts. Categories nearing their limits are highlighted so you never overspend.
-              </p>
-            </div>
-
-            {/* Feature Card 6 */}
-            <div className="group p-8 bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl hover:bg-white/10 hover:border-white/20 transition-all duration-300 hover:-translate-y-1">
-              <div className="w-14 h-14 bg-linear-to-br from-violet-400/20 to-purple-500/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-3">
-                Secure & Private
-              </h3>
-              <p className="text-gray-400 leading-relaxed">
-                Your financial data is protected with secure Google authentication. Your privacy is our priority.
-              </p>
-            </div>
-          </div>
-
-          {/* Bottom CTA */}
-          <div className="text-center mt-20">
-            <p className="text-gray-400 mb-6">Ready to transform your finances?</p>
             {!session && (
               <Link
                 href="/signin"
-                className="inline-flex items-center gap-2 px-8 py-4 bg-linear-to-r from-indigo-600 to-purple-600 text-white rounded-full font-semibold text-lg hover:shadow-2xl hover:shadow-indigo-500/25 transition-all duration-300 hover:-translate-y-0.5"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-white text-blue-700 rounded-full font-semibold text-lg shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all"
               >
                 Start Your Journey
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
+                <TrendingUp className="w-5 h-5" />
               </Link>
             )}
           </div>
         </div>
-      </main>
+      </section>
 
-      {/* Footer */}
-      <footer className="relative z-10 border-t border-white/10 py-8 px-6">
+      {/* ═══════ FOOTER ═══════ */}
+      <footer className="border-t border-slate-100 py-8 px-5">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-linear-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">M</span>
+            <div className="brand-gradient w-7 h-7 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-xs">M</span>
             </div>
-            <span className="text-sm text-gray-400">© 2026 MoneyMate</span>
+            <span className="text-sm text-slate-400">© 2026 MoneyMate</span>
           </div>
-          <p className="text-sm text-gray-500">Built with ❤️ for your financial wellness</p>
+          <p className="text-sm text-slate-400">
+            Built with ❤️ for your financial wellness
+          </p>
         </div>
       </footer>
     </div>
