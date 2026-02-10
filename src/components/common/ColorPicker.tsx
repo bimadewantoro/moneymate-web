@@ -54,13 +54,13 @@ export function ColorPicker({ value, onChange }: ColorPickerProps) {
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         disabled={isSaving}
-        className="w-8 h-8 rounded-lg border-2 border-gray-200 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-400 transition-colors disabled:opacity-50"
+        className="w-8 h-8 rounded-lg border-2 border-slate-200 hover:border-slate-400 transition-colors disabled:opacity-50"
         style={{ backgroundColor: value }}
         title="Click to change color"
       />
       
       {isOpen && (
-        <div className="absolute z-10 mt-2 p-3 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
+        <div className="absolute z-10 mt-2 p-3 bg-white rounded-lg shadow-lg border border-slate-100">
           <div className="grid grid-cols-6 gap-2">
             {PRESET_COLORS.map((color) => (
               <button
@@ -68,7 +68,7 @@ export function ColorPicker({ value, onChange }: ColorPickerProps) {
                 type="button"
                 onClick={() => handleColorSelect(color)}
                 className={`w-6 h-6 rounded-md transition-transform hover:scale-110 ${
-                  color === value ? "ring-2 ring-offset-2 ring-indigo-500" : ""
+                  color === value ? "ring-2 ring-offset-2 ring-blue-600" : ""
                 }`}
                 style={{ backgroundColor: color }}
               />
