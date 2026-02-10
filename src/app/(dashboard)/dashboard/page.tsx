@@ -19,14 +19,12 @@ import { SpendingBreakdown } from "@/features/dashboard/components/SpendingBreak
 import { TrendAnalysis } from "@/features/dashboard/components/TrendAnalysis";
 import { RecentTransactions } from "@/features/dashboard/components/RecentTransactions";
 import { NetWorthProgression } from "@/features/dashboard/components/NetWorthProgression";
-import { TransactionDrawer } from "@/features/transactions/components/TransactionDrawer";
 import { BudgetProgressCard } from "@/features/dashboard/components/BudgetProgressCard";
 import { WatchlistWidget } from "@/features/dashboard/components/WatchlistWidget";
 import { TotalBalanceCard } from "@/features/dashboard/components/TotalBalanceCard";
 import {
   ArrowUpRight,
   ArrowDownLeft,
-  Plus,
   ArrowRightLeft,
   MoreHorizontal,
 } from "lucide-react";
@@ -281,13 +279,6 @@ export default async function DashboardPage() {
           />
         </div>
       </main>
-
-      {/* Mobile FAB Drawer */}
-      <TransactionDrawer
-        accounts={accounts}
-        incomeCategories={categories.filter((c) => c.type === "income")}
-        expenseCategories={categories.filter((c) => c.type === "expense")}
-      />
     </div>
   );
 }
