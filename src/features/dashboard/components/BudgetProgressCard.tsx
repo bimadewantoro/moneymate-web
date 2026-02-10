@@ -30,13 +30,13 @@ function getProgressColor(status: BudgetStatus["status"]) {
 function getProgressBgColor(status: BudgetStatus["status"]) {
   switch (status) {
     case "safe":
-      return "bg-green-100 dark:bg-green-900/30";
+      return "bg-green-100";
     case "warning":
-      return "bg-yellow-100 dark:bg-yellow-900/30";
+      return "bg-yellow-100";
     case "danger":
-      return "bg-orange-100 dark:bg-orange-900/30";
+      return "bg-orange-100";
     case "over":
-      return "bg-red-100 dark:bg-red-900/30";
+      return "bg-red-100";
   }
 }
 
@@ -56,34 +56,34 @@ function getStatusLabel(status: BudgetStatus["status"]) {
 function getStatusLabelColor(status: BudgetStatus["status"]) {
   switch (status) {
     case "safe":
-      return "text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30";
+      return "text-green-600 bg-green-50";
     case "warning":
-      return "text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/30";
+      return "text-yellow-600 bg-yellow-50";
     case "danger":
-      return "text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/30";
+      return "text-orange-600 bg-orange-50";
     case "over":
-      return "text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30";
+      return "text-red-600 bg-red-50";
   }
 }
 
 export function BudgetProgressCard({ budgets }: BudgetProgressCardProps) {
   if (budgets.length === 0) {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-100">
+        <div className="px-6 py-4 border-b border-slate-100">
+          <h2 className="text-lg font-semibold text-slate-900">
             Budget Overview
           </h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-sm text-slate-500">
             Track your spending against category budgets
           </p>
         </div>
         <div className="px-6 py-12 text-center">
           <div className="text-4xl mb-3">📊</div>
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-1">
+          <h3 className="text-lg font-medium text-slate-900 mb-1">
             No budgets set
           </h3>
-          <p className="text-gray-500 dark:text-gray-400">
+          <p className="text-slate-500">
             Set monthly limits on your expense categories in Settings
           </p>
         </div>
@@ -92,22 +92,22 @@ export function BudgetProgressCard({ budgets }: BudgetProgressCardProps) {
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-      <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+    <div className="bg-white rounded-2xl shadow-sm border border-slate-100">
+      <div className="px-6 py-4 border-b border-slate-100">
+        <h2 className="text-lg font-semibold text-slate-900">
           Budget Overview
         </h2>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
+        <p className="text-sm text-slate-500">
           Track your spending against category budgets
         </p>
       </div>
-      <div className="divide-y divide-gray-100 dark:divide-gray-700/50">
+      <div className="divide-y divide-slate-100">
         {budgets.map((budget) => (
           <div key={budget.categoryId} className="px-6 py-4">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <span className="text-lg">{budget.categoryIcon || "📁"}</span>
-                <span className="font-medium text-gray-900 dark:text-white">
+                <span className="font-medium text-slate-900">
                   {budget.categoryName}
                 </span>
               </div>
@@ -128,14 +128,14 @@ export function BudgetProgressCard({ budgets }: BudgetProgressCardProps) {
 
             {/* Stats */}
             <div className="flex items-center justify-between mt-2 text-sm">
-              <span className="text-gray-500 dark:text-gray-400">
+              <span className="text-slate-500">
                 {formatCurrency(budget.spent)} of {formatCurrency(budget.monthlyBudget)}
               </span>
               <span
                 className={`font-medium ${
                   budget.remaining >= 0
-                    ? "text-gray-700 dark:text-gray-300"
-                    : "text-red-600 dark:text-red-400"
+                    ? "text-slate-700"
+                    : "text-red-600"
                 }`}
               >
                 {budget.remaining >= 0

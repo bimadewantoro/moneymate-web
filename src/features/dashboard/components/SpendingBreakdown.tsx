@@ -35,20 +35,20 @@ export function SpendingBreakdown({ data }: SpendingBreakdownProps) {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-      <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+    <div className="bg-white rounded-2xl shadow-sm border border-slate-100">
+      <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
         <div>
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+          <h2 className="text-lg font-semibold text-slate-900">
             Spending Breakdown
           </h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-sm text-slate-500">
             Where your money goes
           </p>
         </div>
         {totalSpending > 0 && (
           <Link
             href="/transactions?type=expense"
-            className="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium"
+            className="text-sm text-blue-600 hover:text-blue-700 font-medium"
           >
             View All →
           </Link>
@@ -63,7 +63,7 @@ export function SpendingBreakdown({ data }: SpendingBreakdownProps) {
         {/* Top Categories List */}
         {data.length > 0 && (
           <div className="mt-6 space-y-3">
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <h3 className="text-sm font-medium text-slate-700">
               Top Categories
             </h3>
             {topCategories.map((category, index) => {
@@ -75,7 +75,7 @@ export function SpendingBreakdown({ data }: SpendingBreakdownProps) {
                 <Link
                   key={category.categoryId || index}
                   href={category.categoryId ? `/transactions?category=${category.categoryId}` : "/transactions?type=expense"}
-                  className="flex items-center gap-3 p-2 -mx-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors cursor-pointer group"
+                  className="flex items-center gap-3 p-2 -mx-2 rounded-lg hover:bg-slate-50 transition-colors cursor-pointer group"
                 >
                   <div
                     className="w-8 h-8 rounded-lg flex items-center justify-center text-sm group-hover:scale-110 transition-transform"
@@ -85,15 +85,15 @@ export function SpendingBreakdown({ data }: SpendingBreakdownProps) {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-medium text-gray-900 dark:text-white truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                      <span className="text-sm font-medium text-slate-900 truncate group-hover:text-blue-600 transition-colors">
                         {category.name}
                       </span>
-                      <span className="text-sm font-medium text-gray-900 dark:text-white ml-2">
+                      <span className="text-sm font-medium text-slate-900 ml-2">
                         {formatCurrency(category.total)}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="flex-1 h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                      <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
                         <div
                           className="h-full rounded-full transition-all duration-500"
                           style={{
@@ -102,13 +102,13 @@ export function SpendingBreakdown({ data }: SpendingBreakdownProps) {
                           }}
                         />
                       </div>
-                      <span className="text-xs text-gray-500 dark:text-gray-400 w-12 text-right">
+                      <span className="text-xs text-slate-500 w-12 text-right">
                         {percentage}%
                       </span>
                     </div>
                   </div>
                   <svg
-                    className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="w-4 h-4 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"

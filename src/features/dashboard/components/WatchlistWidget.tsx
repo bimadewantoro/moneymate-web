@@ -30,16 +30,16 @@ function getStatusEmoji(status: BudgetStatus["status"]) {
 export function WatchlistWidget({ watchlist }: WatchlistWidgetProps) {
   if (watchlist.length === 0) {
     return (
-      <div className="bg-linear-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl shadow-sm border border-green-200 dark:border-green-800">
+      <div className="bg-linear-to-br from-green-50 to-emerald-50 rounded-2xl shadow-sm border border-green-200">
         <div className="px-6 py-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
             <span className="text-xl">✅</span>
           </div>
           <div>
-            <h3 className="font-semibold text-green-800 dark:text-green-200">
+            <h3 className="font-semibold text-green-800">
               All budgets on track!
             </h3>
-            <p className="text-sm text-green-600 dark:text-green-400">
+            <p className="text-sm text-green-600">
               No categories exceeding 80% of their limit
             </p>
           </div>
@@ -49,22 +49,22 @@ export function WatchlistWidget({ watchlist }: WatchlistWidgetProps) {
   }
 
   return (
-    <div className="bg-linear-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl shadow-sm border border-amber-200 dark:border-amber-800">
-      <div className="px-6 py-4 border-b border-amber-200 dark:border-amber-800/50">
+    <div className="bg-linear-to-br from-amber-50 to-orange-50 rounded-2xl shadow-sm border border-amber-200">
+      <div className="px-6 py-4 border-b border-amber-200">
         <div className="flex items-center gap-2">
           <span className="text-xl">👀</span>
-          <h2 className="text-lg font-semibold text-amber-800 dark:text-amber-200">
+          <h2 className="text-lg font-semibold text-amber-800">
             Watchlist
           </h2>
-          <span className="px-2 py-0.5 bg-amber-200 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300 text-xs rounded-full font-medium">
+          <span className="px-2 py-0.5 bg-amber-200 text-amber-800 text-xs rounded-full font-medium">
             {watchlist.length} {watchlist.length === 1 ? "category" : "categories"}
           </span>
         </div>
-        <p className="text-sm text-amber-700 dark:text-amber-400 mt-1">
+        <p className="text-sm text-amber-700 mt-1">
           Categories approaching or over their monthly limit
         </p>
       </div>
-      <div className="divide-y divide-amber-200 dark:divide-amber-800/50">
+      <div className="divide-y divide-amber-200">
         {watchlist.map((item) => (
           <div
             key={item.categoryId}
@@ -75,11 +75,11 @@ export function WatchlistWidget({ watchlist }: WatchlistWidgetProps) {
               <div>
                 <div className="flex items-center gap-2">
                   <span className="text-lg">{item.categoryIcon || "📁"}</span>
-                  <span className="font-medium text-gray-900 dark:text-white">
+                  <span className="font-medium text-slate-900">
                     {item.categoryName}
                   </span>
                 </div>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
+                <p className="text-xs text-slate-500">
                   {formatCurrency(item.spent)} / {formatCurrency(item.monthlyBudget)}
                 </p>
               </div>
@@ -88,10 +88,10 @@ export function WatchlistWidget({ watchlist }: WatchlistWidgetProps) {
               <p
                 className={`text-lg font-bold ${
                   item.percentage >= 100
-                    ? "text-red-600 dark:text-red-400"
+                    ? "text-red-600"
                     : item.percentage >= 90
-                    ? "text-orange-600 dark:text-orange-400"
-                    : "text-yellow-600 dark:text-yellow-400"
+                    ? "text-orange-600"
+                    : "text-yellow-600"
                 }`}
               >
                 {Math.round(item.percentage)}%
@@ -99,8 +99,8 @@ export function WatchlistWidget({ watchlist }: WatchlistWidgetProps) {
               <p
                 className={`text-xs ${
                   item.remaining < 0
-                    ? "text-red-500 dark:text-red-400"
-                    : "text-gray-500 dark:text-gray-400"
+                    ? "text-red-500"
+                    : "text-slate-500"
                 }`}
               >
                 {item.remaining >= 0
