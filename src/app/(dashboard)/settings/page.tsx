@@ -5,7 +5,6 @@ import { getUserCategories } from "@/server/db/queries/categories";
 import { AccountsSection } from "@/features/settings/components/AccountsSection";
 import { CategoriesSection } from "@/features/settings/components/CategoriesSection";
 import { PinSettings } from "@/features/security/components/PinSettings";
-import Link from "next/link";
 
 export default async function SettingsPage() {
   const session = await auth();
@@ -20,68 +19,39 @@ export default async function SettingsPage() {
   ]);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Header */}
-      <nav className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center gap-4">
-              <Link
-                href="/dashboard"
-                className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 19l-7-7 7-7"
-                  />
-                </svg>
-              </Link>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                Settings
-              </h1>
-            </div>
-            <div className="flex items-center gap-3">
-              {session.user.image && (
-                <img
-                  src={session.user.image}
-                  alt={session.user.name || "User"}
-                  className="w-8 h-8 rounded-full"
-                />
-              )}
-              <span className="text-sm font-medium text-gray-900 dark:text-white">
-                {session.user.name}
-              </span>
-            </div>
-          </div>
+    <div className="min-h-screen bg-slate-50">
+      {/* ═══ Mobile Header ═══ */}
+      <header className="md:hidden sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-slate-200/60 px-5 py-3">
+        <h1 className="text-lg font-bold tracking-tight text-slate-900">Settings</h1>
+        <p className="text-sm text-slate-500">Manage your accounts, categories, and security</p>
+      </header>
+
+      {/* ═══ Desktop Header ═══ */}
+      <header className="hidden md:flex items-center justify-between px-8 py-6 border-b border-slate-100 bg-white">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+            Settings
+          </h1>
+          <p className="text-slate-500 text-sm">
+            Manage your accounts, categories, and security
+          </p>
         </div>
-      </nav>
+      </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="space-y-8">
-          {/* PIN Security Section */}
-          <PinSettings />
+      <main className="px-4 sm:px-6 lg:px-8 py-6 space-y-6 max-w-7xl mx-auto">
+        {/* PIN Security Section */}
+        <PinSettings />
 
-          {/* Finance Accounts Section */}
-          <AccountsSection 
-            accounts={accounts.map(acc => ({
-              ...acc,
-              initialBalance: acc.initialBalance / 100, // Convert from cents for display
-            }))} 
-          />
+        {/* Finance Accounts Section */}
+        <AccountsSection 
+          accounts={accounts.map(acc => ({
+            ...acc,
+            initialBalance: acc.initialBalance / 100,
+          }))} 
+        />
 
-          {/* Categories Section */}
-          <CategoriesSection categories={categories} />
-        </div>
+        {/* Categories Section */}
+        <CategoriesSection categories={categories} />
       </main>
     </div>
   );
