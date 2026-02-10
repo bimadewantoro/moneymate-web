@@ -1,80 +1,72 @@
 import { signIn } from "@/auth";
 import Link from "next/link";
+import { Shield, Zap, BarChart3, ArrowLeft } from "lucide-react";
 
 export default function SignInPage() {
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-950 via-slate-900 to-indigo-950 flex">
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 -left-20 w-72 h-72 bg-indigo-500/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 -right-20 w-80 h-80 bg-purple-500/15 rounded-full blur-3xl animate-pulse delay-700" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse delay-1000" />
-      </div>
+    <div className="min-h-screen bg-white flex relative">
+      {/* Mesh gradient background */}
+      <div className="absolute inset-0 mesh-gradient opacity-50 pointer-events-none" />
 
       {/* Left Side - Branding */}
       <div className="hidden lg:flex lg:w-1/2 relative z-10 flex-col justify-between p-12">
         <div>
           <Link href="/" className="inline-flex items-center gap-3 group">
-            <div className="w-12 h-12 bg-linear-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
-              <span className="text-white font-bold text-xl">M</span>
+            <div className="w-12 h-12 brand-gradient rounded-2xl flex items-center justify-center group-hover:scale-105 transition-transform shadow-lg">
+              <span className="text-white font-bold text-lg">M</span>
             </div>
-            <span className="text-2xl font-bold text-white">MoneyMate</span>
+            <span className="text-2xl font-bold text-slate-900 tracking-tight">MoneyMate</span>
           </Link>
         </div>
 
         <div className="space-y-8">
           <div>
-            <h1 className="text-4xl xl:text-5xl font-bold text-white leading-tight mb-4">
+            <h1 className="text-4xl xl:text-5xl font-bold text-slate-900 leading-tight tracking-tight mb-4">
               Take control of your{" "}
-              <span className="bg-linear-to-r from-indigo-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
+              <span className="brand-gradient-text">
                 financial journey
               </span>
             </h1>
-            <p className="text-lg text-gray-400 max-w-md">
+            <p className="text-lg text-slate-500 max-w-md">
               Join thousands of users who are already managing their finances smarter with MoneyMate.
             </p>
           </div>
 
           {/* Feature Pills */}
           <div className="flex flex-wrap gap-3">
-            <div className="flex items-center gap-2 px-4 py-2 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-              <span className="text-sm text-gray-300">Free Forever</span>
-            </div>
-            <div className="flex items-center gap-2 px-4 py-2 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-              <span className="text-sm text-gray-300">Secure Login</span>
-            </div>
-            <div className="flex items-center gap-2 px-4 py-2 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-              <span className="text-sm text-gray-300">Real-time Tracking</span>
-            </div>
+            {[
+              { icon: Zap, label: "Free Forever" },
+              { icon: Shield, label: "Secure Login" },
+              { icon: BarChart3, label: "Real-time Tracking" },
+            ].map((item) => (
+              <div
+                key={item.label}
+                className="flex items-center gap-2 px-4 py-2.5 bg-white/80 backdrop-blur-sm border border-slate-200 rounded-full shadow-sm"
+              >
+                <item.icon className="w-4 h-4 text-green-500" />
+                <span className="text-sm font-medium text-slate-700">{item.label}</span>
+              </div>
+            ))}
           </div>
 
-          {/* Testimonial/Quote */}
-          <div className="p-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl">
-            <p className="text-gray-300 italic mb-4">
+          {/* Testimonial */}
+          <div className="p-6 glass-card rounded-2xl">
+            <p className="text-slate-600 italic mb-4">
               &ldquo;MoneyMate helped me save 30% more every month by showing me exactly where my money was going.&rdquo;
             </p>
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-linear-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center">
-                <span className="text-white font-medium">JD</span>
+              <div className="w-10 h-10 brand-gradient rounded-full flex items-center justify-center">
+                <span className="text-white font-medium text-sm">JD</span>
               </div>
               <div>
-                <p className="text-sm font-medium text-white">Happy User</p>
-                <p className="text-xs text-gray-500">Using MoneyMate since 2025</p>
+                <p className="text-sm font-semibold text-slate-900">Happy User</p>
+                <p className="text-xs text-slate-500">Using MoneyMate since 2025</p>
               </div>
             </div>
           </div>
         </div>
 
-        <p className="text-sm text-gray-500">© 2026 MoneyMate. All rights reserved.</p>
+        <p className="text-sm text-slate-400">© 2026 MoneyMate. All rights reserved.</p>
       </div>
 
       {/* Right Side - Sign In Form */}
@@ -83,20 +75,23 @@ export default function SignInPage() {
           {/* Mobile Logo */}
           <div className="lg:hidden text-center mb-8">
             <Link href="/" className="inline-flex items-center gap-3">
-              <div className="w-12 h-12 bg-linear-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
-                <span className="text-white font-bold text-xl">M</span>
+              <div className="w-12 h-12 brand-gradient rounded-2xl flex items-center justify-center shadow-lg">
+                <span className="text-white font-bold text-lg">M</span>
               </div>
-              <span className="text-2xl font-bold text-white">MoneyMate</span>
+              <span className="text-2xl font-bold text-slate-900 tracking-tight">MoneyMate</span>
             </Link>
           </div>
 
           {/* Sign In Card */}
-          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl">
+          <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-xl">
             <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold text-white mb-2">
+              <div className="w-16 h-16 brand-gradient rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <span className="text-white font-bold text-lg">M</span>
+              </div>
+              <h2 className="text-2xl font-bold text-slate-900 tracking-tight mb-2">
                 Welcome!
               </h2>
-              <p className="text-gray-400">
+              <p className="text-slate-500">
                 Sign in to continue to your dashboard
               </p>
             </div>
@@ -110,7 +105,7 @@ export default function SignInPage() {
             >
               <button
                 type="submit"
-                className="group w-full flex items-center justify-center gap-3 px-6 py-4 bg-white hover:bg-gray-50 rounded-2xl font-medium text-gray-800 transition-all duration-300 hover:shadow-lg hover:shadow-white/10 hover:-translate-y-0.5"
+                className="group w-full flex items-center justify-center gap-3 px-6 py-4 bg-slate-900 hover:bg-slate-800 rounded-2xl font-medium text-white transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                   <path
@@ -137,41 +132,26 @@ export default function SignInPage() {
               </button>
             </form>
 
-            <div className="mt-8">
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-white/10"></div>
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  {/* <span className="px-4 bg-transparent text-gray-500">
-                    Or sign in with email
-                  </span> */}
-                </div>
+            <div className="mt-8 flex items-center justify-center gap-6">
+              <div className="flex items-center gap-2 text-slate-400 text-sm">
+                <Shield className="w-4 h-4 text-green-500" />
+                <span>SSL Encrypted</span>
               </div>
-
-              <div className="mt-6 flex items-center justify-center gap-6">
-                <div className="flex items-center gap-2 text-gray-500 text-sm">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                  </svg>
-                  <span>SSL Encrypted</span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-500 text-sm">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                  </svg>
-                  <span>Privacy First</span>
-                </div>
+              <div className="flex items-center gap-2 text-slate-400 text-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                <span>Privacy First</span>
               </div>
             </div>
 
-            <p className="mt-8 text-xs text-center text-gray-500">
+            <p className="mt-8 text-xs text-center text-slate-400">
               By signing in, you agree to our{" "}
-              <a href="#" className="text-indigo-400 hover:text-indigo-300 transition-colors">
+              <a href="#" className="text-blue-600 hover:text-blue-500 transition-colors">
                 Terms of Service
               </a>{" "}
               and{" "}
-              <a href="#" className="text-indigo-400 hover:text-indigo-300 transition-colors">
+              <a href="#" className="text-blue-600 hover:text-blue-500 transition-colors">
                 Privacy Policy
               </a>
             </p>
@@ -181,17 +161,15 @@ export default function SignInPage() {
           <div className="mt-6 text-center">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm"
+              className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors text-sm font-medium"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
+              <ArrowLeft className="w-4 h-4" />
               Back to Home
             </Link>
           </div>
 
           {/* Mobile Footer */}
-          <p className="lg:hidden mt-8 text-center text-sm text-gray-500">
+          <p className="lg:hidden mt-8 text-center text-sm text-slate-400">
             © 2026 MoneyMate. All rights reserved.
           </p>
         </div>
