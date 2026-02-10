@@ -50,10 +50,10 @@ export function OnboardingClient({
     <div className="min-h-screen">
       {/* Welcome Header (shown above wizard on larger screens) */}
       <div className="hidden lg:block text-center pt-8 pb-4">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+        <h1 className="text-3xl font-bold text-slate-900">
           Welcome to MoneyMate, {userName}! 👋
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-2">
+        <p className="text-slate-500 mt-2">
           Let&apos;s set up your account in a few quick steps
         </p>
       </div>

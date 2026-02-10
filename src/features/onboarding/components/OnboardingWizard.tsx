@@ -66,7 +66,7 @@ export function OnboardingWizard({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
       <div className="w-full max-w-2xl">
         {/* Progress Indicator */}
         <div className="mb-8">
@@ -76,10 +76,10 @@ export function OnboardingWizard({
                 <div
                   className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all ${
                     step === currentStep
-                      ? "bg-indigo-600 text-white scale-110"
+                      ? "brand-gradient text-white scale-110"
                       : step < currentStep
                       ? "bg-green-500 text-white"
-                      : "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400"
+                      : "bg-slate-200 text-slate-500"
                   }`}
                 >
                   {step < currentStep ? (
@@ -104,7 +104,7 @@ export function OnboardingWizard({
                     className={`w-16 h-1 mx-2 rounded transition-colors ${
                       step < currentStep
                         ? "bg-green-500"
-                        : "bg-gray-200 dark:bg-gray-700"
+                        : "bg-slate-200"
                     }`}
                   />
                 )}
@@ -112,14 +112,14 @@ export function OnboardingWizard({
             ))}
           </div>
           <div className="text-center">
-            <h2 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+            <h2 className="text-sm font-medium text-slate-500">
               Step {currentStep} of 3
             </h2>
           </div>
         </div>
 
         {/* Card Container */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
           {currentStep === 1 && (
             <Step1Account
               initialData={data.account}
@@ -144,7 +144,7 @@ export function OnboardingWizard({
         </div>
 
         {/* Footer */}
-        <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">
+        <p className="text-center text-sm text-slate-500 mt-6">
           You can always change these settings later
         </p>
       </div>
