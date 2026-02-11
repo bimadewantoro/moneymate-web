@@ -181,7 +181,8 @@ export function TransactionDrawer({
 
     setIsScanning(true);
     try {
-      const base64 = await fileToBase64(file);
+      // Compress image to reduce size (camera photos can be 5-15MB+)
+      const base64 = await compressImage(file);
       const result = await scanReceipt(base64);
 
       if (result.success && result.data) {
@@ -204,12 +205,27 @@ export function TransactionDrawer({
     }
   };
 
-  const fileToBase64 = (file: File): Promise<string> =>
+  const compressImage = (file: File, maxWidth = 1280, quality = 0.7): Promise<string> =>
     new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve((reader.result as string).split(",")[1]);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
+      const img = new Image();
+      img.onload = () => {
+        let { width, height } = img;
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return reject(new Error("Canvas not supported"));
+        ctx.drawImage(img, 0, 0, width, height);
+        // Export as JPEG for smaller size, strip the data-url prefix
+        const dataUrl = canvas.toDataURL("image/jpeg", quality);
+        resolve(dataUrl.split(",")[1]);
+      };
+      img.onerror = () => reject(new Error("Failed to load image"));
+      img.src = URL.createObjectURL(file);
     });
 
   const applyScanData = (data: ReceiptData) => {
@@ -528,7 +544,6 @@ export function TransactionDrawer({
         ref={fileInputRef}
         type="file"
         accept="image/*"
-        capture="environment"
         onChange={handleScanFile}
         className="hidden"
       />
