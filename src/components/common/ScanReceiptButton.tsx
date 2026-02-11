@@ -31,17 +31,26 @@ export function ScanReceiptButton({
     fileInputRef.current?.click();
   };
 
-  const convertFileToBase64 = (file: File): Promise<string> => {
+  const compressImage = (file: File, maxWidth = 1280, quality = 0.7): Promise<string> => {
     return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const result = reader.result as string;
-        // Remove the data URL prefix to get just the base64 string
-        const base64 = result.split(",")[1];
-        resolve(base64);
+      const img = new Image();
+      img.onload = () => {
+        let { width, height } = img;
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return reject(new Error("Canvas not supported"));
+        ctx.drawImage(img, 0, 0, width, height);
+        const dataUrl = canvas.toDataURL("image/jpeg", quality);
+        resolve(dataUrl.split(",")[1]);
       };
-      reader.onerror = (error) => reject(error);
-      reader.readAsDataURL(file);
+      img.onerror = () => reject(new Error("Failed to load image"));
+      img.src = URL.createObjectURL(file);
     });
   };
 
@@ -64,7 +73,7 @@ export function ScanReceiptButton({
     setIsScanning(true);
 
     try {
-      const base64 = await convertFileToBase64(file);
+      const base64 = await compressImage(file);
       const result = await scanReceipt(base64);
 
       if (result.success && result.data) {

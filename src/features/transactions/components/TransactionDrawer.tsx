@@ -18,6 +18,7 @@ import {
   AlertCircle,
   CalendarDays,
   Camera,
+  ImageUp,
   ChevronDown,
   Sparkles,
 } from "lucide-react";
@@ -112,6 +113,7 @@ export function TransactionDrawer({
   const [showSuccess, setShowSuccess] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [isScanning, setIsScanning] = useState(false);
+  const [showScanOptions, setShowScanOptions] = useState(false);
   const [toast, setToast] = useState<{
     type: "success" | "error";
     message: string;
@@ -120,6 +122,7 @@ export function TransactionDrawer({
   const scrollRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   const categories =
     activeType === "income" ? incomeCategories : expenseCategories;
@@ -164,7 +167,25 @@ export function TransactionDrawer({
 
   /* ── Scan receipt ── */
 
-  const handleScanClick = () => fileInputRef.current?.click();
+  const handleScanClick = () => {
+    if (isDesktop) {
+      // Desktop: open file picker directly
+      fileInputRef.current?.click();
+    } else {
+      // Mobile: show camera / gallery options
+      setShowScanOptions(true);
+    }
+  };
+
+  const handlePickCamera = () => {
+    setShowScanOptions(false);
+    setTimeout(() => cameraInputRef.current?.click(), 100);
+  };
+
+  const handlePickGallery = () => {
+    setShowScanOptions(false);
+    setTimeout(() => fileInputRef.current?.click(), 100);
+  };
 
   const handleScanFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -174,14 +195,15 @@ export function TransactionDrawer({
       setToast({ type: "error", message: "Please select an image file" });
       return;
     }
-    if (file.size > 10 * 1024 * 1024) {
-      setToast({ type: "error", message: "Image too large — max 10 MB" });
+    if (file.size > 20 * 1024 * 1024) {
+      setToast({ type: "error", message: "Image too large — max 20 MB" });
       return;
     }
 
     setIsScanning(true);
     try {
-      const base64 = await fileToBase64(file);
+      // Compress image to reduce size (camera photos can be 5-15MB+)
+      const base64 = await compressImage(file);
       const result = await scanReceipt(base64);
 
       if (result.success && result.data) {
@@ -201,15 +223,32 @@ export function TransactionDrawer({
     } finally {
       setIsScanning(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
+      if (cameraInputRef.current) cameraInputRef.current.value = "";
     }
   };
 
-  const fileToBase64 = (file: File): Promise<string> =>
+  const compressImage = (file: File, maxWidth = 1280, quality = 0.7): Promise<string> =>
     new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve((reader.result as string).split(",")[1]);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
+      const img = new window.Image();
+      const objectUrl = URL.createObjectURL(file);
+      img.onload = () => {
+        let { width, height } = img;
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) { URL.revokeObjectURL(objectUrl); return reject(new Error("Canvas not supported")); }
+        ctx.drawImage(img, 0, 0, width, height);
+        const dataUrl = canvas.toDataURL("image/jpeg", quality);
+        URL.revokeObjectURL(objectUrl);
+        resolve(dataUrl.split(",")[1]);
+      };
+      img.onerror = () => { URL.revokeObjectURL(objectUrl); reject(new Error("Failed to load image")); };
+      img.src = objectUrl;
     });
 
   const applyScanData = (data: ReceiptData) => {
@@ -523,15 +562,75 @@ export function TransactionDrawer({
 
   return (
     <>
-      {/* Hidden file input (shared) */}
+      {/* Hidden file inputs */}
       <input
         ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleScanFile}
+        className="hidden"
+      />
+      <input
+        ref={cameraInputRef}
         type="file"
         accept="image/*"
         capture="environment"
         onChange={handleScanFile}
         className="hidden"
       />
+
+      {/* ═══ Mobile scan options action sheet ═══ */}
+      <Drawer.Root open={showScanOptions} onOpenChange={setShowScanOptions}>
+        <Drawer.Portal>
+          <Drawer.Overlay className="fixed inset-0 bg-black/40 backdrop-blur-[2px] z-[70]" />
+          <Drawer.Content
+            className="fixed bottom-0 left-0 right-0 z-[70] outline-none flex flex-col bg-white rounded-t-[20px]"
+          >
+            <div className="flex justify-center pt-3 pb-1">
+              <div className="w-9 h-1 rounded-full bg-slate-300/80" />
+            </div>
+            <Drawer.Title className="px-5 pt-1 pb-3 text-lg font-bold text-slate-900">
+              Scan Receipt
+            </Drawer.Title>
+            <div className="px-5 pb-6 space-y-2">
+              <button
+                type="button"
+                onClick={handlePickCamera}
+                className="w-full flex items-center gap-4 px-4 py-3.5 rounded-xl bg-slate-50 hover:bg-slate-100 active:bg-slate-200 transition-colors"
+              >
+                <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
+                  <Camera className="w-5 h-5 text-blue-600" />
+                </div>
+                <div className="text-left">
+                  <p className="text-sm font-semibold text-slate-800">Take Photo</p>
+                  <p className="text-xs text-slate-500">Use camera to capture receipt</p>
+                </div>
+              </button>
+              <button
+                type="button"
+                onClick={handlePickGallery}
+                className="w-full flex items-center gap-4 px-4 py-3.5 rounded-xl bg-slate-50 hover:bg-slate-100 active:bg-slate-200 transition-colors"
+              >
+                <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
+                  <ImageUp className="w-5 h-5 text-emerald-600" />
+                </div>
+                <div className="text-left">
+                  <p className="text-sm font-semibold text-slate-800">Choose from Gallery</p>
+                  <p className="text-xs text-slate-500">Select an existing photo</p>
+                </div>
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowScanOptions(false)}
+                className="w-full py-3 mt-1 rounded-xl text-sm font-semibold text-slate-500 hover:bg-slate-50 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+            <div className="pb-safe" />
+          </Drawer.Content>
+        </Drawer.Portal>
+      </Drawer.Root>
 
       {isDesktop ? (
         /* ═══ Desktop → Radix Dialog ═══ */
