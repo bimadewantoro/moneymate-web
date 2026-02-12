@@ -93,12 +93,14 @@ export default async function TransactionsPage({ searchParams }: PageProps) {
 
       <main className="px-4 sm:px-6 lg:px-8 py-6 space-y-6 max-w-7xl mx-auto">
 
-      {/* Add Transaction Form */}
-      <TransactionForm
-        accounts={accounts}
-        incomeCategories={categories.filter((c) => c.type === "income")}
-        expenseCategories={categories.filter((c) => c.type === "expense")}
-      />
+      {/* Add Transaction Form - hidden on mobile, shown on desktop */}
+      <div className="hidden md:block">
+        <TransactionForm
+          accounts={accounts}
+          incomeCategories={categories.filter((c) => c.type === "income")}
+          expenseCategories={categories.filter((c) => c.type === "expense")}
+        />
+      </div>
 
       {/* Transactions Table */}
       <div className="bg-white rounded-2xl shadow-sm border border-slate-100">

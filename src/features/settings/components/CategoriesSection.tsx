@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Pencil, Plus } from "lucide-react";
 import { InlineEdit } from "@/components/common/InlineEdit";
 import { ColorPicker } from "@/components/common/ColorPicker";
 import {
@@ -17,6 +18,17 @@ function formatCurrency(amount: number) {
     currency: "IDR",
     minimumFractionDigits: 0,
   }).format(amount / 100); // Convert from cents
+}
+
+function formatCompactCurrency(amount: number) {
+  const value = amount / 100;
+  if (value >= 1_000_000) {
+    return `Rp ${(value / 1_000_000).toFixed(value % 1_000_000 === 0 ? 0 : 1)}jt`;
+  }
+  if (value >= 1_000) {
+    return `Rp ${(value / 1_000).toFixed(value % 1_000 === 0 ? 0 : 0)}rb`;
+  }
+  return `Rp ${value}`;
 }
 
 interface Category {
@@ -45,7 +57,6 @@ export function CategoriesSection({ categories }: CategoriesSectionProps) {
   const [isAddingCategory, setIsAddingCategory] = useState(false);
   const [activeTab, setActiveTab] = useState<"income" | "expense">("expense");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [isInitializing, setIsInitializing] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
 
@@ -88,25 +99,6 @@ export function CategoriesSection({ categories }: CategoriesSectionProps) {
     const result = await updateCategoryAction(categoryId, { icon });
     if (!result.success) {
       alert(result.error);
-    }
-  };
-
-  const handleDelete = async (categoryId: string) => {
-    if (!confirm("Are you sure you want to delete this category?")) {
-      return;
-    }
-
-    setDeletingId(categoryId);
-    try {
-      const result = await deleteCategoryAction(categoryId);
-      if (!result.success) {
-        alert(result.error);
-      }
-    } catch (error) {
-      console.error("Error deleting category:", error);
-      alert("Failed to delete category");
-    } finally {
-      setDeletingId(null);
     }
   };
 
@@ -154,22 +146,9 @@ export function CategoriesSection({ categories }: CategoriesSectionProps) {
           <button
             type="button"
             onClick={() => setIsAddingCategory(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 brand-gradient text-white rounded-lg hover:shadow-md transition-colors text-sm font-medium"
+            className="inline-flex items-center gap-2 px-4 py-2 brand-gradient text-white rounded-lg hover:shadow-md transition-colors text-sm font-medium min-h-11"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 4v16m8-8H4"
-              />
-            </svg>
+            <Plus className="h-4 w-4" />
             Add Category
           </button>
         </div>
@@ -313,20 +292,20 @@ export function CategoriesSection({ categories }: CategoriesSectionProps) {
           displayCategories.map((category) => (
             <div
               key={category.id}
-              className={`px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors ${
+              className={`px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between hover:bg-slate-50 transition-colors ${
                 !category.isActive ? "opacity-50" : ""
               }`}
             >
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
                 <ColorPicker
                   value={category.color}
                   onChange={(color) => handleUpdateColor(category.id, color)}
                 />
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-1 min-w-0">
                   <select
                     value={category.icon || ""}
                     onChange={(e) => handleUpdateIcon(category.id, e.target.value)}
-                    className="text-xl bg-transparent border-none focus:ring-0 cursor-pointer"
+                    className="text-xl bg-transparent border-none focus:ring-0 cursor-pointer shrink-0"
                     style={{ width: "2.5rem" }}
                   >
                     <option value="">📁</option>
@@ -336,23 +315,33 @@ export function CategoriesSection({ categories }: CategoriesSectionProps) {
                       </option>
                     ))}
                   </select>
-                  <div>
+                  <div className="min-w-0 flex-1">
                     <InlineEdit
                       value={category.name}
                       onSave={(name) => handleUpdateName(category.id, name)}
                       className="font-medium text-slate-900"
                     />
-                    {category.type === "expense" && category.monthlyBudget && (
-                      <p className="text-xs text-slate-500">
-                        Budget: {formatCurrency(category.monthlyBudget)}/mo
-                      </p>
+                    {category.type === "expense" && (
+                      category.monthlyBudget ? (
+                        <p className="text-xs text-slate-500">
+                          Budget: {formatCompactCurrency(category.monthlyBudget)}/mo
+                        </p>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => setEditingCategory(category)}
+                          className="text-xs text-blue-600 hover:text-blue-700 font-medium hover:underline"
+                        >
+                          + Set Budget
+                        </button>
+                      )
                     )}
                   </div>
                 </div>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 sm:gap-3 shrink-0">
                 <span
-                  className={`text-xs px-2 py-1 rounded-full ${
+                  className={`hidden sm:inline text-xs px-2 py-1 rounded-full ${
                     category.type === "income"
                       ? "bg-green-100 text-green-700"
                       : "bg-red-100 text-red-700"
@@ -363,45 +352,10 @@ export function CategoriesSection({ categories }: CategoriesSectionProps) {
                 <button
                   type="button"
                   onClick={() => setEditingCategory(category)}
-                  className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                  className="p-2.5 min-h-11 min-w-11 flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                   title="Edit category"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                    />
-                  </svg>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleDelete(category.id)}
-                  disabled={deletingId === category.id}
-                  className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
-                  title="Delete category"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                    />
-                  </svg>
+                  <Pencil className="h-4 w-4" />
                 </button>
               </div>
             </div>
