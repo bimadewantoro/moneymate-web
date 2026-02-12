@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { updateAccountAction } from "@/features/settings/actions";
+import { X, Trash2 } from "lucide-react";
+import { updateAccountAction, deleteAccountAction } from "@/features/settings/actions";
 
 interface Account {
   id: string;
@@ -33,6 +34,7 @@ export function EditAccountModal({
   onClose,
 }: EditAccountModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [formData, setFormData] = useState({
     name: account.name,
     type: account.type,
@@ -78,6 +80,27 @@ export function EditAccountModal({
     }
   };
 
+  const handleDelete = async () => {
+    if (!confirm("Are you sure you want to delete this account? This action cannot be undone.")) {
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      const result = await deleteAccountAction(account.id);
+      if (result.success) {
+        onClose();
+      } else {
+        alert(result.error);
+      }
+    } catch (error) {
+      console.error("Error deleting account:", error);
+      alert("Failed to delete account");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -98,22 +121,9 @@ export function EditAccountModal({
             </h2>
             <button
               onClick={onClose}
-              className="p-2 text-slate-400 hover:text-slate-500 rounded-lg hover:bg-slate-50 transition-colors"
+              className="p-2 min-h-11 min-w-11 flex items-center justify-center text-slate-400 hover:text-slate-500 rounded-lg hover:bg-slate-50 transition-colors"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
+              <X className="h-5 w-5" />
             </button>
           </div>
 
@@ -198,21 +208,32 @@ export function EditAccountModal({
             </div>
 
             {/* Footer */}
-            <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+            <div className="flex justify-between items-center pt-4 border-t border-slate-100">
               <button
                 type="button"
-                onClick={onClose}
-                className="px-4 py-2 text-slate-700 hover:bg-slate-50 rounded-lg transition-colors"
+                onClick={handleDelete}
+                disabled={isDeleting}
+                className="inline-flex items-center gap-2 px-4 py-2.5 min-h-11 text-red-600 hover:bg-red-50 rounded-lg transition-colors text-sm font-medium disabled:opacity-50"
               >
-                Cancel
+                <Trash2 className="h-4 w-4" />
+                {isDeleting ? "Deleting..." : "Delete Account"}
               </button>
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="px-4 py-2 brand-gradient text-white rounded-lg hover:shadow-md disabled:opacity-50 transition-colors"
-              >
-                {isSubmitting ? "Saving..." : "Save Changes"}
-              </button>
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="px-4 py-2.5 min-h-11 text-slate-700 hover:bg-slate-50 rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="px-4 py-2.5 min-h-11 brand-gradient text-white rounded-lg hover:shadow-md disabled:opacity-50 transition-colors"
+                >
+                  {isSubmitting ? "Saving..." : "Save Changes"}
+                </button>
+              </div>
             </div>
           </form>
         </div>

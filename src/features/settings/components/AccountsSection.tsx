@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Pencil, Plus } from "lucide-react";
 import { InlineEdit } from "@/components/common/InlineEdit";
 import {
   createAccountAction,
@@ -36,7 +37,6 @@ const ACCOUNT_TYPES = [
 export function AccountsSection({ accounts }: AccountsSectionProps) {
   const [isAddingAccount, setIsAddingAccount] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [editingAccount, setEditingAccount] = useState<Account | null>(null);
 
   const handleAddAccount = async (formData: FormData) => {
@@ -73,25 +73,6 @@ export function AccountsSection({ accounts }: AccountsSectionProps) {
     }
   };
 
-  const handleDelete = async (accountId: string) => {
-    if (!confirm("Are you sure you want to delete this account?")) {
-      return;
-    }
-
-    setDeletingId(accountId);
-    try {
-      const result = await deleteAccountAction(accountId);
-      if (!result.success) {
-        alert(result.error);
-      }
-    } catch (error) {
-      console.error("Error deleting account:", error);
-      alert("Failed to delete account");
-    } finally {
-      setDeletingId(null);
-    }
-  };
-
   const getAccountIcon = (type: string) => {
     return ACCOUNT_TYPES.find((t) => t.value === type)?.icon || "💳";
   };
@@ -118,22 +99,9 @@ export function AccountsSection({ accounts }: AccountsSectionProps) {
         <button
           type="button"
           onClick={() => setIsAddingAccount(true)}
-          className="inline-flex items-center gap-2 px-4 py-2 brand-gradient text-white rounded-lg hover:shadow-md transition-colors text-sm font-medium"
+          className="inline-flex items-center gap-2 px-4 py-2 brand-gradient text-white rounded-lg hover:shadow-md transition-colors text-sm font-medium min-h-11"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-4 w-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 4v16m8-8H4"
-            />
-          </svg>
+          <Plus className="h-4 w-4" />
           Add Account
         </button>
       </div>
@@ -258,51 +226,14 @@ export function AccountsSection({ accounts }: AccountsSectionProps) {
                   </div>
                 </div>
               </div>
-              <div className="flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => setEditingAccount(account)}
-                  className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                  title="Edit account"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                    />
-                  </svg>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleDelete(account.id)}
-                  disabled={deletingId === account.id}
-                  className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
-                  title="Delete account"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                    />
-                  </svg>
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => setEditingAccount(account)}
+                className="p-2.5 min-h-11 min-w-11 flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                title="Edit account"
+              >
+                <Pencil className="h-4 w-4" />
+              </button>
             </div>
           ))
         )}
