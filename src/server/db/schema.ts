@@ -11,6 +11,7 @@ export const users = sqliteTable("user", {
   email: text("email").unique().notNull(),
   emailVerified: integer("emailVerified", { mode: "timestamp_ms" }),
   image: text("image"),
+  baseCurrency: text("baseCurrency").notNull().default("IDR"),
 });
 
 export const accounts = sqliteTable(
@@ -124,6 +125,8 @@ export const transactions = sqliteTable("transaction", {
     .references(() => financeAccounts.id, { onDelete: "set null" }),
   toAccountId: text("toAccountId")
     .references(() => financeAccounts.id, { onDelete: "set null" }),
+  currency: text("currency").notNull().default("IDR"),
+  exchangeRate: text("exchangeRate").notNull().default("1"), // String-encoded decimal for SQLite precision
   date: integer("date", { mode: "timestamp_ms" })
     .notNull()
     .default(sql`(unixepoch() * 1000)`),
@@ -144,6 +147,7 @@ export const goals = sqliteTable("goal", {
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
+  currency: text("currency").notNull().default("IDR"),
   targetAmount: integer("targetAmount").notNull(), // Store as cents/smallest unit
   currentAmount: integer("currentAmount").notNull().default(0), // Store as cents/smallest unit
   targetDate: integer("targetDate", { mode: "timestamp_ms" }).notNull(),
