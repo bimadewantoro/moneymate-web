@@ -135,6 +135,27 @@ export const transactions = sqliteTable("transaction", {
     .default(sql`(unixepoch() * 1000)`),
 });
 
+// Savings Goals (Sinking Funds)
+export const goals = sqliteTable("goal", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  userId: text("userId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  targetAmount: integer("targetAmount").notNull(), // Store as cents/smallest unit
+  currentAmount: integer("currentAmount").notNull().default(0), // Store as cents/smallest unit
+  targetDate: integer("targetDate", { mode: "timestamp_ms" }).notNull(),
+  icon: text("icon"), // Optional emoji or icon identifier
+  createdAt: integer("createdAt", { mode: "timestamp_ms" })
+    .notNull()
+    .default(sql`(unixepoch() * 1000)`),
+  updatedAt: integer("updatedAt", { mode: "timestamp_ms" })
+    .notNull()
+    .default(sql`(unixepoch() * 1000)`),
+});
+
 // Type exports for use in application
 export type FinanceAccount = typeof financeAccounts.$inferSelect;
 export type NewFinanceAccount = typeof financeAccounts.$inferInsert;
@@ -142,3 +163,5 @@ export type Category = typeof categories.$inferSelect;
 export type NewCategory = typeof categories.$inferInsert;
 export type Transaction = typeof transactions.$inferSelect;
 export type NewTransaction = typeof transactions.$inferInsert;
+export type Goal = typeof goals.$inferSelect;
+export type NewGoal = typeof goals.$inferInsert;

@@ -7,6 +7,7 @@ import {
 } from "@/server/db/queries/accounts";
 import { getActiveCategories } from "@/server/db/queries/categories";
 import { getRecentTransactions } from "@/server/db/queries/transactions";
+import { getGoals } from "@/server/db/queries/goals";
 import {
   getCurrentMonthStats,
   getSpendingByCategory,
@@ -22,11 +23,15 @@ import { NetWorthProgression } from "@/features/dashboard/components/NetWorthPro
 import { BudgetProgressCard } from "@/features/dashboard/components/BudgetProgressCard";
 import { WatchlistWidget } from "@/features/dashboard/components/WatchlistWidget";
 import { TotalBalanceCard } from "@/features/dashboard/components/TotalBalanceCard";
+import { GoalCard } from "@/features/goals/components/GoalCard";
+import { CreateGoalModal } from "@/features/goals/components/CreateGoalModal";
 import {
   ArrowUpRight,
   ArrowDownLeft,
   ArrowRightLeft,
   MoreHorizontal,
+  Plus,
+  Target,
 } from "lucide-react";
 
 const ACCOUNT_ICONS: Record<string, string> = {
@@ -69,6 +74,7 @@ export default async function DashboardPage() {
     netWorthData,
     budgetStatus,
     watchlistCategories,
+    savingsGoals,
   ] = await Promise.all([
     Promise.resolve(existingAccounts), // Reuse the already fetched data
     getCurrentMonthStats(session.user.id),
@@ -80,6 +86,7 @@ export default async function DashboardPage() {
     getNetWorthProgression(session.user.id, 6),
     getBudgetStatus(session.user.id),
     getWatchlistCategories(session.user.id),
+    getGoals(session.user.id),
   ]);
 
   const totalBalance = accountsWithBalances.reduce(
@@ -197,6 +204,44 @@ export default async function DashboardPage() {
 
         {/* ── Budget ── */}
         <BudgetProgressCard budgets={budgetStatus} />
+
+        {/* ── Savings Goals ── */}
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-100">
+          <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
+            <div>
+              <h2 className="text-lg font-semibold tracking-tight text-slate-900">
+                Savings Goals
+              </h2>
+              <p className="text-sm text-slate-500">
+                Track progress towards your targets
+              </p>
+            </div>
+          </div>
+          <div className="p-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {savingsGoals.map((goal) => (
+                <GoalCard key={goal.id} goal={goal} />
+              ))}
+
+              {/* New Goal trigger card */}
+              <CreateGoalModal>
+                <button className="min-h-[180px] flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50/50 hover:border-blue-300 hover:bg-blue-50/50 transition-all group cursor-pointer">
+                  <div className="w-12 h-12 rounded-xl bg-slate-100 group-hover:bg-blue-100 flex items-center justify-center transition-colors">
+                    <Plus className="w-5 h-5 text-slate-400 group-hover:text-blue-600 transition-colors" />
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm font-medium text-slate-500 group-hover:text-blue-700 transition-colors">
+                      New Goal
+                    </p>
+                    <p className="text-xs text-slate-400">
+                      Start saving for something
+                    </p>
+                  </div>
+                </button>
+              </CreateGoalModal>
+            </div>
+          </div>
+        </div>
 
         {/* ── Net Worth ── */}
         <NetWorthProgression data={netWorthData} />
