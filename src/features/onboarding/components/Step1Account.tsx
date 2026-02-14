@@ -1,11 +1,23 @@
 "use client";
 
 import { useState } from "react";
+import { getCurrencySymbol } from "@/lib/utils/currency";
 
 const ACCOUNT_TYPES = [
   { value: "bank", label: "Bank Account", icon: "🏦", description: "BCA, Mandiri, BNI, etc." },
   { value: "cash", label: "Cash", icon: "💵", description: "Physical cash on hand" },
   { value: "e-wallet", label: "E-Wallet", icon: "📱", description: "OVO, GoPay, Dana, etc." },
+] as const;
+
+const CURRENCIES = [
+  { code: "IDR", label: "Indonesian Rupiah", flag: "🇮🇩" },
+  { code: "USD", label: "US Dollar", flag: "🇺🇸" },
+  { code: "EUR", label: "Euro", flag: "🇪🇺" },
+  { code: "GBP", label: "British Pound", flag: "🇬🇧" },
+  { code: "SGD", label: "Singapore Dollar", flag: "🇸🇬" },
+  { code: "AUD", label: "Australian Dollar", flag: "🇦🇺" },
+  { code: "JPY", label: "Japanese Yen", flag: "🇯🇵" },
+  { code: "MYR", label: "Malaysian Ringgit", flag: "🇲🇾" },
 ] as const;
 
 interface AccountData {
@@ -16,10 +28,11 @@ interface AccountData {
 
 interface Step1AccountProps {
   initialData: AccountData | null;
-  onComplete: (data: AccountData) => void;
+  initialCurrency?: string;
+  onComplete: (data: AccountData, baseCurrency: string) => void;
 }
 
-export function Step1Account({ initialData, onComplete }: Step1AccountProps) {
+export function Step1Account({ initialData, initialCurrency, onComplete }: Step1AccountProps) {
   const [name, setName] = useState(initialData?.name || "");
   const [type, setType] = useState<"bank" | "cash" | "e-wallet">(
     initialData?.type || "bank"
@@ -27,6 +40,7 @@ export function Step1Account({ initialData, onComplete }: Step1AccountProps) {
   const [initialBalance, setInitialBalance] = useState(
     initialData?.initialBalance?.toString() || "0"
   );
+  const [currency, setCurrency] = useState(initialCurrency || "IDR");
   const [error, setError] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -42,7 +56,7 @@ export function Step1Account({ initialData, onComplete }: Step1AccountProps) {
       name: name.trim(),
       type,
       initialBalance: parseFloat(initialBalance) || 0,
-    });
+    }, currency);
   };
 
   return (
@@ -106,6 +120,24 @@ export function Step1Account({ initialData, onComplete }: Step1AccountProps) {
           </div>
         </div>
 
+        {/* Currency */}
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-2">
+            Currency
+          </label>
+          <select
+            value={currency}
+            onChange={(e) => setCurrency(e.target.value)}
+            className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-blue-600 bg-white text-slate-900 text-lg"
+          >
+            {CURRENCIES.map((c) => (
+              <option key={c.code} value={c.code}>
+                {c.flag} {c.code} — {c.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
         {/* Initial Balance */}
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-2">
@@ -113,7 +145,7 @@ export function Step1Account({ initialData, onComplete }: Step1AccountProps) {
           </label>
           <div className="relative">
             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-medium">
-              Rp
+              {getCurrencySymbol(currency)}
             </span>
             <input
               type="number"

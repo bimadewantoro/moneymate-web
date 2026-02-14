@@ -30,6 +30,7 @@ export function OnboardingClient({
     const result = await completeOnboardingAction({
       account: data.account,
       selectedCategories: data.selectedCategories,
+      baseCurrency: data.baseCurrency,
     });
 
     if (!result.success) {

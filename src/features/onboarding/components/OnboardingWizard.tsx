@@ -13,6 +13,7 @@ export interface OnboardingData {
   } | null;
   selectedCategories: string[];
   pin: string | null;
+  baseCurrency: string;
 }
 
 interface OnboardingWizardProps {
@@ -35,10 +36,11 @@ export function OnboardingWizard({
     account: null,
     selectedCategories: defaultCategories.map((c) => c.name),
     pin: null,
+    baseCurrency: "IDR",
   });
 
-  const handleStep1Complete = (account: OnboardingData["account"]) => {
-    setData((prev) => ({ ...prev, account }));
+  const handleStep1Complete = (account: OnboardingData["account"], baseCurrency: string) => {
+    setData((prev) => ({ ...prev, account, baseCurrency }));
     setCurrentStep(2);
   };
 
@@ -123,6 +125,7 @@ export function OnboardingWizard({
           {currentStep === 1 && (
             <Step1Account
               initialData={data.account}
+              initialCurrency={data.baseCurrency}
               onComplete={handleStep1Complete}
             />
           )}

@@ -3,6 +3,7 @@
 import { auth } from "@/auth";
 import { createFinanceAccount } from "@/server/db/mutations/accounts";
 import { createCategory } from "@/server/db/mutations/categories";
+import { updateUserBaseCurrency } from "@/server/db/mutations/users";
 import { revalidatePath } from "next/cache";
 import { type Result, okVoid, err } from "@/types";
 import { DEFAULT_ONBOARDING_CATEGORIES } from "./constants";
@@ -14,6 +15,7 @@ interface OnboardingData {
     initialBalance: number;
   };
   selectedCategories: string[];
+  baseCurrency?: string;
 }
 
 export async function completeOnboardingAction(
@@ -27,11 +29,16 @@ export async function completeOnboardingAction(
   const userId = session.user.id;
 
   try {
+    const currency = data.baseCurrency || "IDR";
+
+    // Save user's base currency preference
+    await updateUserBaseCurrency(userId, currency);
+
     await createFinanceAccount(userId, {
       name: data.account.name,
       type: data.account.type,
       initialBalance: Math.round(data.account.initialBalance * 100),
-      currency: "IDR",
+      currency,
     });
 
     const categoriesToCreate = DEFAULT_ONBOARDING_CATEGORIES.filter((cat) =>
