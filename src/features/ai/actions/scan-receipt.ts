@@ -31,7 +31,8 @@ function cleanJsonResponse(text: string): string {
 // Schema for receipt data extraction
 const receiptSchema = z.object({
   merchant: z.string().describe("The merchant or store name from the receipt"),
-  amount: z.number().describe("The total amount as a raw number (e.g., 50000 for Rp 50.000)"),
+  amount: z.number().describe("The total amount as a pure number without currency symbols (e.g., 50000 not Rp 50.000)"),
+  currency: z.string().length(3).describe("The 3-letter ISO 4217 currency code detected from the receipt (e.g., IDR, USD, EUR, SGD). Default to IDR if unknown."),
   date: z.string().describe("The transaction date in YYYY-MM-DD format"),
   category: z
     .enum([
@@ -82,7 +83,8 @@ export async function scanReceipt(imageBase64: string): Promise<ScanReceiptResul
     // Define the expected JSON structure for the prompt
     const jsonStructure = `{
   "merchant": "string (store/merchant name)",
-  "amount": number (total amount as raw number, e.g., 50000 for Rp 50.000),
+  "amount": number (total amount as a pure number, NO currency symbols),
+  "currency": "string (3-letter ISO 4217 code, e.g. IDR, USD, EUR, SGD)",
   "date": "string (YYYY-MM-DD format)",
   "category": "one of: Food & Dining, Groceries, Transportation, Shopping, Entertainment, Bills & Utilities, Health & Medical, Education, Travel, Other",
   "items": [{"name": "string", "price": number}] (optional, include if visible)
@@ -100,11 +102,19 @@ export async function scanReceipt(imageBase64: string): Promise<ScanReceiptResul
 
 Instructions:
 - Extract the merchant/store name accurately
-- Extract the TOTAL amount as a raw number (e.g., 50000 for "Rp 50.000" or "IDR 50,000")
-- If the currency shows "Rp", "IDR", or Indonesian Rupiah, return the amount as-is without any conversion
+- Extract the TOTAL amount as a pure number WITHOUT any currency symbols (e.g., 50000 not "Rp 50.000")
+- Detect the currency from the receipt and return the correct 3-letter ISO 4217 code:
+  • "Rp" or "IDR" → IDR
+  • "$" or "USD" → USD (unless context suggests otherwise like SGD, AUD, CAD)
+  • "€" or "EUR" → EUR
+  • "¥" or "JPY" → JPY
+  • "£" or "GBP" → GBP
+  • "S$" or "SGD" → SGD
+  • "RM" or "MYR" → MYR
+  • If no currency symbol is visible, default to "IDR"
 - Extract the date in YYYY-MM-DD format. If no date is visible, use today's date: ${today}
 - Suggest an appropriate category based on the merchant type and items purchased
-- If individual items are visible, extract them with their prices
+- If individual items are visible, extract them with their prices as pure numbers
 
 IMPORTANT: Return ONLY raw JSON. Do not use markdown code blocks. Do not add any explanations or text before or after the JSON.
 
