@@ -8,6 +8,7 @@
 import { db } from "@/server/db";
 import { financeAccounts, transactions } from "@/server/db/schema";
 import { eq, and, sql } from "drizzle-orm";
+import { convertAmount } from "@/lib/exchange-rates";
 
 /**
  * Get all finance accounts for a specific user
@@ -103,4 +104,37 @@ export async function getUserAccountsWithBalances(userId: string) {
   );
 
   return accountsWithBalances;
+}
+
+/**
+ * Get all accounts with balances converted to the user's base currency.
+ * Returns per-account data + a converted total.
+ */
+export async function getUserAccountsWithConvertedBalances(
+  userId: string,
+  baseCurrency: string
+) {
+  const accountsWithBalances = await getUserAccountsWithBalances(userId);
+
+  let convertedTotal = 0;
+
+  const accountsWithConversion = await Promise.all(
+    accountsWithBalances.map(async (account) => {
+      const convertedBalance = await convertAmount(
+        account.currentBalance,
+        account.currency,
+        baseCurrency
+      );
+      convertedTotal += convertedBalance;
+      return {
+        ...account,
+        convertedBalance,
+      };
+    })
+  );
+
+  return {
+    accounts: accountsWithConversion,
+    convertedTotal,
+  };
 }

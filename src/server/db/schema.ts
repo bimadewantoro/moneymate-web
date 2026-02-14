@@ -160,6 +160,20 @@ export const goals = sqliteTable("goal", {
     .default(sql`(unixepoch() * 1000)`),
 });
 
+// Exchange rates table
+export const exchangeRates = sqliteTable("exchange_rate", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  baseCurrency: text("baseCurrency").notNull(),
+  targetCurrency: text("targetCurrency").notNull(),
+  rate: text("rate").notNull(), // Store as text for precision
+  date: integer("date", { mode: "timestamp_ms" }).notNull(),
+  createdAt: integer("createdAt", { mode: "timestamp_ms" })
+    .notNull()
+    .default(sql`(unixepoch() * 1000)`),
+});
+
 // Type exports for use in application
 export type FinanceAccount = typeof financeAccounts.$inferSelect;
 export type NewFinanceAccount = typeof financeAccounts.$inferInsert;
@@ -169,3 +183,5 @@ export type Transaction = typeof transactions.$inferSelect;
 export type NewTransaction = typeof transactions.$inferInsert;
 export type Goal = typeof goals.$inferSelect;
 export type NewGoal = typeof goals.$inferInsert;
+export type ExchangeRate = typeof exchangeRates.$inferSelect;
+export type NewExchangeRate = typeof exchangeRates.$inferInsert;
