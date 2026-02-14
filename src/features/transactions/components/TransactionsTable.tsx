@@ -13,6 +13,7 @@ import {
 import { deleteTransactionAction } from "@/features/transactions/actions";
 import { EditTransactionModal } from "./EditTransactionModal";
 import { TransactionFilters, FilterState, defaultFilters } from "./TransactionFilters";
+import { formatCurrency as formatCurrencyUtil } from "@/lib/utils/currency";
 
 interface Transaction {
   id: string;
@@ -31,6 +32,7 @@ interface Account {
   id: string;
   name: string;
   type: "bank" | "cash" | "e-wallet" | "investment" | "other";
+  currency: string;
 }
 
 interface Category {
@@ -45,6 +47,7 @@ interface TransactionsTableProps {
   transactions: Transaction[];
   accounts: Account[];
   categories: Category[];
+  baseCurrency: string;
   initialTypeFilter?: "income" | "expense" | "transfer";
   initialCategoryFilter?: string;
   initialAccountFilter?: string;
@@ -64,6 +67,7 @@ export function TransactionsTable({
   transactions,
   accounts,
   categories,
+  baseCurrency,
   initialTypeFilter,
   initialCategoryFilter,
   initialAccountFilter,
@@ -165,11 +169,7 @@ export function TransactionsTable({
   }, [transactions, filters]);
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-      minimumFractionDigits: 0,
-    }).format(amount);
+    return formatCurrencyUtil(amount, baseCurrency);
   };
 
   const formatDate = (date: Date) => {

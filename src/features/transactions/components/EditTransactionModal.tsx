@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { updateTransactionAction } from "@/features/transactions/actions";
+import { getCurrencySymbol } from "@/lib/utils/currency";
 
 interface Transaction {
   id: string;
@@ -18,6 +19,7 @@ interface Account {
   id: string;
   name: string;
   type: "bank" | "cash" | "e-wallet" | "investment" | "other";
+  currency: string;
 }
 
 interface Category {
@@ -203,7 +205,11 @@ export function EditTransactionModal({
                 </label>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-                    Rp
+                    {(() => {
+                      const accountId = activeType === "income" ? formData.toAccountId : formData.fromAccountId;
+                      const account = accounts.find(a => a.id === accountId);
+                      return getCurrencySymbol(account?.currency ?? "IDR");
+                    })()}
                   </span>
                   <input
                     type="number"

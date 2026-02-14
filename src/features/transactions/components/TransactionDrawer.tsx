@@ -28,6 +28,7 @@ import {
   type ReceiptData,
 } from "@/features/ai/actions/scan-receipt";
 import { useTransactionDrawer } from "@/features/transactions/contexts/TransactionDrawerContext";
+import { getCurrencySymbol, formatCurrency } from "@/lib/utils/currency";
 
 /* ─── Types ─────────────────────────────── */
 
@@ -35,6 +36,7 @@ interface Account {
   id: string;
   name: string;
   type: "bank" | "cash" | "e-wallet" | "investment" | "other";
+  currency: string;
 }
 
 interface Category {
@@ -210,7 +212,7 @@ export function TransactionDrawer({
         applyScanData(result.data);
         setToast({
           type: "success",
-          message: `Scanned: ${result.data.merchant} — Rp ${result.data.amount.toLocaleString("id-ID")}`,
+          message: `Scanned: ${result.data.merchant} — ${formatCurrency(result.data.amount, result.data.currency)}`,
         });
       } else {
         setToast({
@@ -399,7 +401,7 @@ export function TransactionDrawer({
               </label>
               <div className="flex items-baseline gap-1 px-4 pb-3">
                 <span className="text-base font-bold text-slate-400 select-none">
-                  Rp
+                  {getCurrencySymbol("IDR")}
                 </span>
                 <input
                   type="number"
