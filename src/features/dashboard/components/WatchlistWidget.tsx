@@ -1,18 +1,13 @@
 "use client";
 
 import type { BudgetStatus } from "@/server/db/queries/analytics";
+import { formatCurrency as formatCurrencyUtil } from "@/lib/utils/currency";
 
 interface WatchlistWidgetProps {
   watchlist: BudgetStatus[];
+  baseCurrency: string;
 }
 
-function formatCurrency(amount: number) {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    minimumFractionDigits: 0,
-  }).format(amount / 100);
-}
 
 function getStatusEmoji(status: BudgetStatus["status"]) {
   switch (status) {
@@ -27,7 +22,11 @@ function getStatusEmoji(status: BudgetStatus["status"]) {
   }
 }
 
-export function WatchlistWidget({ watchlist }: WatchlistWidgetProps) {
+export function WatchlistWidget({ watchlist, baseCurrency }: WatchlistWidgetProps) {
+  function formatCurrency(amount: number) {
+    return formatCurrencyUtil(amount / 100, baseCurrency);
+  }
+
   if (watchlist.length === 0) {
     return (
       <div className="bg-linear-to-br from-green-50 to-emerald-50 rounded-2xl shadow-sm border border-green-200">

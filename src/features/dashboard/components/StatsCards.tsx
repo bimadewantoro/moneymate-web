@@ -1,5 +1,7 @@
 "use client";
 
+import { formatCurrency as formatCurrencyUtil } from "@/lib/utils/currency";
+
 interface StatsCardsProps {
   totalBalance: number;
   monthlyIncome: number;
@@ -8,15 +10,9 @@ interface StatsCardsProps {
   incomeTrend: number;
   expenseTrend: number;
   savingsRateTrend: number;
+  baseCurrency: string;
 }
 
-function formatCurrency(amount: number) {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    minimumFractionDigits: 0,
-  }).format(amount / 100);
-}
 
 function TrendIndicator({ value, inverted = false }: { value: number; inverted?: boolean }) {
   // For expenses, inverted=true means higher is bad
@@ -63,7 +59,12 @@ export function StatsCards({
   incomeTrend,
   expenseTrend,
   savingsRateTrend,
+  baseCurrency,
 }: StatsCardsProps) {
+  function formatCurrency(amount: number) {
+    return formatCurrencyUtil(amount / 100, baseCurrency);
+  }
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {/* Total Balance */}

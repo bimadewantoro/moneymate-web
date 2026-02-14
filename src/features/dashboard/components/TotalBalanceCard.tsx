@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowUpRight, ArrowDownLeft, Wallet } from "lucide-react";
+import { formatCurrency as formatCurrencyUtil } from "@/lib/utils/currency";
 
 interface AccountBalance {
   id: string;
@@ -14,14 +15,7 @@ interface TotalBalanceCardProps {
   monthlyIncome: number;
   monthlyExpenses: number;
   accounts: AccountBalance[];
-}
-
-function formatCurrency(amount: number) {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    minimumFractionDigits: 0,
-  }).format(amount / 100);
+  baseCurrency: string;
 }
 
 export function TotalBalanceCard({
@@ -29,7 +23,12 @@ export function TotalBalanceCard({
   monthlyIncome,
   monthlyExpenses,
   accounts,
+  baseCurrency,
 }: TotalBalanceCardProps) {
+  function formatCurrency(amount: number) {
+    return formatCurrencyUtil(amount / 100, baseCurrency);
+  }
+
   return (
     <div className="relative overflow-hidden rounded-2xl brand-gradient p-6 text-white shadow-lg shadow-blue-700/25">
       {/* Decorative circles */}

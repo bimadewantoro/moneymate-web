@@ -1,6 +1,7 @@
 "use client";
 
 import { MonthlyTrendChart } from "@/components/charts/MonthlyTrendChart";
+import { formatCurrency as formatCurrencyUtil } from "@/lib/utils/currency";
 
 interface MonthlyData {
   month: string;
@@ -12,17 +13,14 @@ interface MonthlyData {
 
 interface TrendAnalysisProps {
   data: MonthlyData[];
+  baseCurrency: string;
 }
 
-function formatCurrency(amount: number) {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    minimumFractionDigits: 0,
-  }).format(amount / 100);
-}
+export function TrendAnalysis({ data, baseCurrency }: TrendAnalysisProps) {
+  function formatCurrency(amount: number) {
+    return formatCurrencyUtil(amount / 100, baseCurrency);
+  }
 
-export function TrendAnalysis({ data }: TrendAnalysisProps) {
   const totalIncome = data.reduce((sum, d) => sum + d.income, 0);
   const totalExpense = data.reduce((sum, d) => sum + d.expense, 0);
   const avgIncome = data.length > 0 ? totalIncome / data.length : 0;

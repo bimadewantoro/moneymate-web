@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { formatCurrency as formatCurrencyUtil } from "@/lib/utils/currency";
 
 interface Transaction {
   id: string;
@@ -30,6 +31,7 @@ interface RecentTransactionsProps {
   transactions: Transaction[];
   categories: Category[];
   accounts: Account[];
+  baseCurrency: string;
 }
 
 const ACCOUNT_ICONS: Record<string, string> = {
@@ -41,11 +43,7 @@ const ACCOUNT_ICONS: Record<string, string> = {
 };
 
 function formatCurrency(amount: number) {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    minimumFractionDigits: 0,
-  }).format(amount / 100);
+  return formatCurrencyUtil(amount / 100, "IDR");
 }
 
 function formatDate(date: Date) {
@@ -68,7 +66,12 @@ export function RecentTransactions({
   transactions,
   categories,
   accounts,
+  baseCurrency,
 }: RecentTransactionsProps) {
+  function formatCurrency(amount: number) {
+    return formatCurrencyUtil(amount / 100, baseCurrency);
+  }
+
   const categoryMap = new Map(categories.map((c) => [c.id, c]));
   const accountMap = new Map(accounts.map((a) => [a.id, a]));
 

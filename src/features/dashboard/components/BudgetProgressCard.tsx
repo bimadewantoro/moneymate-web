@@ -1,18 +1,13 @@
 "use client";
 
 import type { BudgetStatus } from "@/server/db/queries/analytics";
+import { formatCurrency as formatCurrencyUtil } from "@/lib/utils/currency";
 
 interface BudgetProgressCardProps {
   budgets: BudgetStatus[];
+  baseCurrency: string;
 }
 
-function formatCurrency(amount: number) {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    minimumFractionDigits: 0,
-  }).format(amount / 100);
-}
 
 function getProgressColor(status: BudgetStatus["status"]) {
   switch (status) {
@@ -66,7 +61,11 @@ function getStatusLabelColor(status: BudgetStatus["status"]) {
   }
 }
 
-export function BudgetProgressCard({ budgets }: BudgetProgressCardProps) {
+export function BudgetProgressCard({ budgets, baseCurrency }: BudgetProgressCardProps) {
+  function formatCurrency(amount: number) {
+    return formatCurrencyUtil(amount / 100, baseCurrency);
+  }
+
   if (budgets.length === 0) {
     return (
       <div className="bg-white rounded-2xl shadow-sm border border-slate-100">

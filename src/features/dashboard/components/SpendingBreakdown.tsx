@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { SpendingDonutChart } from "@/components/charts/SpendingDonutChart";
+import { formatCurrency as formatCurrencyUtil } from "@/lib/utils/currency";
 
 interface CategoryData {
   categoryId: string | null;
@@ -14,17 +15,14 @@ interface CategoryData {
 
 interface SpendingBreakdownProps {
   data: CategoryData[];
+  baseCurrency: string;
 }
 
-function formatCurrency(amount: number) {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    minimumFractionDigits: 0,
-  }).format(amount / 100);
-}
+export function SpendingBreakdown({ data, baseCurrency }: SpendingBreakdownProps) {
+  function formatCurrency(amount: number) {
+    return formatCurrencyUtil(amount / 100, baseCurrency);
+  }
 
-export function SpendingBreakdown({ data }: SpendingBreakdownProps) {
   const totalSpending = data.reduce((sum, item) => sum + item.total, 0);
   const topCategories = data.slice(0, 5);
 
