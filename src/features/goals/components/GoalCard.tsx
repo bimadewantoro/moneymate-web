@@ -12,13 +12,10 @@ import {
   Loader2,
 } from "lucide-react";
 import type { Goal } from "@/server/db/schema";
+import { formatCurrency } from "@/lib/utils/currency";
 
-function formatCurrency(amountInCents: number) {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    minimumFractionDigits: 0,
-  }).format(amountInCents / 100);
+function formatGoalCurrency(amountInCents: number, currency: string) {
+  return formatCurrency(amountInCents / 100, currency);
 }
 
 function formatDate(date: Date) {
@@ -119,11 +116,11 @@ export function GoalCard({ goal }: GoalCardProps) {
         <div className="flex items-center justify-between mt-2">
           <p className="text-sm text-slate-900">
             <span className="font-semibold">
-              {formatCurrency(goal.currentAmount)}
+              {formatGoalCurrency(goal.currentAmount, goal.currency)}
             </span>
             <span className="text-slate-400 mx-1">/</span>
             <span className="text-slate-500">
-              {formatCurrency(goal.targetAmount)}
+              {formatGoalCurrency(goal.targetAmount, goal.currency)}
             </span>
           </p>
           <span
