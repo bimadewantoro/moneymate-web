@@ -41,7 +41,7 @@ export function AddMoneyModal({ goalId, goalName, children }: AddMoneyModalProps
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="w-[400px]">
+      <DialogContent className="w-[95%] sm:w-[400px]">
         <div className="px-6 pt-6 pb-2">
           <div className="flex items-center gap-3 mb-1">
             <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center">
