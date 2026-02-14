@@ -129,7 +129,7 @@ export function CreateGoalModal({ children }: CreateGoalModalProps) {
               htmlFor="goal-target"
               className="block text-sm font-medium text-slate-700 mb-1.5"
             >
-              Target Amount (Rp)
+              Target Amount
             </label>
             <input
               id="goal-target"

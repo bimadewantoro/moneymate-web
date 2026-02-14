@@ -68,7 +68,7 @@ export function AddMoneyModal({ goalId, goalName, children }: AddMoneyModalProps
               htmlFor="add-amount"
               className="block text-sm font-medium text-slate-700 mb-1.5"
             >
-              Amount (Rp)
+              Amount
             </label>
             <input
               id="add-amount"
