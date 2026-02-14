@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { Camera, Loader2, CheckCircle, AlertCircle } from "lucide-react";
 import { scanReceipt, type ReceiptData } from "@/features/ai/actions/scan-receipt";
+import { formatCurrency } from "@/lib/utils/currency";
 
 interface ScanReceiptButtonProps {
   onScanComplete: (data: ReceiptData) => void;
@@ -80,7 +81,7 @@ export function ScanReceiptButton({
         onScanComplete(result.data);
         showToast(
           "success",
-          `Receipt scanned! Found: ${result.data.merchant} - Rp ${result.data.amount.toLocaleString("id-ID")}`
+          `Receipt scanned! Found: ${result.data.merchant} - ${formatCurrency(result.data.amount, result.data.currency)}`
         );
       } else {
         showToast("error", result.error || "Failed to scan receipt");

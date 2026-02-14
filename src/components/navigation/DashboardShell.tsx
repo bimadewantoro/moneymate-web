@@ -7,6 +7,7 @@ interface Account {
   id: string;
   name: string;
   type: "bank" | "cash" | "e-wallet" | "investment" | "other";
+  currency: string;
 }
 
 interface Category {
