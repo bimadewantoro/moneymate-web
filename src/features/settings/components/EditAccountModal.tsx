@@ -28,6 +28,17 @@ const ACCOUNT_TYPES = [
   { value: "other", label: "Other", icon: "💳" },
 ] as const;
 
+const CURRENCIES = [
+  { code: "IDR", label: "IDR", flag: "🇮🇩" },
+  { code: "USD", label: "USD", flag: "🇺🇸" },
+  { code: "EUR", label: "EUR", flag: "🇪🇺" },
+  { code: "GBP", label: "GBP", flag: "🇬🇧" },
+  { code: "SGD", label: "SGD", flag: "🇸🇬" },
+  { code: "AUD", label: "AUD", flag: "🇦🇺" },
+  { code: "JPY", label: "JPY", flag: "🇯🇵" },
+  { code: "MYR", label: "MYR", flag: "🇲🇾" },
+] as const;
+
 export function EditAccountModal({
   account,
   isOpen,
@@ -63,7 +74,7 @@ export function EditAccountModal({
         name: formData.name,
         type: formData.type,
         initialBalance: parseFloat(formData.initialBalance) || 0,
-        currency: "IDR", // Currency is temporarily disabled - IDR is set as default
+        currency: formData.currency,
         isActive: formData.isActive,
       });
 
@@ -186,7 +197,25 @@ export function EditAccountModal({
               />
             </div>
 
-            {/* Currency is temporarily disabled - IDR is set as default */}
+            {/* Currency */}
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">
+                Currency
+              </label>
+              <select
+                value={formData.currency}
+                onChange={(e) =>
+                  setFormData({ ...formData, currency: e.target.value })
+                }
+                className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600 bg-white text-slate-900"
+              >
+                {CURRENCIES.map((c) => (
+                  <option key={c.code} value={c.code}>
+                    {c.flag} {c.code}
+                  </option>
+                ))}
+              </select>
+            </div>
 
             {/* Active Status */}
             <div className="flex items-center gap-3">

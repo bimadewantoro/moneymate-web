@@ -4,11 +4,13 @@ import { useState, useRef, useEffect } from "react";
 import { createTransactionAction } from "@/features/transactions/actions";
 import { ScanReceiptButton } from "@/components/common/ScanReceiptButton";
 import type { ReceiptData } from "@/features/ai/actions/scan-receipt";
+import { getCurrencySymbol } from "@/lib/utils/currency";
 
 interface Account {
   id: string;
   name: string;
   type: "bank" | "cash" | "e-wallet" | "investment" | "other";
+  currency: string;
 }
 
 interface Category {
@@ -221,7 +223,11 @@ export function TransactionForm({
                 </label>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-                    Rp
+                    {(() => {
+                      const accountId = activeType === "income" ? formValues.toAccountId : formValues.fromAccountId;
+                      const account = accounts.find(a => a.id === accountId);
+                      return getCurrencySymbol(account?.currency ?? "IDR");
+                    })()}
                   </span>
                   <input
                     ref={amountRef}

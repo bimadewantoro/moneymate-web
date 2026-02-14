@@ -9,6 +9,18 @@ import {
   deleteAccountAction,
 } from "@/features/settings/actions";
 import { EditAccountModal } from "./EditAccountModal";
+import { formatCurrency as formatCurrencyUtil } from "@/lib/utils/currency";
+
+const CURRENCIES = [
+  { code: "IDR", label: "IDR", flag: "🇮🇩" },
+  { code: "USD", label: "USD", flag: "🇺🇸" },
+  { code: "EUR", label: "EUR", flag: "🇪🇺" },
+  { code: "GBP", label: "GBP", flag: "🇬🇧" },
+  { code: "SGD", label: "SGD", flag: "🇸🇬" },
+  { code: "AUD", label: "AUD", flag: "🇦🇺" },
+  { code: "JPY", label: "JPY", flag: "🇯🇵" },
+  { code: "MYR", label: "MYR", flag: "🇲🇾" },
+] as const;
 
 interface Account {
   id: string;
@@ -24,6 +36,7 @@ interface Account {
 
 interface AccountsSectionProps {
   accounts: Account[];
+  baseCurrency: string;
 }
 
 const ACCOUNT_TYPES = [
@@ -34,7 +47,7 @@ const ACCOUNT_TYPES = [
   { value: "other", label: "Other", icon: "💳" },
 ] as const;
 
-export function AccountsSection({ accounts }: AccountsSectionProps) {
+export function AccountsSection({ accounts, baseCurrency }: AccountsSectionProps) {
   const [isAddingAccount, setIsAddingAccount] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingAccount, setEditingAccount] = useState<Account | null>(null);
@@ -77,12 +90,8 @@ export function AccountsSection({ accounts }: AccountsSectionProps) {
     return ACCOUNT_TYPES.find((t) => t.value === type)?.icon || "💳";
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-      minimumFractionDigits: 0,
-    }).format(amount);
+  const formatAccountCurrency = (amount: number, currency: string) => {
+    return formatCurrencyUtil(amount, currency);
   };
 
   return (
@@ -151,8 +160,22 @@ export function AccountsSection({ accounts }: AccountsSectionProps) {
                   className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600 bg-white text-slate-900"
                 />
               </div>
-              {/* Currency is temporarily disabled - IDR is set as default */}
-              <input type="hidden" name="currency" value="IDR" />
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Currency
+                </label>
+                <select
+                  name="currency"
+                  defaultValue={baseCurrency}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600 bg-white text-slate-900"
+                >
+                  {CURRENCIES.map((c) => (
+                    <option key={c.code} value={c.code}>
+                      {c.flag} {c.code}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
             <div className="flex gap-2 justify-end">
               <button
@@ -221,7 +244,7 @@ export function AccountsSection({ accounts }: AccountsSectionProps) {
                     </select>
                     <span className="text-xs text-slate-400">•</span>
                     <span className="text-xs text-slate-500">
-                      Initial: {formatCurrency(account.initialBalance)}
+                      Initial: {formatAccountCurrency(account.initialBalance, account.currency)}
                     </span>
                   </div>
                 </div>

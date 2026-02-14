@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { X, Trash2 } from "lucide-react";
 import { updateCategoryAction, deleteCategoryAction } from "@/features/settings/actions";
+import { getCurrencySymbol } from "@/lib/utils/currency";
 
 interface Category {
   id: string;
@@ -18,6 +19,7 @@ interface EditCategoryModalProps {
   category: Category;
   isOpen: boolean;
   onClose: () => void;
+  baseCurrency: string;
 }
 
 const DEFAULT_ICONS = [
@@ -38,6 +40,7 @@ export function EditCategoryModal({
   category,
   isOpen,
   onClose,
+  baseCurrency,
 }: EditCategoryModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -188,7 +191,7 @@ export function EditCategoryModal({
                 </label>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm">
-                    Rp
+                    {getCurrencySymbol(baseCurrency)}
                   </span>
                   <input
                     type="number"

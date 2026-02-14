@@ -11,25 +11,7 @@ import {
   initializeDefaultCategoriesAction,
 } from "@/features/settings/actions";
 import { EditCategoryModal } from "./EditCategoryModal";
-
-function formatCurrency(amount: number) {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    minimumFractionDigits: 0,
-  }).format(amount / 100); // Convert from cents
-}
-
-function formatCompactCurrency(amount: number) {
-  const value = amount / 100;
-  if (value >= 1_000_000) {
-    return `Rp ${(value / 1_000_000).toFixed(value % 1_000_000 === 0 ? 0 : 1)}jt`;
-  }
-  if (value >= 1_000) {
-    return `Rp ${(value / 1_000).toFixed(value % 1_000 === 0 ? 0 : 0)}rb`;
-  }
-  return `Rp ${value}`;
-}
+import { formatCurrency, formatCurrencyCompact } from "@/lib/utils/currency";
 
 interface Category {
   id: string;
@@ -45,6 +27,7 @@ interface Category {
 
 interface CategoriesSectionProps {
   categories: Category[];
+  baseCurrency: string;
 }
 
 const DEFAULT_ICONS = [
@@ -53,7 +36,15 @@ const DEFAULT_ICONS = [
   "🎬", "🎵", "💪", "🐕", "👶", "💇", "🔧", "📱",
 ];
 
-export function CategoriesSection({ categories }: CategoriesSectionProps) {
+export function CategoriesSection({ categories, baseCurrency }: CategoriesSectionProps) {
+  function formatBudget(amount: number) {
+    return formatCurrency(amount / 100, baseCurrency);
+  }
+
+  function formatBudgetCompact(amount: number) {
+    return formatCurrencyCompact(amount / 100, baseCurrency);
+  }
+
   const [isAddingCategory, setIsAddingCategory] = useState(false);
   const [activeTab, setActiveTab] = useState<"income" | "expense">("expense");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -324,7 +315,7 @@ export function CategoriesSection({ categories }: CategoriesSectionProps) {
                     {category.type === "expense" && (
                       category.monthlyBudget ? (
                         <p className="text-xs text-slate-500">
-                          Budget: {formatCompactCurrency(category.monthlyBudget)}/mo
+                          Budget: {formatBudgetCompact(category.monthlyBudget)}/mo
                         </p>
                       ) : (
                         <button
@@ -369,6 +360,7 @@ export function CategoriesSection({ categories }: CategoriesSectionProps) {
           category={editingCategory}
           isOpen={!!editingCategory}
           onClose={() => setEditingCategory(null)}
+          baseCurrency={baseCurrency}
         />
       )}
     </div>
