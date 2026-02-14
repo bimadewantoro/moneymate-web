@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { getUserFinanceAccounts } from "@/server/db/queries/accounts";
 import { getUserCategories } from "@/server/db/queries/categories";
+import { getUserBaseCurrency } from "@/server/db/queries/users";
 import { AccountsSection } from "@/features/settings/components/AccountsSection";
 import { CategoriesSection } from "@/features/settings/components/CategoriesSection";
 
@@ -12,9 +13,10 @@ export default async function BudgetPage() {
     redirect("/signin");
   }
 
-  const [accounts, categories] = await Promise.all([
+  const [accounts, categories, baseCurrency] = await Promise.all([
     getUserFinanceAccounts(session.user.id),
     getUserCategories(session.user.id),
+    getUserBaseCurrency(session.user.id),
   ]);
 
   return (
@@ -43,11 +45,12 @@ export default async function BudgetPage() {
           accounts={accounts.map(acc => ({
             ...acc,
             initialBalance: acc.initialBalance / 100,
-          }))} 
+          }))}
+          baseCurrency={baseCurrency}
         />
 
         {/* Categories Section */}
-        <CategoriesSection categories={categories} />
+        <CategoriesSection categories={categories} baseCurrency={baseCurrency} />
       </main>
     </div>
   );

@@ -8,6 +8,7 @@ import {
 import { getActiveCategories } from "@/server/db/queries/categories";
 import { TransactionsTable } from "@/features/transactions/components/TransactionsTable";
 import { TransactionForm } from "@/features/transactions/components/TransactionForm";
+import { getUserBaseCurrency } from "@/server/db/queries/users";
 
 interface PageProps {
   searchParams: Promise<{
@@ -26,10 +27,11 @@ export default async function TransactionsPage({ searchParams }: PageProps) {
 
   const params = await searchParams;
 
-  const [transactions, accounts, categories] = await Promise.all([
+  const [transactions, accounts, categories, baseCurrency] = await Promise.all([
     getUserTransactions(session.user.id),
     getActiveFinanceAccounts(session.user.id),
     getActiveCategories(session.user.id),
+    getUserBaseCurrency(session.user.id),
   ]);
 
   // Convert amounts from cents to display values
@@ -144,6 +146,7 @@ export default async function TransactionsPage({ searchParams }: PageProps) {
             transactions={displayTransactions}
             accounts={accounts}
             categories={categories}
+            baseCurrency={baseCurrency}
             initialTypeFilter={params.type as "income" | "expense" | "transfer" | undefined}
             initialCategoryFilter={params.category}
             initialAccountFilter={params.account}

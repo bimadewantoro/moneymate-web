@@ -3,11 +3,13 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import {
   getUserAccountsWithBalances,
+  getUserAccountsWithConvertedBalances,
   getActiveFinanceAccounts,
 } from "@/server/db/queries/accounts";
 import { getActiveCategories } from "@/server/db/queries/categories";
 import { getRecentTransactions } from "@/server/db/queries/transactions";
 import { getGoals } from "@/server/db/queries/goals";
+import { getUserBaseCurrency } from "@/server/db/queries/users";
 import {
   getCurrentMonthStats,
   getSpendingByCategory,
@@ -25,6 +27,7 @@ import { WatchlistWidget } from "@/features/dashboard/components/WatchlistWidget
 import { TotalBalanceCard } from "@/features/dashboard/components/TotalBalanceCard";
 import { GoalCard } from "@/features/goals/components/GoalCard";
 import { CreateGoalModal } from "@/features/goals/components/CreateGoalModal";
+import { formatCurrency as formatCurrencyUtil } from "@/lib/utils/currency";
 import {
   ArrowUpRight,
   ArrowDownLeft,
@@ -42,12 +45,8 @@ const ACCOUNT_ICONS: Record<string, string> = {
   other: "💳",
 };
 
-function formatCurrency(amount: number) {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    minimumFractionDigits: 0,
-  }).format(amount / 100); // Convert from cents
+function formatCurrency(amount: number, currency: string) {
+  return formatCurrencyUtil(amount / 100, currency);
 }
 
 export default async function DashboardPage() {
@@ -57,6 +56,9 @@ export default async function DashboardPage() {
     redirect("/signin");
   }
 
+  // Fetch baseCurrency first (needed for onboarding redirect and converted balances)
+  const baseCurrency = await getUserBaseCurrency(session.user.id);
+
   // Check if user needs onboarding (no accounts yet)
   const existingAccounts = await getUserAccountsWithBalances(session.user.id);
   if (existingAccounts.length === 0) {
@@ -64,7 +66,7 @@ export default async function DashboardPage() {
   }
 
   const [
-    accountsWithBalances,
+    convertedBalancesData,
     monthStats,
     spendingByCategory,
     monthlyTrends,
@@ -76,7 +78,7 @@ export default async function DashboardPage() {
     watchlistCategories,
     savingsGoals,
   ] = await Promise.all([
-    Promise.resolve(existingAccounts), // Reuse the already fetched data
+    getUserAccountsWithConvertedBalances(session.user.id, baseCurrency),
     getCurrentMonthStats(session.user.id),
     getSpendingByCategory(session.user.id),
     getMonthlyTrends(session.user.id, 6),
@@ -89,10 +91,8 @@ export default async function DashboardPage() {
     getGoals(session.user.id),
   ]);
 
-  const totalBalance = accountsWithBalances.reduce(
-    (sum, acc) => sum + acc.currentBalance,
-    0
-  );
+  const accountsWithBalances = convertedBalancesData.accounts;
+  const totalBalance = convertedBalancesData.convertedTotal;
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -147,6 +147,7 @@ export default async function DashboardPage() {
           monthlyIncome={monthStats.income}
           monthlyExpenses={monthStats.expenses}
           accounts={accountsWithBalances}
+          baseCurrency={baseCurrency}
         />
 
         {/* ── Quick Actions ── */}
@@ -193,17 +194,17 @@ export default async function DashboardPage() {
 
         {/* ── Watchlist ── */}
         {watchlistCategories.length > 0 && (
-          <WatchlistWidget watchlist={watchlistCategories} />
+          <WatchlistWidget watchlist={watchlistCategories} baseCurrency={baseCurrency} />
         )}
 
         {/* ── Charts ── */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <SpendingBreakdown data={spendingByCategory} />
-          <TrendAnalysis data={monthlyTrends} />
+          <SpendingBreakdown data={spendingByCategory} baseCurrency={baseCurrency} />
+          <TrendAnalysis data={monthlyTrends} baseCurrency={baseCurrency} />
         </div>
 
         {/* ── Budget ── */}
-        <BudgetProgressCard budgets={budgetStatus} />
+        <BudgetProgressCard budgets={budgetStatus} baseCurrency={baseCurrency} />
 
         {/* ── Savings Goals ── */}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-100">
@@ -308,7 +309,7 @@ export default async function DashboardPage() {
                           : "text-red-500"
                       }`}
                     >
-                      {formatCurrency(account.currentBalance)}
+                      {formatCurrency(account.currentBalance, baseCurrency)}
                     </p>
                   </div>
                 ))}
@@ -321,6 +322,7 @@ export default async function DashboardPage() {
             transactions={recentTransactions}
             categories={categories}
             accounts={accounts}
+            baseCurrency={baseCurrency}
           />
         </div>
       </main>
