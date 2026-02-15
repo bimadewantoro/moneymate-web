@@ -17,6 +17,12 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "MoneyMate",
   description: "Your personal finance dashboard",
+  manifest: "/site.webmanifest",
+  icons: {
+    icon: "/moneymate-logo.png",
+    shortcut: "/moneymate-logo.png",
+    apple: "/moneymate-logo.png",
+  },
 };
 
 export default function RootLayout({

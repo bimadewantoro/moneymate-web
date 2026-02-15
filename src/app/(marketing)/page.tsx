@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import Link from "next/link";
+import Image from "next/image";
 import {
   BarChart3,
   Wallet,
@@ -76,8 +77,15 @@ export default async function Home() {
       <nav className="relative z-20 px-5 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="brand-gradient w-10 h-10 rounded-2xl flex items-center justify-center shadow-sm">
-              <span className="text-white font-bold text-lg">M</span>
+            <div className="relative w-10 h-10 flex items-center justify-center">
+               <Image
+                src="/moneymate-logo.png"
+                alt="MoneyMate Icon"
+                width={40}
+                height={40}
+                className="rounded-xl object-contain"
+                priority
+              />
             </div>
             <span className="text-xl font-bold tracking-tight brand-gradient-text">
               MoneyMate

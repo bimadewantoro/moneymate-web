@@ -30,9 +30,13 @@ export function Sidebar({ userName, userImage }: SidebarProps) {
     <aside className="hidden md:flex md:flex-col md:w-64 lg:w-72 border-r border-slate-200 bg-white h-screen sticky top-0">
       {/* Brand */}
       <div className="flex items-center gap-3 px-6 py-5 border-b border-slate-100">
-        <div className="brand-gradient w-10 h-10 rounded-2xl flex items-center justify-center shadow-sm">
-          <span className="text-white font-bold text-lg">M</span>
-        </div>
+        <Image
+          src="/moneymate-logo.png"
+          alt="MoneyMate Icon"
+          width={32}
+          height={32}
+          className="rounded-xl"
+        />
         <span className="text-xl font-bold tracking-tight brand-gradient-text">
           MoneyMate
         </span>
