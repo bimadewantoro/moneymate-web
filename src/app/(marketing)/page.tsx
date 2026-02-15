@@ -9,9 +9,20 @@ import {
   ScanLine,
   ArrowUpRight,
   ArrowDownLeft,
+  Target,
+  Globe,
+  CircleDollarSign,
+  ClipboardList,
+  Sparkles,
 } from "lucide-react";
 
 const FEATURES = [
+  {
+    icon: ScanLine,
+    title: "AI Receipt Scanner",
+    description:
+      "Snap a photo of any receipt and let Google AI auto-extract merchant, amount, and category instantly.",
+  },
   {
     icon: BarChart3,
     title: "Expense Tracking",
@@ -37,16 +48,22 @@ const FEATURES = [
       "Manage bank accounts, e-wallets, cash, and investments all in one unified dashboard.",
   },
   {
-    icon: ScanLine,
-    title: "Receipt Scanner",
+    icon: Target,
+    title: "Savings Goals",
     description:
-      "Snap a photo of any receipt and let AI auto-fill transaction details — instant and accurate.",
+      "Set targets for vacations, gadgets, or emergency funds. Track your progress with visual milestones.",
+  },
+  {
+    icon: CircleDollarSign,
+    title: "Easy Setup",
+    description:
+      "Simple and quick setup process. Just focus on your expenses and let MoneyMate handle the rest.",
   },
   {
     icon: ShieldCheck,
     title: "Secure & Private",
     description:
-      "Your financial data is protected with Google auth and optional PIN lock. Privacy first.",
+      "Sign in with Google OAuth, SSL-encrypted data, and privacy-first design. Your finances stay yours.",
   },
 ];
 
@@ -148,7 +165,7 @@ export default async function Home() {
               <div className="flex flex-wrap items-center justify-center lg:justify-start gap-6 mt-10">
                 <div className="flex items-center gap-2 text-slate-400">
                   <ShieldCheck className="w-4 h-4" />
-                  <span className="text-xs font-medium">Google Auth</span>
+                  <span className="text-xs font-medium">Easy to Use</span>
                 </div>
                 <div className="flex items-center gap-2 text-slate-400">
                   <TrendingUp className="w-4 h-4" />
@@ -261,7 +278,7 @@ export default async function Home() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
           {FEATURES.map((f) => (
             <div
               key={f.title}
@@ -278,6 +295,65 @@ export default async function Home() {
               </p>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* ═══════ HOW IT WORKS ═══════ */}
+      <section className="px-5 py-16 sm:py-24 bg-slate-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-14">
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 mb-3">
+              Get started in{" "}
+              <span className="brand-gradient-text">three easy steps</span>
+            </h2>
+            <p className="text-slate-500 max-w-2xl mx-auto">
+              From sign-up to financial clarity in under a minute.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              {
+                step: "01",
+                icon: CircleDollarSign,
+                title: "Create Your Accounts",
+                description:
+                  "Add your bank accounts, e-wallets, and cash stashes. Set the currency and opening balance for each.",
+              },
+              {
+                step: "02",
+                icon: ClipboardList,
+                title: "Track Transactions",
+                description:
+                  "Log income, expenses, and transfers — or snap a receipt and let AI do the heavy lifting.",
+              },
+              {
+                step: "03",
+                icon: Sparkles,
+                title: "Watch Your Wealth Grow",
+                description:
+                  "Set savings goals, review spending charts, and gain insights that help you save more every month.",
+              },
+            ].map((item) => (
+              <div
+                key={item.step}
+                className="relative text-center p-8 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300"
+              >
+                <span className="absolute top-4 right-5 text-5xl font-black text-slate-100 select-none">
+                  {item.step}
+                </span>
+                <div className="w-14 h-14 brand-gradient rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-sm">
+                  <item.icon className="w-7 h-7 text-white" />
+                </div>
+                <h3 className="text-lg font-semibold text-slate-900 mb-2 tracking-tight">
+                  {item.title}
+                </h3>
+                <p className="text-sm text-slate-500 leading-relaxed">
+                  {item.description}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
