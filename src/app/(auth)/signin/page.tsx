@@ -1,6 +1,7 @@
 import { signIn } from "@/auth";
 import Link from "next/link";
 import { Shield, Zap, BarChart3, ArrowLeft } from "lucide-react";
+import Image from "next/image";
 
 export default function SignInPage() {
   return (
@@ -12,8 +13,15 @@ export default function SignInPage() {
       <div className="hidden lg:flex lg:w-1/2 relative z-10 flex-col justify-between p-12">
         <div>
           <Link href="/" className="inline-flex items-center gap-3 group">
-            <div className="w-12 h-12 brand-gradient rounded-2xl flex items-center justify-center group-hover:scale-105 transition-transform shadow-lg">
-              <span className="text-white font-bold text-lg">M</span>
+            <div className="relative w-10 h-10 flex items-center justify-center">
+              <Image
+                src="/moneymate-logo.png"
+                alt="MoneyMate Icon"
+                width={40}
+                height={40}
+                className="rounded-xl object-contain"
+                priority
+              />
             </div>
             <span className="text-2xl font-bold text-slate-900 tracking-tight">MoneyMate</span>
           </Link>
