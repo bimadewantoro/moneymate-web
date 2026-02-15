@@ -208,8 +208,8 @@ export function EditTransactionModal({
                   <input
                     type="number"
                     required
-                    min="0.01"
-                    step="0.01"
+                    min="1"
+                    step="1"
                     value={formData.amount}
                     onChange={(e) =>
                       setFormData({ ...formData, amount: e.target.value })

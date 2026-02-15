@@ -121,7 +121,7 @@ export function Step1Account({ initialData, onComplete }: Step1AccountProps) {
               onChange={(e) => setInitialBalance(e.target.value)}
               placeholder="0"
               min="0"
-              step="1000"
+              step="1"
               className="w-full pl-12 pr-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-blue-600 bg-white text-slate-900 text-lg"
             />
           </div>
