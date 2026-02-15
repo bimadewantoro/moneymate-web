@@ -83,8 +83,15 @@ export default function SignInPage() {
           {/* Mobile Logo */}
           <div className="lg:hidden text-center mb-8">
             <Link href="/" className="inline-flex items-center gap-3">
-              <div className="w-12 h-12 brand-gradient rounded-2xl flex items-center justify-center shadow-lg">
-                <span className="text-white font-bold text-lg">M</span>
+              <div className="relative w-10 h-10 flex items-center justify-center">
+                <Image
+                  src="/moneymate-logo.png"
+                  alt="MoneyMate Icon"
+                  width={40}
+                  height={40}
+                  className="rounded-xl object-contain"
+                  priority
+                />
               </div>
               <span className="text-2xl font-bold text-slate-900 tracking-tight">MoneyMate</span>
             </Link>
@@ -93,9 +100,6 @@ export default function SignInPage() {
           {/* Sign In Card */}
           <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-xl">
             <div className="text-center mb-8">
-              <div className="w-16 h-16 brand-gradient rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <span className="text-white font-bold text-lg">M</span>
-              </div>
               <h2 className="text-2xl font-bold text-slate-900 tracking-tight mb-2">
                 Welcome!
               </h2>

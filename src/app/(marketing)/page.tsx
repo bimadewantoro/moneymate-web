@@ -396,10 +396,7 @@ export default async function Home() {
       <footer className="border-t border-slate-100 py-8 px-5">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="brand-gradient w-7 h-7 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-xs">M</span>
-            </div>
-            <span className="text-sm text-slate-400">© 2026 MoneyMate</span>
+            <span className="text-sm text-slate-400">© 2026 MoneyMate. All rights reserved.</span>
           </div>
           <p className="text-sm text-slate-400">
             Built with ❤️ for your financial wellness
