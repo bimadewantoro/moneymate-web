@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { Loader2 } from "lucide-react";
 import { createTransactionAction } from "@/features/transactions/actions";
 import { ScanReceiptButton } from "@/components/common/ScanReceiptButton";
 import type { ReceiptData } from "@/features/ai/actions/scan-receipt";
@@ -212,7 +213,13 @@ export function TransactionForm({
             </button>
           </div>
 
-          <form action={handleSubmit} className="space-y-4">
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              await handleSubmit(new FormData(e.currentTarget));
+            }}
+            className="space-y-4"
+          >
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {/* Amount */}
               <div>
@@ -357,7 +364,14 @@ export function TransactionForm({
                     : "bg-blue-600 text-white hover:bg-blue-700"
                 }`}
               >
-                {isSubmitting ? "Saving..." : `Add ${activeType.charAt(0).toUpperCase() + activeType.slice(1)}`}
+                {isSubmitting ? (
+                  <span className="inline-flex items-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Saving...
+                  </span>
+                ) : (
+                  `Add ${activeType.charAt(0).toUpperCase() + activeType.slice(1)}`
+                )}
               </button>
             </div>
           </form>

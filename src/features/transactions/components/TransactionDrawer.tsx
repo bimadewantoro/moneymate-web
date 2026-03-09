@@ -386,7 +386,14 @@ export function TransactionDrawer({
           </div>
 
           {/* ═══ Form ═══ */}
-          <form ref={formRef} action={handleSubmit} className="space-y-4">
+          <form
+            ref={formRef}
+            onSubmit={async (e) => {
+              e.preventDefault();
+              await handleSubmit(new FormData(e.currentTarget));
+            }}
+            className="space-y-4"
+          >
             {/* ── Amount ── */}
             <div
               className={[
