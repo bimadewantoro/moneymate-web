@@ -5,7 +5,7 @@ import { getUserCategories } from "@/server/db/queries/categories";
 import { AccountsSection } from "@/features/settings/components/AccountsSection";
 import { CategoriesSection } from "@/features/settings/components/CategoriesSection";
 
-export default async function BudgetPage() {
+export default async function PocketsPage() {
   const session = await auth();
 
   if (!session?.user?.id) {
@@ -21,7 +21,7 @@ export default async function BudgetPage() {
     <div className="min-h-screen bg-slate-50">
       {/* ═══ Mobile Header ═══ */}
       <header className="md:hidden sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-slate-200/60 px-5 py-3">
-        <h1 className="text-lg font-bold tracking-tight text-slate-900">Budget</h1>
+        <h1 className="text-lg font-bold tracking-tight text-slate-900">Pockets</h1>
         <p className="text-sm text-slate-500">Manage your accounts and categories</p>
       </header>
 
@@ -29,7 +29,7 @@ export default async function BudgetPage() {
       <header className="hidden md:flex items-center justify-between px-8 py-6 border-b border-slate-100 bg-white">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-            Budget
+            Pockets
           </h1>
           <p className="text-slate-500 text-sm">
             Manage your accounts and categories
