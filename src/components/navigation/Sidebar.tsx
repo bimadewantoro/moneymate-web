@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import {
   Home,
   ArrowLeftRight,
-  PiggyBank,
+  Wallet,
   LogOut,
 } from "lucide-react";
 import { useTransactionDrawer } from "@/features/transactions/contexts/TransactionDrawerContext";
@@ -14,7 +14,7 @@ import { useTransactionDrawer } from "@/features/transactions/contexts/Transacti
 const SIDEBAR_ITEMS = [
   { href: "/dashboard", label: "Dashboard", icon: Home },
   { href: "/transactions", label: "Transactions", icon: ArrowLeftRight },
-  { href: "/budget", label: "Budget", icon: PiggyBank },
+  { href: "/pockets", label: "Pockets", icon: Wallet },
 ];
 
 interface SidebarProps {

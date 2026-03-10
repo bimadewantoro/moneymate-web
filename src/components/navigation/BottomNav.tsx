@@ -6,7 +6,7 @@ import {
   Home,
   ArrowLeftRight,
   Plus,
-  PiggyBank,
+  Wallet,
   UserCircle,
 } from "lucide-react";
 import { useTransactionDrawer } from "@/features/transactions/contexts/TransactionDrawerContext";
@@ -15,7 +15,7 @@ const NAV_ITEMS = [
   { href: "/dashboard", label: "Home", icon: Home },
   { href: "/transactions", label: "Activity", icon: ArrowLeftRight },
   { href: "__add__", label: "Add", icon: Plus }, // center FAB — opens drawer
-  { href: "/budget", label: "Budget", icon: PiggyBank },
+  { href: "/pockets", label: "Pockets", icon: Wallet },
   { href: "/profile", label: "Profile", icon: UserCircle },
 ];
 
