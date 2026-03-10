@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import { getUserFinanceAccounts } from "@/server/db/queries/accounts";
+import { getUserAccountsWithBalances } from "@/server/db/queries/accounts";
 import { getUserCategories } from "@/server/db/queries/categories";
 import { AccountsSection } from "@/features/settings/components/AccountsSection";
 import { CategoriesSection } from "@/features/settings/components/CategoriesSection";
@@ -13,7 +13,7 @@ export default async function PocketsPage() {
   }
 
   const [accounts, categories] = await Promise.all([
-    getUserFinanceAccounts(session.user.id),
+    getUserAccountsWithBalances(session.user.id),
     getUserCategories(session.user.id),
   ]);
 
@@ -43,6 +43,7 @@ export default async function PocketsPage() {
           accounts={accounts.map(acc => ({
             ...acc,
             initialBalance: acc.initialBalance / 100,
+            currentBalance: acc.currentBalance / 100,
           }))} 
         />
 
