@@ -13,7 +13,13 @@ export default auth((req) => {
   // The marketing page is at / via (marketing) route group
   // The dashboard is also at / via (dashboard) route group
   // We need to protect dashboard-only routes
-  const dashboardPaths = ["/dashboard", "/transactions", "/pockets", "/profile", "/onboarding"];
+  const dashboardPaths = [
+    "/dashboard",
+    "/transactions",
+    "/pockets",
+    "/profile",
+    "/onboarding",
+  ];
   const isDashboardRoute = dashboardPaths.some((p) => pathname.startsWith(p));
 
   if (isDashboardRoute && !isAuthenticated) {

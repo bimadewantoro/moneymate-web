@@ -123,7 +123,7 @@ export default async function TransactionsPage({ searchParams }: PageProps) {
               Set up your accounts first to start tracking transactions
             </p>
             <Link
-              href="/budget"
+              href="/pockets"
               className="inline-flex items-center px-5 py-2.5 brand-gradient text-white rounded-xl hover:shadow-md transition-shadow font-medium"
             >
               Set Up Accounts
