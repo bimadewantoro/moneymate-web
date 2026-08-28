@@ -156,6 +156,22 @@ export const goals = sqliteTable("goal", {
     .default(sql`(unixepoch() * 1000)`),
 });
 
+// MCP Auth API Keys
+export const apiKeys = sqliteTable("api_key", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  keyHash: text("key_hash").unique().notNull(),
+  name: text("name").notNull().default("MCP Agent"),
+  createdAt: integer("created_at", { mode: "timestamp_ms" })
+    .notNull()
+    .default(sql`(unixepoch() * 1000)`),
+  lastUsedAt: integer("last_used_at", { mode: "timestamp_ms" }),
+});
+
 // Type exports for use in application
 export type FinanceAccount = typeof financeAccounts.$inferSelect;
 export type NewFinanceAccount = typeof financeAccounts.$inferInsert;

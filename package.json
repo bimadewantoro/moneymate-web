@@ -11,13 +11,15 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "db:push:prod": "NODE_ENV=production drizzle-kit push"
+    "db:push:prod": "NODE_ENV=production drizzle-kit push",
+    "mcp": "tsx mcp/server.ts"
   },
   "dependencies": {
     "@ai-sdk/google": "^3.0.22",
     "@auth/core": "^0.41.0",
     "@auth/drizzle-adapter": "^1.11.1",
     "@libsql/client": "^0.17.0",
+    "@modelcontextprotocol/sdk": "^1.30.0",
     "@radix-ui/react-dialog": "^1.1.15",
     "@tanstack/react-table": "^8.21.3",
     "ai": "^6.0.77",
@@ -47,6 +49,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4",
+    "tsx": "^4.23.12",
     "typescript": "^5"
   }
 }
