@@ -1,29 +1,27 @@
-import "./env.js";
+import "./env";
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 
-import { db } from "../src/server/db/index.js";
-import { transactions, categories } from "../src/server/db/schema.js";
+import { db } from "../src/server/db/index";
+import { transactions, categories } from "../src/server/db/schema";
 import { eq, and, desc, sql } from "drizzle-orm";
-import { getAuthenticatedUser } from "./auth.js";
 
 import {
   getUserFinanceAccounts,
   getUserAccountsWithBalances,
   getAccountBalance,
-} from "../src/server/db/queries/accounts.js";
+} from "../src/server/db/queries/accounts";
 import {
   getUserCategories,
   getActiveCategories,
   getCategoriesByType,
-} from "../src/server/db/queries/categories.js";
+} from "../src/server/db/queries/categories";
 import {
   getUserTransactions,
   getUserTransactionStats,
-} from "../src/server/db/queries/transactions.js";
-import { getGoals, getGoalById } from "../src/server/db/queries/goals.js";
+} from "../src/server/db/queries/transactions";
+import { getGoals, getGoalById } from "../src/server/db/queries/goals";
 import {
   getIncomeByCategory,
   getMonthlyTrends,
@@ -31,35 +29,28 @@ import {
   getNetWorthProgression,
   getBudgetStatus,
   getWatchlistCategories,
-} from "../src/server/db/queries/analytics.js";
+} from "../src/server/db/queries/analytics";
 
 import {
   createFinanceAccount,
   updateFinanceAccount,
   deleteFinanceAccount,
-} from "../src/server/db/mutations/accounts.js";
+} from "../src/server/db/mutations/accounts";
 import {
   createCategory,
   updateCategory,
   deleteCategory,
-} from "../src/server/db/mutations/categories.js";
+} from "../src/server/db/mutations/categories";
 import {
   createTransaction,
   updateTransaction,
   deleteTransaction,
-} from "../src/server/db/mutations/transactions.js";
+} from "../src/server/db/mutations/transactions";
 import {
   createGoal,
   addMoneyToGoal,
   deleteGoal,
-} from "../src/server/db/mutations/goals.js";
-
-let currentUserId: string = "";
-
-const server = new McpServer({
-  name: "moneymate-mcp",
-  version: "1.0.0",
-});
+} from "../src/server/db/mutations/goals";
 
 function text(data: unknown) {
   return {
@@ -84,6 +75,12 @@ async function safeTool<T>(
     return errorResult("Database operation failed");
   }
 }
+
+export function createMcpServer(currentUserId: string) {
+  const server = new McpServer({
+    name: "moneymate-mcp",
+    version: "1.0.0",
+  });
 
 // ── Accounts (queries) ──
 
@@ -715,16 +712,5 @@ server.tool(
   }
 );
 
-async function main() {
-  currentUserId = await getAuthenticatedUser();
-  console.error("Authenticated MCP user ID:", currentUserId);
-
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
-  console.error("MoneyMate MCP server running on stdio");
+return server;
 }
-
-main().catch((err) => {
-  console.error("Fatal:", err);
-  process.exit(1);
-});
