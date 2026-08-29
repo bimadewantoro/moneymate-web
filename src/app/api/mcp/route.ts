@@ -36,9 +36,10 @@ async function handleMcpRequest(request: NextRequest) {
     }
 
     return await transport.handleRequest(request);
-  } catch (error: any) {
-    if (error.message?.includes("Unauthorized")) {
-      return new NextResponse(error.message, { status: 401 });
+  } catch (error: unknown) {
+    const errMessage = error instanceof Error ? error.message : String(error);
+    if (errMessage.includes("Unauthorized")) {
+      return new NextResponse(errMessage, { status: 401 });
     }
     console.error("MCP Error:", error);
     return new NextResponse("Internal Server Error", { status: 500 });
