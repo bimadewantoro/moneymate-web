@@ -1,83 +1,58 @@
 import { NextRequest, NextResponse } from "next/server";
-import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
+import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
 import { createMcpServer } from "../../../../mcp/server";
 import { authenticateUser } from "../../../../mcp/auth";
 import { mcpTransports, mcpServers } from "@/server/mcpTransports";
-import { ServerResponse } from "node:http";
+import * as crypto from "node:crypto";
 
-export async function GET(request: NextRequest) {
+async function handleMcpRequest(request: NextRequest) {
   try {
     const authHeader = request.headers.get("Authorization");
     const userId = await authenticateUser(authHeader);
 
-    let responseStream: ReadableStreamDefaultController;
-    const stream = new ReadableStream({
-      start(controller) {
-        responseStream = controller;
-      },
-      cancel() {
-        // Clean up when client disconnects
-      },
-    });
+    // Look for existing session ID in headers or search params
+    const sessionId =
+      request.headers.get("mcp-session-id") ||
+      request.nextUrl.searchParams.get("sessionId");
 
-    const encoder = new TextEncoder();
+    let transport: WebStandardStreamableHTTPServerTransport | undefined;
+    let activeSessionId = sessionId;
 
-    const mockResponse = new ServerResponse({} as any);
-    mockResponse.writeHead = (statusCode: number, headers?: any) => {
-      return mockResponse;
-    };
-    mockResponse.write = (chunk: any) => {
-      try {
-        const payload = typeof chunk === "string" ? encoder.encode(chunk) : chunk;
-        responseStream.enqueue(payload);
-      } catch (e) {
-        // Ignore enqueue errors if stream is closed
-      }
-      return true;
-    };
-    mockResponse.end = () => {
-      try {
-        responseStream.close();
-      } catch (e) {}
-      return mockResponse;
-    };
-    mockResponse.on = (event: string, callback: any) => {
-      if (event === "close") {
-        request.signal.addEventListener("abort", callback);
-      }
-      return mockResponse;
-    };
+    if (activeSessionId && mcpTransports.has(activeSessionId)) {
+      transport = mcpTransports.get(activeSessionId)!;
+    } else {
+      // Create a new transport session
+      activeSessionId = crypto.randomUUID();
+      transport = new WebStandardStreamableHTTPServerTransport({
+        sessionIdGenerator: () => activeSessionId!,
+      });
 
-    const transport = new SSEServerTransport("/api/mcp/message", mockResponse as any);
-    const sessionId = transport.sessionId;
-    
-    mcpTransports.set(sessionId, transport);
+      mcpTransports.set(activeSessionId, transport);
 
-    const server = createMcpServer(userId);
-    mcpServers.set(sessionId, server);
+      const server = createMcpServer(userId);
+      mcpServers.set(activeSessionId, server);
 
-    server.connect(transport).catch((err) => {
-      console.error("MCP connection error:", err);
-    });
+      await server.connect(transport);
+    }
 
-    request.signal.addEventListener("abort", () => {
-      mcpTransports.delete(sessionId);
-      mcpServers.delete(sessionId);
-      transport.close().catch(() => {});
-    });
-
-    return new NextResponse(stream, {
-      headers: {
-        "Content-Type": "text/event-stream",
-        "Cache-Control": "no-cache",
-        "Connection": "keep-alive",
-      },
-    });
+    return await transport.handleRequest(request);
   } catch (error: any) {
     if (error.message?.includes("Unauthorized")) {
       return new NextResponse(error.message, { status: 401 });
     }
-    console.error("MCP SSE Error:", error);
+    console.error("MCP Error:", error);
     return new NextResponse("Internal Server Error", { status: 500 });
   }
+}
+
+export async function GET(request: NextRequest) {
+  return handleMcpRequest(request);
+}
+
+export async function POST(request: NextRequest) {
+  return handleMcpRequest(request);
+}
+
+export async function DELETE(request: NextRequest) {
+  return handleMcpRequest(request);
 }

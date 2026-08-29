@@ -1,13 +1,14 @@
-import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
+import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 // Use global to persist across Next.js hot reloads and requests
 declare global {
-  var mcpTransports: Map<string, SSEServerTransport> | undefined;
+  // eslint-disable-next-line no-var
+  var mcpTransports: Map<string, WebStandardStreamableHTTPServerTransport> | undefined;
   var mcpServers: Map<string, McpServer> | undefined;
 }
 
-export const mcpTransports = globalThis.mcpTransports ?? new Map<string, SSEServerTransport>();
+export const mcpTransports = globalThis.mcpTransports ?? new Map<string, WebStandardStreamableHTTPServerTransport>();
 export const mcpServers = globalThis.mcpServers ?? new Map<string, McpServer>();
 
 if (!globalThis.mcpTransports) {
