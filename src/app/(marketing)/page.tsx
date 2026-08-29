@@ -11,13 +11,22 @@ import {
   ArrowUpRight,
   ArrowDownLeft,
   Target,
-  Globe,
   CircleDollarSign,
   ClipboardList,
   Sparkles,
+  Bot,
+  Key,
+  Terminal,
+  Zap,
 } from "lucide-react";
 
 const FEATURES = [
+  {
+    icon: Bot,
+    title: "Remote MCP Server",
+    description:
+      "Connect your personal financial data to Claude Desktop, Hermes Agent, and custom AI tools securely with personal API keys.",
+  },
   {
     icon: ScanLine,
     title: "AI Receipt Scanner",
@@ -53,12 +62,6 @@ const FEATURES = [
     title: "Savings Goals",
     description:
       "Set targets for vacations, gadgets, or emergency funds. Track your progress with visual milestones.",
-  },
-  {
-    icon: CircleDollarSign,
-    title: "Easy Setup",
-    description:
-      "Simple and quick setup process. Just focus on your expenses and let MoneyMate handle the rest.",
   },
   {
     icon: ShieldCheck,
@@ -306,8 +309,150 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* ═══════ MCP SPOTLIGHT SECTION ═══════ */}
+      <section className="px-5 py-16 sm:py-24 bg-gradient-to-b from-white via-slate-50/70 to-slate-50 border-t border-b border-slate-100">
+        <div className="max-w-7xl mx-auto">
+          <div className="bg-slate-900 rounded-3xl p-8 sm:p-12 lg:p-16 text-white relative overflow-hidden shadow-xl shadow-slate-900/10">
+            {/* Background glowing accents */}
+            <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/15 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+
+            <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+              {/* Left Column: Description & Benefits */}
+              <div className="lg:col-span-7 space-y-6">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-blue-500/10 border border-blue-400/20 rounded-full">
+                  <Bot className="w-4 h-4 text-blue-400" />
+                  <span className="text-xs font-semibold uppercase tracking-wider text-blue-300">
+                    Model Context Protocol (MCP)
+                  </span>
+                </div>
+
+                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-tight">
+                  Supercharge Your Finances with{" "}
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-teal-300 to-emerald-400">
+                    External AI Agents
+                  </span>
+                </h2>
+
+                <p className="text-slate-300 text-base sm:text-lg leading-relaxed">
+                  MoneyMate now features a native, cloud-hosted <strong>Model Context Protocol (MCP) Server</strong>. Connect your personal financial context directly to AI assistants like <strong>Claude Desktop, Hermes Agent, and Cursor</strong> without exposing sensitive credentials or running local scripts.
+                </p>
+
+                <p className="text-slate-400 text-sm sm:text-base leading-relaxed">
+                  Generate personal API keys with strict multi-user isolation. Your AI companion can now analyze your spending patterns, query remaining budgets, calculate net worth trends, and create transactions on your behalf in real-time.
+                </p>
+
+                {/* Key Benefit Badges */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-2">
+                  <div className="bg-slate-800/80 border border-slate-700/60 rounded-xl p-3.5">
+                    <div className="flex items-center gap-2 text-emerald-400 font-semibold text-xs mb-1">
+                      <ShieldCheck className="w-4 h-4" />
+                      Strict Isolation
+                    </div>
+                    <p className="text-xs text-slate-400">
+                      Personalized API keys ensure agents only access your personal data.
+                    </p>
+                  </div>
+
+                  <div className="bg-slate-800/80 border border-slate-700/60 rounded-xl p-3.5">
+                    <div className="flex items-center gap-2 text-blue-400 font-semibold text-xs mb-1">
+                      <Zap className="w-4 h-4" />
+                      Streamable HTTP
+                    </div>
+                    <p className="text-xs text-slate-400">
+                      Modern, high-performance remote protocol with zero local setup.
+                    </p>
+                  </div>
+
+                  <div className="bg-slate-800/80 border border-slate-700/60 rounded-xl p-3.5">
+                    <div className="flex items-center gap-2 text-purple-400 font-semibold text-xs mb-1">
+                      <Terminal className="w-4 h-4" />
+                      Full Tool Suite
+                    </div>
+                    <p className="text-xs text-slate-400">
+                      15+ built-in financial tools for queries, insights, and mutations.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Call to action */}
+                <div className="pt-4 flex flex-wrap items-center gap-4">
+                  {session ? (
+                    <Link
+                      href="/profile"
+                      className="inline-flex items-center gap-2 px-6 py-3.5 brand-gradient text-white rounded-full font-semibold text-sm shadow-lg shadow-blue-600/30 hover:shadow-xl hover:-translate-y-0.5 transition-all"
+                    >
+                      <Key className="w-4 h-4" />
+                      Generate Your MCP Key in Profile
+                    </Link>
+                  ) : (
+                    <Link
+                      href="/signin"
+                      className="inline-flex items-center gap-2 px-6 py-3.5 brand-gradient text-white rounded-full font-semibold text-sm shadow-lg shadow-blue-600/30 hover:shadow-xl hover:-translate-y-0.5 transition-all"
+                    >
+                      <Sparkles className="w-4 h-4" />
+                      Sign In to Get Started
+                    </Link>
+                  )}
+                </div>
+              </div>
+
+              {/* Right Column: Code & Interactive Mock */}
+              <div className="lg:col-span-5">
+                <div className="bg-slate-950 border border-slate-800 rounded-2xl p-5 shadow-2xl space-y-4">
+                  <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-red-500/80" />
+                      <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
+                      <div className="w-3 h-3 rounded-full bg-green-500/80" />
+                      <span className="text-xs font-mono text-slate-400 ml-2">
+                        claude_desktop_config.json
+                      </span>
+                    </div>
+                    <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-blue-900/60 text-blue-300 border border-blue-800">
+                      HTTP Stream
+                    </span>
+                  </div>
+
+                  <pre className="text-[11px] sm:text-xs font-mono text-slate-300 overflow-x-auto leading-relaxed">
+{`{
+  "mcpServers": {
+    "moneymate": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/inspector",
+        "--transport",
+        "http",
+        "--server-url",
+        "https://moneymate.bimd.top/api/mcp",
+        "--header",
+        "Authorization: Bearer mcp_sec_..."
+      ]
+    }
+  }
+}`}
+                  </pre>
+
+                  {/* AI Agent sample dialog */}
+                  <div className="bg-slate-900/90 border border-slate-800/80 rounded-xl p-3.5 space-y-2">
+                    <div className="flex items-center gap-2 text-xs text-blue-400 font-medium">
+                      <Bot className="w-3.5 h-3.5" />
+                      <span>Claude Desktop / AI Agent:</span>
+                    </div>
+                    <p className="text-xs text-slate-300 italic">
+                      &ldquo;You spent Rp 1.450.000 on Groceries this month (72% of budget). Would you like me to allocate Rp 500.000 to your Emergency Fund goal?&rdquo;
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ═══════ HOW IT WORKS ═══════ */}
-      <section className="px-5 py-16 sm:py-24 bg-slate-50">
+      <section id="how-it-works" className="px-5 py-16 sm:py-24 bg-slate-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-14">
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 mb-3">

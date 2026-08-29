@@ -257,16 +257,21 @@ export function ApiKeySettings() {
                   <Terminal className="w-3.5 h-3.5 text-slate-500" />
                   Claude Desktop Config Example
                 </div>
-                <pre className="p-3 bg-slate-900 text-slate-100 rounded-xl text-[11px] font-mono overflow-x-auto">
+                <pre className="p-3 bg-slate-900 text-slate-100 rounded-xl text-[11px] font-mono overflow-x-auto leading-relaxed">
 {`{
   "mcpServers": {
     "moneymate": {
-      "command": "npm",
-      "args": ["run", "mcp"],
-      "cwd": "${typeof window !== 'undefined' ? window.location.origin : '/path/to/moneymate-web'}",
-      "env": {
-        "MONEYMATE_MCP_API_KEY": "${newKeyPlaintext}"
-      }
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/inspector",
+        "--transport",
+        "http",
+        "--server-url",
+        "${typeof window !== 'undefined' ? window.location.origin : 'https://moneymate.bimd.top'}/api/mcp",
+        "--header",
+        "Authorization: Bearer ${newKeyPlaintext}"
+      ]
     }
   }
 }`}

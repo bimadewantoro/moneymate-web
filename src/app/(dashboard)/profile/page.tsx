@@ -2,6 +2,7 @@ import { auth, signOut } from "@/auth";
 import { redirect } from "next/navigation";
 import { PinSettings } from "@/features/security/components/PinSettings";
 import { ApiKeySettings } from "@/features/security/components/ApiKeySettings";
+import { McpTutorial } from "@/features/security/components/McpTutorial";
 import { LogOut, Shield } from "lucide-react";
 
 export default async function ProfilePage() {
@@ -69,6 +70,9 @@ export default async function ProfilePage() {
 
         {/* ═══ Security Section ═══ */}
         <PinSettings />
+
+        {/* ═══ MCP Tutorial & Integration Guide ═══ */}
+        <McpTutorial />
 
         {/* ═══ MCP API Keys Section ═══ */}
         <ApiKeySettings />

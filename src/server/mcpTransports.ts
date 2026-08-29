@@ -3,7 +3,6 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 // Use global to persist across Next.js hot reloads and requests
 declare global {
-  // eslint-disable-next-line no-var
   var mcpTransports: Map<string, WebStandardStreamableHTTPServerTransport> | undefined;
   var mcpServers: Map<string, McpServer> | undefined;
 }
