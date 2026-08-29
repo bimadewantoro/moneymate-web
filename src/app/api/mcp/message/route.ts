@@ -5,7 +5,7 @@ import { mcpTransports } from "@/server/mcpTransports";
 export async function POST(request: NextRequest) {
   try {
     const authHeader = request.headers.get("Authorization");
-    await authenticateUser(authHeader); // Throws if unauthorized
+    await authenticateUser(authHeader);
 
     const sessionId = request.nextUrl.searchParams.get("sessionId");
     if (!sessionId) {

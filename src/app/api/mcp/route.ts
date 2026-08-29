@@ -3,9 +3,7 @@ import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
 import { createMcpServer } from "../../../../mcp/server";
 import { authenticateUser } from "../../../../mcp/auth";
 import { mcpTransports, mcpServers } from "@/server/mcpTransports";
-import * as crypto from "node:crypto";
 import { ServerResponse } from "node:http";
-import { Socket } from "node:net";
 
 export async function GET(request: NextRequest) {
   try {
@@ -22,17 +20,16 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    const sessionId = crypto.randomUUID();
-    const endpoint = `/api/mcp/message?sessionId=${sessionId}`;
+    const encoder = new TextEncoder();
 
-    // Create a mock ServerResponse to satisfy SSEServerTransport
     const mockResponse = new ServerResponse({} as any);
     mockResponse.writeHead = (statusCode: number, headers?: any) => {
       return mockResponse;
     };
     mockResponse.write = (chunk: any) => {
       try {
-        responseStream.enqueue(chunk);
+        const payload = typeof chunk === "string" ? encoder.encode(chunk) : chunk;
+        responseStream.enqueue(payload);
       } catch (e) {
         // Ignore enqueue errors if stream is closed
       }
@@ -51,13 +48,17 @@ export async function GET(request: NextRequest) {
       return mockResponse;
     };
 
-    const transport = new SSEServerTransport(endpoint, mockResponse as any);
+    const transport = new SSEServerTransport("/api/mcp/message", mockResponse as any);
+    const sessionId = transport.sessionId;
+    
     mcpTransports.set(sessionId, transport);
 
     const server = createMcpServer(userId);
     mcpServers.set(sessionId, server);
 
-    await server.connect(transport);
+    server.connect(transport).catch((err) => {
+      console.error("MCP connection error:", err);
+    });
 
     request.signal.addEventListener("abort", () => {
       mcpTransports.delete(sessionId);
