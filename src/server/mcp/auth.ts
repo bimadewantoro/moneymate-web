@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
-import { db } from "../src/server/db/index.js";
-import { apiKeys } from "../src/server/db/schema.js";
+import { db } from "../db/index";
+import { apiKeys } from "../db/schema";
 import { eq } from "drizzle-orm";
 
 export class UnauthorizedError extends Error {
